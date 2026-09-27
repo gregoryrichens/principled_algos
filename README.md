@@ -61,11 +61,11 @@ Each term below is explained using one running example, **Two Sum**:
 | `DRILLS.md` | The 36 practice cards. You write each one from memory until you can do it correctly in under two minutes, three times in a row. |
 | `CONTRASTS.md` | Contrast pairs, families, compositions, and a list of misleading wording in problems. The answers are hidden so you can test yourself. |
 
-## Supporting material you can ignore
+## Supporting material you can ignore but which I have included if you are curious re: LLM analsysis/decision-making
 
 | Folder or file | What it is |
 |---|---|
 | `_analysis/notes_A.md` to `notes_F.md` | The raw notes from analyzing all 150 problems, one file per group of topics. |
 | `_analysis/review_*.md` | Two independent reviews that checked the files above for mistakes. Their fixes have already been applied. |
 | `_analysis/*.json` | Data files used to build the coverage index. |
-| `_sources/` | Copies of the two public GitHub repositories the solutions came from. |
+| `_sources/` | [leetcode solutions](https://github.com/neetcode-gh/leetcode) && [Neetcode solutions](https://github.com/mdmzfzl/NeetCode-Solutions) used for solution analysis |
