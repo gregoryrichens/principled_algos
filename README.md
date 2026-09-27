@@ -1,6 +1,8 @@
-# algo_bs: learning coding interviews by principle, not by memorizing problems
+# principled: learning coding interviews by principle, not by memorizing problems
 
 ## What this is
+
+LLMs are the greatest pattern matchers... ever. So I paired with one to identify principles that underpin common coding interview questions. Instead of solving problems for you, the LLM has helped me build a program to make you a problem solver.
 
 The NeetCode 150 is a popular list of 150 LeetCode problems used to prepare for software engineering interviews. Most people study it by solving all 150 problems and trying to remember each solution.
 
