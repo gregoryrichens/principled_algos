@@ -1,0 +1,232 @@
+[
+ {
+  "problem": "Maximum Subarray",
+  "pattern": "Greedy",
+  "difficulty": "Medium",
+  "code": "0053-maximum-subarray",
+  "python": "_sources/leetcode/python/0053-maximum-subarray.py",
+  "article": "_sources/leetcode/articles/maximum-subarray.md",
+  "hint": "_sources/leetcode/hints/maximum-subarray.md",
+  "alt_python": "_sources/NeetCode-Solutions/15_Greedy/01_Maximum_Subarray/0053-maximum-subarray.py"
+ },
+ {
+  "problem": "Jump Game",
+  "pattern": "Greedy",
+  "difficulty": "Medium",
+  "code": "0055-jump-game",
+  "python": "_sources/leetcode/python/0055-jump-game.py",
+  "article": "_sources/leetcode/articles/jump-game.md",
+  "hint": "_sources/leetcode/hints/jump-game.md",
+  "alt_python": "_sources/NeetCode-Solutions/15_Greedy/02_Jump_Game/0055-jump-game.py"
+ },
+ {
+  "problem": "Jump Game II",
+  "pattern": "Greedy",
+  "difficulty": "Medium",
+  "code": "0045-jump-game-ii",
+  "python": "_sources/leetcode/python/0045-jump-game-ii.py",
+  "article": "_sources/leetcode/articles/jump-game-ii.md",
+  "hint": "_sources/leetcode/hints/jump-game-ii.md",
+  "alt_python": "_sources/NeetCode-Solutions/15_Greedy/03_Jump_Game_II/0045-jump-game-ii.py"
+ },
+ {
+  "problem": "Gas Station",
+  "pattern": "Greedy",
+  "difficulty": "Medium",
+  "code": "0134-gas-station",
+  "python": "_sources/leetcode/python/0134-gas-station.py",
+  "article": "_sources/leetcode/articles/gas-station.md",
+  "hint": "_sources/leetcode/hints/gas-station.md",
+  "alt_python": "_sources/NeetCode-Solutions/15_Greedy/04_Gas_Station/0134-gas-station.py"
+ },
+ {
+  "problem": "Hand of Straights",
+  "pattern": "Greedy",
+  "difficulty": "Medium",
+  "code": "0846-hand-of-straights",
+  "python": "_sources/leetcode/python/0846-hand-of-straights.py",
+  "article": "_sources/leetcode/articles/hand-of-straights.md",
+  "hint": "_sources/leetcode/hints/hand-of-straights.md",
+  "alt_python": "_sources/NeetCode-Solutions/15_Greedy/05_Hand_of_Straights/0846-hand-of-straights.py"
+ },
+ {
+  "problem": "Merge Triplets to Form Target Triplet",
+  "pattern": "Greedy",
+  "difficulty": "Medium",
+  "code": "1899-merge-triplets-to-form-target-triplet",
+  "python": "_sources/leetcode/python/1899-merge-triplets-to-form-target-triplet.py",
+  "article": "_sources/leetcode/articles/merge-triplets-to-form-target.md",
+  "hint": "_sources/leetcode/hints/merge-triplets-to-form-target.md",
+  "alt_python": "_sources/NeetCode-Solutions/15_Greedy/06_Merge_Triplets_to_Form_Target_Triplet/1899-merge-triplets-to-form-target-triplet.py"
+ },
+ {
+  "problem": "Partition Labels",
+  "pattern": "Greedy",
+  "difficulty": "Medium",
+  "code": "0763-partition-labels",
+  "python": "_sources/leetcode/python/0763-partition-labels.py",
+  "article": "_sources/leetcode/articles/partition-labels.md",
+  "hint": "_sources/leetcode/hints/partition-labels.md",
+  "alt_python": "_sources/NeetCode-Solutions/15_Greedy/07_Partition_Labels/0763-partition-labels.py"
+ },
+ {
+  "problem": "Valid Parenthesis String",
+  "pattern": "Greedy",
+  "difficulty": "Medium",
+  "code": "0678-valid-parenthesis-string",
+  "python": "_sources/leetcode/python/0678-valid-parenthesis-string.py",
+  "article": "_sources/leetcode/articles/valid-parenthesis-string.md",
+  "hint": "_sources/leetcode/hints/valid-parenthesis-string.md",
+  "alt_python": "_sources/NeetCode-Solutions/15_Greedy/08_Valid_Parenthesis_String/0678-valid-parenthesis-string.py"
+ },
+ {
+  "problem": "Rotate Image",
+  "pattern": "Math & Geometry",
+  "difficulty": "Medium",
+  "code": "0048-rotate-image",
+  "python": "_sources/leetcode/python/0048-rotate-image.py",
+  "article": "_sources/leetcode/articles/rotate-matrix.md",
+  "hint": "_sources/leetcode/hints/rotate-matrix.md",
+  "alt_python": "_sources/NeetCode-Solutions/17_Math_&_Geometry/01_Rotate_Image/0048-rotate-image.py"
+ },
+ {
+  "problem": "Spiral Matrix",
+  "pattern": "Math & Geometry",
+  "difficulty": "Medium",
+  "code": "0054-spiral-matrix",
+  "python": "_sources/leetcode/python/0054-spiral-matrix.py",
+  "article": "_sources/leetcode/articles/spiral-matrix.md",
+  "hint": "_sources/leetcode/hints/spiral-matrix.md",
+  "alt_python": "_sources/NeetCode-Solutions/17_Math_&_Geometry/02_Spiral_Matrix/0054-spiral-matrix.py"
+ },
+ {
+  "problem": "Set Matrix Zeroes",
+  "pattern": "Math & Geometry",
+  "difficulty": "Medium",
+  "code": "0073-set-matrix-zeroes",
+  "python": "_sources/leetcode/python/0073-set-matrix-zeroes.py",
+  "article": "_sources/leetcode/articles/set-zeroes-in-matrix.md",
+  "hint": "_sources/leetcode/hints/set-zeroes-in-matrix.md",
+  "alt_python": "_sources/NeetCode-Solutions/17_Math_&_Geometry/03_Set_Matrix_Zeroes/0073-set-matrix-zeroes.py"
+ },
+ {
+  "problem": "Happy Number",
+  "pattern": "Math & Geometry",
+  "difficulty": "Easy",
+  "code": "0202-happy-number",
+  "python": "_sources/leetcode/python/0202-happy-number.py",
+  "article": "_sources/leetcode/articles/non-cyclical-number.md",
+  "hint": "_sources/leetcode/hints/non-cyclical-number.md",
+  "alt_python": "_sources/NeetCode-Solutions/17_Math_&_Geometry/04_Happy_Number/0202-happy-number.py"
+ },
+ {
+  "problem": "Plus One",
+  "pattern": "Math & Geometry",
+  "difficulty": "Easy",
+  "code": "0066-plus-one",
+  "python": "_sources/leetcode/python/0066-plus-one.py",
+  "article": "_sources/leetcode/articles/plus-one.md",
+  "hint": "_sources/leetcode/hints/plus-one.md",
+  "alt_python": "_sources/NeetCode-Solutions/17_Math_&_Geometry/05_Plus_One/0066-plus-one.py"
+ },
+ {
+  "problem": "Pow(x, n)",
+  "pattern": "Math & Geometry",
+  "difficulty": "Medium",
+  "code": "0050-powx-n",
+  "python": "_sources/leetcode/python/0050-powx-n.py",
+  "article": "_sources/leetcode/articles/pow-x-n.md",
+  "hint": "_sources/leetcode/hints/pow-x-n.md",
+  "alt_python": "_sources/NeetCode-Solutions/17_Math_&_Geometry/06_Pow(x,n)/0050-powx-n.py"
+ },
+ {
+  "problem": "Multiply Strings",
+  "pattern": "Math & Geometry",
+  "difficulty": "Medium",
+  "code": "0043-multiply-strings",
+  "python": "_sources/leetcode/python/0043-multiply-strings.py",
+  "article": "_sources/leetcode/articles/multiply-strings.md",
+  "hint": "_sources/leetcode/hints/multiply-strings.md",
+  "alt_python": "_sources/NeetCode-Solutions/17_Math_&_Geometry/07_Multiply_Strings/0043-multiply-strings.py"
+ },
+ {
+  "problem": "Detect Squares",
+  "pattern": "Math & Geometry",
+  "difficulty": "Medium",
+  "code": "2013-detect-squares",
+  "python": "_sources/leetcode/python/2013-detect-squares.py",
+  "article": "_sources/leetcode/articles/count-squares.md",
+  "hint": "_sources/leetcode/hints/count-squares.md",
+  "alt_python": "_sources/NeetCode-Solutions/17_Math_&_Geometry/08_Detect_Squares/2013-detect-squares.py"
+ },
+ {
+  "problem": "Single Number",
+  "pattern": "Bit Manipulation",
+  "difficulty": "Easy",
+  "code": "0136-single-number",
+  "python": "_sources/leetcode/python/0136-single-number.py",
+  "article": "_sources/leetcode/articles/single-number.md",
+  "hint": "_sources/leetcode/hints/single-number.md",
+  "alt_python": "_sources/NeetCode-Solutions/18_Bit_Manipulation/01_Single_Number/0136-single-number.py"
+ },
+ {
+  "problem": "Number of 1 Bits",
+  "pattern": "Bit Manipulation",
+  "difficulty": "Easy",
+  "code": "0191-number-of-1-bits",
+  "python": "_sources/leetcode/python/0191-number-of-1-bits.py",
+  "article": "_sources/leetcode/articles/number-of-one-bits.md",
+  "hint": "_sources/leetcode/hints/number-of-one-bits.md",
+  "alt_python": "_sources/NeetCode-Solutions/18_Bit_Manipulation/02_Number_of_1_Bits/0191-number-of-1-bits.py"
+ },
+ {
+  "problem": "Counting Bits",
+  "pattern": "Bit Manipulation",
+  "difficulty": "Easy",
+  "code": "0338-counting-bits",
+  "python": "_sources/leetcode/python/0338-counting-bits.py",
+  "article": "_sources/leetcode/articles/counting-bits.md",
+  "hint": "_sources/leetcode/hints/counting-bits.md",
+  "alt_python": "_sources/NeetCode-Solutions/18_Bit_Manipulation/03_Counting_Bits/0338-counting-bits.py"
+ },
+ {
+  "problem": "Reverse Bits",
+  "pattern": "Bit Manipulation",
+  "difficulty": "Easy",
+  "code": "0190-reverse-bits",
+  "python": "_sources/leetcode/python/0190-reverse-bits.py",
+  "article": "_sources/leetcode/articles/reverse-bits.md",
+  "hint": "_sources/leetcode/hints/reverse-bits.md",
+  "alt_python": "_sources/NeetCode-Solutions/18_Bit_Manipulation/04_Reverse_Bits/0190-reverse-bits.py"
+ },
+ {
+  "problem": "Missing Number",
+  "pattern": "Bit Manipulation",
+  "difficulty": "Easy",
+  "code": "0268-missing-number",
+  "python": "_sources/leetcode/python/0268-missing-number.py",
+  "article": "_sources/leetcode/articles/missing-number.md",
+  "hint": "_sources/leetcode/hints/missing-number.md",
+  "alt_python": "_sources/NeetCode-Solutions/18_Bit_Manipulation/05_Missing_Number/0268-missing-number.py"
+ },
+ {
+  "problem": "Sum of Two Integers",
+  "pattern": "Bit Manipulation",
+  "difficulty": "Medium",
+  "code": "0371-sum-of-two-integers",
+  "python": "_sources/leetcode/python/0371-sum-of-two-integers.py",
+  "article": "_sources/leetcode/articles/sum-of-two-integers.md",
+  "hint": "_sources/leetcode/hints/sum-of-two-integers.md",
+  "alt_python": "_sources/NeetCode-Solutions/18_Bit_Manipulation/06_Sum_of_Two_Integers/0371-sum-of-two-integers.py"
+ },
+ {
+  "problem": "Reverse Integer",
+  "pattern": "Bit Manipulation",
+  "difficulty": "Medium",
+  "code": "0007-reverse-integer",
+  "python": "_sources/leetcode/python/0007-reverse-integer.py",
+  "article": "_sources/leetcode/articles/reverse-integer.md",
+  "hint": "_sources/leetcode/hints/reverse-integer.md",
+  "alt_python": "_sources/NeetCode-Solutions/18_Bit_Manipulation/07_Reverse_Integer/0007-reverse-integer.py"
+ }
+]

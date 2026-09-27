@@ -1,0 +1,272 @@
+[
+ {
+  "problem": "Contains Duplicate",
+  "pattern": "Arrays & Hashing",
+  "difficulty": "Easy",
+  "code": "0217-contains-duplicate",
+  "python": "_sources/leetcode/python/0217-contains-duplicate.py",
+  "article": "_sources/leetcode/articles/find-duplicate-integer.md",
+  "hint": "_sources/leetcode/hints/find-duplicate-integer.md",
+  "alt_python": "_sources/NeetCode-Solutions/01_Arrays_&_Hashing/01_Contains_Duplicate/0217-contains-duplicate.py"
+ },
+ {
+  "problem": "Valid Anagram",
+  "pattern": "Arrays & Hashing",
+  "difficulty": "Easy",
+  "code": "0242-valid-anagram",
+  "python": "_sources/leetcode/python/0242-valid-anagram.py",
+  "article": "_sources/leetcode/articles/is-anagram.md",
+  "hint": "_sources/leetcode/hints/is-anagram.md",
+  "alt_python": "_sources/NeetCode-Solutions/01_Arrays_&_Hashing/02_Valid_Anagram/0242-valid-anagram.py"
+ },
+ {
+  "problem": "Two Sum",
+  "pattern": "Arrays & Hashing",
+  "difficulty": "Easy",
+  "code": "0001-two-sum",
+  "python": "_sources/leetcode/python/0001-two-sum.py",
+  "article": "_sources/leetcode/articles/two-integer-sum.md",
+  "hint": "_sources/leetcode/hints/two-integer-sum.md",
+  "alt_python": "_sources/NeetCode-Solutions/01_Arrays_&_Hashing/03_Two_Sum/0001-two-sum.py"
+ },
+ {
+  "problem": "Group Anagrams",
+  "pattern": "Arrays & Hashing",
+  "difficulty": "Medium",
+  "code": "0049-group-anagrams",
+  "python": "_sources/leetcode/python/0049-group-anagrams.py",
+  "article": "_sources/leetcode/articles/anagram-groups.md",
+  "hint": "_sources/leetcode/hints/anagram-groups.md",
+  "alt_python": "_sources/NeetCode-Solutions/01_Arrays_&_Hashing/04_Group_Anagrams/0049-group-anagrams.py"
+ },
+ {
+  "problem": "Top K Frequent Elements",
+  "pattern": "Arrays & Hashing",
+  "difficulty": "Medium",
+  "code": "0347-top-k-frequent-elements",
+  "python": "_sources/leetcode/python/0347-top-k-frequent-elements.py",
+  "article": "_sources/leetcode/articles/top-k-elements-in-list.md",
+  "hint": "_sources/leetcode/hints/top-k-elements-in-list.md",
+  "alt_python": "_sources/NeetCode-Solutions/01_Arrays_&_Hashing/05_Top_K_Frequent_Elements/0347-top-k-frequent-elements.py"
+ },
+ {
+  "problem": "Product of Array Except Self",
+  "pattern": "Arrays & Hashing",
+  "difficulty": "Medium",
+  "code": "0238-product-of-array-except-self",
+  "python": "_sources/leetcode/python/0238-product-of-array-except-self.py",
+  "article": "_sources/leetcode/articles/products-of-array-discluding-self.md",
+  "hint": "_sources/leetcode/hints/products-of-array-discluding-self.md",
+  "alt_python": "_sources/NeetCode-Solutions/01_Arrays_&_Hashing/06_Product_of_Array_Except_Self/0238-product-of-array-except-self.py"
+ },
+ {
+  "problem": "Valid Sudoku",
+  "pattern": "Arrays & Hashing",
+  "difficulty": "Medium",
+  "code": "0036-valid-sudoku",
+  "python": "_sources/leetcode/python/0036-valid-sudoku.py",
+  "article": "_sources/leetcode/articles/valid-sudoku.md",
+  "hint": "_sources/leetcode/hints/valid-sudoku.md",
+  "alt_python": "_sources/NeetCode-Solutions/01_Arrays_&_Hashing/07_Valid_Sudoku/0036-valid-sudoku.py"
+ },
+ {
+  "problem": "Encode and Decode Strings",
+  "pattern": "Arrays & Hashing",
+  "difficulty": "Medium",
+  "code": "0271-encode-and-decode-strings",
+  "python": "_sources/leetcode/python/0271-encode-and-decode-strings.py",
+  "article": "_sources/leetcode/articles/string-encode-and-decode.md",
+  "hint": "_sources/leetcode/hints/string-encode-and-decode.md",
+  "alt_python": "_sources/NeetCode-Solutions/01_Arrays_&_Hashing/08_Encode_and_Decode_Strings/0271-encode-and-decode-strings.py"
+ },
+ {
+  "problem": "Longest Consecutive Sequence",
+  "pattern": "Arrays & Hashing",
+  "difficulty": "Medium",
+  "code": "0128-longest-consecutive-sequence",
+  "python": "_sources/leetcode/python/0128-longest-consecutive-sequence.py",
+  "article": "_sources/leetcode/articles/longest-consecutive-sequence.md",
+  "hint": "_sources/leetcode/hints/longest-consecutive-sequence.md",
+  "alt_python": "_sources/NeetCode-Solutions/01_Arrays_&_Hashing/09_Longest_Consecutive_Sequence/0128-longest-consecutive-sequence.py"
+ },
+ {
+  "problem": "Valid Palindrome",
+  "pattern": "Two Pointers",
+  "difficulty": "Easy",
+  "code": "0125-valid-palindrome",
+  "python": "_sources/leetcode/python/0125-valid-palindrome.py",
+  "article": "_sources/leetcode/articles/is-palindrome.md",
+  "hint": "_sources/leetcode/hints/is-palindrome.md",
+  "alt_python": "_sources/NeetCode-Solutions/02_Two_Pointers/01_Valid_Palindrome/0125-valid-palindrome.py"
+ },
+ {
+  "problem": "Two Sum II Input Array Is Sorted",
+  "pattern": "Two Pointers",
+  "difficulty": "Medium",
+  "code": "0167-two-sum-ii-input-array-is-sorted",
+  "python": "_sources/leetcode/python/0167-two-sum-ii-input-array-is-sorted.py",
+  "article": "_sources/leetcode/articles/two-integer-sum-ii.md",
+  "hint": "_sources/leetcode/hints/two-integer-sum-ii.md",
+  "alt_python": "_sources/NeetCode-Solutions/02_Two_Pointers/02_Two_Sum_II_-_Input_Array_Is_Sorted/0167-two-sum-ii-input-array-is-sorted.py"
+ },
+ {
+  "problem": "3Sum",
+  "pattern": "Two Pointers",
+  "difficulty": "Medium",
+  "code": "0015-3sum",
+  "python": "_sources/leetcode/python/0015-3sum.py",
+  "article": "_sources/leetcode/articles/three-integer-sum.md",
+  "hint": "_sources/leetcode/hints/three-integer-sum.md",
+  "alt_python": "_sources/NeetCode-Solutions/02_Two_Pointers/03_3Sum/0015-3sum.py"
+ },
+ {
+  "problem": "Container With Most Water",
+  "pattern": "Two Pointers",
+  "difficulty": "Medium",
+  "code": "0011-container-with-most-water",
+  "python": "_sources/leetcode/python/0011-container-with-most-water.py",
+  "article": "_sources/leetcode/articles/max-water-container.md",
+  "hint": "_sources/leetcode/hints/max-water-container.md",
+  "alt_python": "_sources/NeetCode-Solutions/02_Two_Pointers/04_Container_With_Most_Water/0011-container-with-most-water.py"
+ },
+ {
+  "problem": "Trapping Rain Water",
+  "pattern": "Two Pointers",
+  "difficulty": "Hard",
+  "code": "0042-trapping-rain-water",
+  "python": "_sources/leetcode/python/0042-trapping-rain-water.py",
+  "article": "_sources/leetcode/articles/trapping-rain-water.md",
+  "hint": "_sources/leetcode/hints/trapping-rain-water.md",
+  "alt_python": "_sources/NeetCode-Solutions/02_Two_Pointers/05_Trapping_Rain_Water/0042-trapping-rain-water.py"
+ },
+ {
+  "problem": "Best Time to Buy And Sell Stock",
+  "pattern": "Sliding Window",
+  "difficulty": "Easy",
+  "code": "0121-best-time-to-buy-and-sell-stock",
+  "python": "_sources/leetcode/python/0121-best-time-to-buy-and-sell-stock.py",
+  "article": "_sources/leetcode/articles/buy-and-sell-crypto.md",
+  "hint": "_sources/leetcode/hints/buy-and-sell-crypto.md",
+  "alt_python": "_sources/NeetCode-Solutions/03_Sliding_Window/01_Best_Time_to_Buy_and_Sell_Stock/0121-best-time-to-buy-and-sell-stock.py"
+ },
+ {
+  "problem": "Longest Substring Without Repeating Characters",
+  "pattern": "Sliding Window",
+  "difficulty": "Medium",
+  "code": "0003-longest-substring-without-repeating-characters",
+  "python": "_sources/leetcode/python/0003-longest-substring-without-repeating-characters.py",
+  "article": "_sources/leetcode/articles/longest-substring-without-duplicates.md",
+  "hint": "_sources/leetcode/hints/longest-substring-without-duplicates.md",
+  "alt_python": "_sources/NeetCode-Solutions/03_Sliding_Window/02_Longest_Substring_Without_Repeating_Characters/0003-longest-substring-without-repeating-characters.py"
+ },
+ {
+  "problem": "Longest Repeating Character Replacement",
+  "pattern": "Sliding Window",
+  "difficulty": "Medium",
+  "code": "0424-longest-repeating-character-replacement",
+  "python": "_sources/leetcode/python/0424-longest-repeating-character-replacement.py",
+  "article": "_sources/leetcode/articles/longest-repeating-substring-with-replacement.md",
+  "hint": "_sources/leetcode/hints/longest-repeating-substring-with-replacement.md",
+  "alt_python": "_sources/NeetCode-Solutions/03_Sliding_Window/03_Longest_Repeating_Character_Replacement/0424-longest-repeating-character-replacement.py"
+ },
+ {
+  "problem": "Permutation In String",
+  "pattern": "Sliding Window",
+  "difficulty": "Medium",
+  "code": "0567-permutation-in-string",
+  "python": "_sources/leetcode/python/0567-permutation-in-string.py",
+  "article": "_sources/leetcode/articles/permutation-string.md",
+  "hint": "_sources/leetcode/hints/permutation-string.md",
+  "alt_python": "_sources/NeetCode-Solutions/03_Sliding_Window/04_Permutation_in_String/0567-permutation-in-string.py"
+ },
+ {
+  "problem": "Minimum Window Substring",
+  "pattern": "Sliding Window",
+  "difficulty": "Hard",
+  "code": "0076-minimum-window-substring",
+  "python": "_sources/leetcode/python/0076-minimum-window-substring.py",
+  "article": "_sources/leetcode/articles/minimum-window-with-characters.md",
+  "hint": "_sources/leetcode/hints/minimum-window-with-characters.md",
+  "alt_python": "_sources/NeetCode-Solutions/03_Sliding_Window/05_Minimum_Window_Substring/0076-minimum-window-substring.py"
+ },
+ {
+  "problem": "Sliding Window Maximum",
+  "pattern": "Sliding Window",
+  "difficulty": "Hard",
+  "code": "0239-sliding-window-maximum",
+  "python": "_sources/leetcode/python/0239-sliding-window-maximum.py",
+  "article": "_sources/leetcode/articles/sliding-window-maximum.md",
+  "hint": "_sources/leetcode/hints/sliding-window-maximum.md",
+  "alt_python": "_sources/NeetCode-Solutions/03_Sliding_Window/06_Sliding_Window_Maximum/0239-sliding-window-maximum.py"
+ },
+ {
+  "problem": "Valid Parentheses",
+  "pattern": "Stack",
+  "difficulty": "Easy",
+  "code": "0020-valid-parentheses",
+  "python": "_sources/leetcode/python/0020-valid-parentheses.py",
+  "article": "_sources/leetcode/articles/validate-parentheses.md",
+  "hint": "_sources/leetcode/hints/validate-parentheses.md",
+  "alt_python": "_sources/NeetCode-Solutions/04_Stack/01_Valid_Parentheses/0020-valid-parentheses.py"
+ },
+ {
+  "problem": "Min Stack",
+  "pattern": "Stack",
+  "difficulty": "Medium",
+  "code": "0155-min-stack",
+  "python": "_sources/leetcode/python/0155-min-stack.py",
+  "article": "_sources/leetcode/articles/minimum-stack.md",
+  "hint": "_sources/leetcode/hints/minimum-stack.md",
+  "alt_python": "_sources/NeetCode-Solutions/04_Stack/02_Min_Stack/0155-min-stack.py"
+ },
+ {
+  "problem": "Evaluate Reverse Polish Notation",
+  "pattern": "Stack",
+  "difficulty": "Medium",
+  "code": "0150-evaluate-reverse-polish-notation",
+  "python": "_sources/leetcode/python/0150-evaluate-reverse-polish-notation.py",
+  "article": "_sources/leetcode/articles/evaluate-reverse-polish-notation.md",
+  "hint": "_sources/leetcode/hints/evaluate-reverse-polish-notation.md",
+  "alt_python": "_sources/NeetCode-Solutions/04_Stack/03_Evaluate_Reverse_Polish_Notation/0150-evaluate-reverse-polish-notation.py"
+ },
+ {
+  "problem": "Generate Parentheses",
+  "pattern": "Stack",
+  "difficulty": "Medium",
+  "code": "0022-generate-parentheses",
+  "python": "_sources/leetcode/python/0022-generate-parentheses.py",
+  "article": "_sources/leetcode/articles/generate-parentheses.md",
+  "hint": "_sources/leetcode/hints/generate-parentheses.md",
+  "alt_python": "_sources/NeetCode-Solutions/04_Stack/04_Generate_Parentheses/0022-generate-parentheses.py"
+ },
+ {
+  "problem": "Daily Temperatures",
+  "pattern": "Stack",
+  "difficulty": "Medium",
+  "code": "0739-daily-temperatures",
+  "python": "_sources/leetcode/python/0739-daily-temperatures.py",
+  "article": "_sources/leetcode/articles/daily-temperatures.md",
+  "hint": "_sources/leetcode/hints/daily-temperatures.md",
+  "alt_python": "_sources/NeetCode-Solutions/04_Stack/05_Daily_Temperatures/0739-daily-temperatures.py"
+ },
+ {
+  "problem": "Car Fleet",
+  "pattern": "Stack",
+  "difficulty": "Medium",
+  "code": "0853-car-fleet",
+  "python": "_sources/leetcode/python/0853-car-fleet.py",
+  "article": "_sources/leetcode/articles/car-fleet.md",
+  "hint": "_sources/leetcode/hints/car-fleet.md",
+  "alt_python": "_sources/NeetCode-Solutions/04_Stack/06_Car_Fleet/0853-car-fleet.py"
+ },
+ {
+  "problem": "Largest Rectangle In Histogram",
+  "pattern": "Stack",
+  "difficulty": "Hard",
+  "code": "0084-largest-rectangle-in-histogram",
+  "python": "_sources/leetcode/python/0084-largest-rectangle-in-histogram.py",
+  "article": "_sources/leetcode/articles/largest-rectangle-in-histogram.md",
+  "hint": "_sources/leetcode/hints/largest-rectangle-in-histogram.md",
+  "alt_python": "_sources/NeetCode-Solutions/04_Stack/07_Largest_Rectangle_In_Histogram/0084-largest-rectangle-in-histogram.py"
+ }
+]

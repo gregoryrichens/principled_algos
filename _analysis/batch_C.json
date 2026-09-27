@@ -1,0 +1,272 @@
+[
+ {
+  "problem": "Invert Binary Tree",
+  "pattern": "Trees",
+  "difficulty": "Easy",
+  "code": "0226-invert-binary-tree",
+  "python": "_sources/leetcode/python/0226-invert-binary-tree.py",
+  "article": "_sources/leetcode/articles/invert-a-binary-tree.md",
+  "hint": "_sources/leetcode/hints/invert-a-binary-tree.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/01_Invert_Binary_Tree/0226-invert-binary-tree.py"
+ },
+ {
+  "problem": "Maximum Depth of Binary Tree",
+  "pattern": "Trees",
+  "difficulty": "Easy",
+  "code": "0104-maximum-depth-of-binary-tree",
+  "python": "_sources/leetcode/python/0104-maximum-depth-of-binary-tree.py",
+  "article": "_sources/leetcode/articles/depth-of-binary-tree.md",
+  "hint": "_sources/leetcode/hints/depth-of-binary-tree.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/02_Maximum_Depth_of_Binary_Tree/0104-maximum-depth-of-binary-tree.py"
+ },
+ {
+  "problem": "Diameter of Binary Tree",
+  "pattern": "Trees",
+  "difficulty": "Easy",
+  "code": "0543-diameter-of-binary-tree",
+  "python": "_sources/leetcode/python/0543-diameter-of-binary-tree.py",
+  "article": "_sources/leetcode/articles/binary-tree-diameter.md",
+  "hint": "_sources/leetcode/hints/binary-tree-diameter.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/03_Diameter_of_Binary_Tree/0543-diameter-of-binary-tree.py"
+ },
+ {
+  "problem": "Balanced Binary Tree",
+  "pattern": "Trees",
+  "difficulty": "Easy",
+  "code": "0110-balanced-binary-tree",
+  "python": "_sources/leetcode/python/0110-balanced-binary-tree.py",
+  "article": "_sources/leetcode/articles/balanced-binary-tree.md",
+  "hint": "_sources/leetcode/hints/balanced-binary-tree.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/04_Balanced_Binary_Tree/0110-balanced-binary-tree.py"
+ },
+ {
+  "problem": "Same Tree",
+  "pattern": "Trees",
+  "difficulty": "Easy",
+  "code": "0100-same-tree",
+  "python": "_sources/leetcode/python/0100-same-tree.py",
+  "article": "_sources/leetcode/articles/same-binary-tree.md",
+  "hint": "_sources/leetcode/hints/same-binary-tree.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/05_Same_Tree/0100-same-tree.py"
+ },
+ {
+  "problem": "Subtree of Another Tree",
+  "pattern": "Trees",
+  "difficulty": "Easy",
+  "code": "0572-subtree-of-another-tree",
+  "python": "_sources/leetcode/python/0572-subtree-of-another-tree.py",
+  "article": "_sources/leetcode/articles/subtree-of-a-binary-tree.md",
+  "hint": "_sources/leetcode/hints/subtree-of-a-binary-tree.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/06_Subtree_of_Another_Tree/0572-subtree-of-another-tree.py"
+ },
+ {
+  "problem": "Lowest Common Ancestor of a Binary Search Tree",
+  "pattern": "Trees",
+  "difficulty": "Medium",
+  "code": "0235-lowest-common-ancestor-of-a-binary-search-tree",
+  "python": "_sources/leetcode/python/0235-lowest-common-ancestor-of-a-binary-search-tree.py",
+  "article": "_sources/leetcode/articles/lowest-common-ancestor-in-binary-search-tree.md",
+  "hint": "_sources/leetcode/hints/lowest-common-ancestor-in-binary-search-tree.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/07_Lowest_Common_Ancestor_of_a_Binary_Search_Tree/0235-lowest-common-ancestor-of-a-binary-search-tree.py"
+ },
+ {
+  "problem": "Binary Tree Level Order Traversal",
+  "pattern": "Trees",
+  "difficulty": "Medium",
+  "code": "0102-binary-tree-level-order-traversal",
+  "python": "_sources/leetcode/python/0102-binary-tree-level-order-traversal.py",
+  "article": "_sources/leetcode/articles/level-order-traversal-of-binary-tree.md",
+  "hint": "_sources/leetcode/hints/level-order-traversal-of-binary-tree.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/08_Binary_Tree_Level_Order_Traversal/0102-binary-tree-level-order-traversal.py"
+ },
+ {
+  "problem": "Binary Tree Right Side View",
+  "pattern": "Trees",
+  "difficulty": "Medium",
+  "code": "0199-binary-tree-right-side-view",
+  "python": "_sources/leetcode/python/0199-binary-tree-right-side-view.py",
+  "article": "_sources/leetcode/articles/binary-tree-right-side-view.md",
+  "hint": "_sources/leetcode/hints/binary-tree-right-side-view.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/09_Binary_Tree_Right_Side_View/0199-binary-tree-right-side-view.py"
+ },
+ {
+  "problem": "Count Good Nodes In Binary Tree",
+  "pattern": "Trees",
+  "difficulty": "Medium",
+  "code": "1448-count-good-nodes-in-binary-tree",
+  "python": "_sources/leetcode/python/1448-count-good-nodes-in-binary-tree.py",
+  "article": "_sources/leetcode/articles/count-good-nodes-in-binary-tree.md",
+  "hint": "_sources/leetcode/hints/count-good-nodes-in-binary-tree.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/10_Count_Good_Nodes_In_Binary_Tree/1448-count-good-nodes-in-binary-tree.py"
+ },
+ {
+  "problem": "Validate Binary Search Tree",
+  "pattern": "Trees",
+  "difficulty": "Medium",
+  "code": "0098-validate-binary-search-tree",
+  "python": "_sources/leetcode/python/0098-validate-binary-search-tree.py",
+  "article": "_sources/leetcode/articles/valid-binary-search-tree.md",
+  "hint": "_sources/leetcode/hints/valid-binary-search-tree.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/11_Validate_Binary_Search_Tree/0098-validate-binary-search-tree.py"
+ },
+ {
+  "problem": "Kth Smallest Element In a Bst",
+  "pattern": "Trees",
+  "difficulty": "Medium",
+  "code": "0230-kth-smallest-element-in-a-bst",
+  "python": "_sources/leetcode/python/0230-kth-smallest-element-in-a-bst.py",
+  "article": "_sources/leetcode/articles/kth-smallest-integer-in-bst.md",
+  "hint": "_sources/leetcode/hints/kth-smallest-integer-in-bst.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/12_Kth_Smallest_Element_In_a_BST/0230-kth-smallest-element-in-a-bst.py"
+ },
+ {
+  "problem": "Construct Binary Tree From Preorder And Inorder Traversal",
+  "pattern": "Trees",
+  "difficulty": "Medium",
+  "code": "0105-construct-binary-tree-from-preorder-and-inorder-traversal",
+  "python": "_sources/leetcode/python/0105-construct-binary-tree-from-preorder-and-inorder-traversal.py",
+  "article": "_sources/leetcode/articles/binary-tree-from-preorder-and-inorder-traversal.md",
+  "hint": "_sources/leetcode/hints/binary-tree-from-preorder-and-inorder-traversal.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/13_Construct_Binary_Tree_from_Preorder_and_Inorder_Traversal/0105-construct-binary-tree-from-preorder-and-inorder-traversal.py"
+ },
+ {
+  "problem": "Binary Tree Maximum Path Sum",
+  "pattern": "Trees",
+  "difficulty": "Hard",
+  "code": "0124-binary-tree-maximum-path-sum",
+  "python": "_sources/leetcode/python/0124-binary-tree-maximum-path-sum.py",
+  "article": "_sources/leetcode/articles/binary-tree-maximum-path-sum.md",
+  "hint": "_sources/leetcode/hints/binary-tree-maximum-path-sum.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/14_Binary_Tree_Maximum_Path_Sum/0124-binary-tree-maximum-path-sum.py"
+ },
+ {
+  "problem": "Serialize And Deserialize Binary Tree",
+  "pattern": "Trees",
+  "difficulty": "Hard",
+  "code": "0297-serialize-and-deserialize-binary-tree",
+  "python": "_sources/leetcode/python/0297-serialize-and-deserialize-binary-tree.py",
+  "article": "_sources/leetcode/articles/serialize-and-deserialize-binary-tree.md",
+  "hint": "_sources/leetcode/hints/serialize-and-deserialize-binary-tree.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/15_Serialize_and_Deserialize_Binary_Tree/0297-serialize-and-deserialize-binary-tree.py"
+ },
+ {
+  "problem": "Implement Trie Prefix Tree",
+  "pattern": "Tries",
+  "difficulty": "Medium",
+  "code": "0208-implement-trie-prefix-tree",
+  "python": "_sources/leetcode/python/0208-implement-trie-prefix-tree.py",
+  "article": "_sources/leetcode/articles/implement-prefix-tree.md",
+  "hint": "_sources/leetcode/hints/implement-prefix-tree.md",
+  "alt_python": "_sources/NeetCode-Solutions/08_Tries/01_Implement_Trie_Prefix_Tree/0208-implement-trie-prefix-tree.py"
+ },
+ {
+  "problem": "Design Add And Search Words Data Structure",
+  "pattern": "Tries",
+  "difficulty": "Medium",
+  "code": "0211-design-add-and-search-words-data-structure",
+  "python": "_sources/leetcode/python/0211-design-add-and-search-words-data-structure.py",
+  "article": "_sources/leetcode/articles/design-word-search-data-structure.md",
+  "hint": "_sources/leetcode/hints/design-word-search-data-structure.md",
+  "alt_python": "_sources/NeetCode-Solutions/08_Tries/02_Design_Add_and_Search_Words_Data_Structure/0211-design-add-and-search-words-data-structure.py"
+ },
+ {
+  "problem": "Word Search II",
+  "pattern": "Tries",
+  "difficulty": "Hard",
+  "code": "0212-word-search-ii",
+  "python": "_sources/leetcode/python/0212-word-search-ii.py",
+  "article": "_sources/leetcode/articles/search-for-word-ii.md",
+  "hint": "_sources/leetcode/hints/search-for-word-ii.md",
+  "alt_python": "_sources/NeetCode-Solutions/08_Tries/03_Word_Search_II/0212-word-search-ii.py"
+ },
+ {
+  "problem": "Subsets",
+  "pattern": "Backtracking",
+  "difficulty": "Medium",
+  "code": "0078-subsets",
+  "python": "_sources/leetcode/python/0078-subsets.py",
+  "article": "_sources/leetcode/articles/subsets.md",
+  "hint": "_sources/leetcode/hints/subsets.md",
+  "alt_python": "_sources/NeetCode-Solutions/10_Backtracking/01_Subsets/0078-subsets.py"
+ },
+ {
+  "problem": "Combination Sum",
+  "pattern": "Backtracking",
+  "difficulty": "Medium",
+  "code": "0039-combination-sum",
+  "python": "_sources/leetcode/python/0039-combination-sum.py",
+  "article": "_sources/leetcode/articles/combination-target-sum.md",
+  "hint": "_sources/leetcode/hints/combination-target-sum.md",
+  "alt_python": "_sources/NeetCode-Solutions/10_Backtracking/02_Combination_Sum/0039-combination-sum.py"
+ },
+ {
+  "problem": "Permutations",
+  "pattern": "Backtracking",
+  "difficulty": "Medium",
+  "code": "0046-permutations",
+  "python": "_sources/leetcode/python/0046-permutations.py",
+  "article": "_sources/leetcode/articles/permutations.md",
+  "hint": "_sources/leetcode/hints/permutations.md",
+  "alt_python": "_sources/NeetCode-Solutions/10_Backtracking/03_Permutations/0046-permutations.py"
+ },
+ {
+  "problem": "Subsets II",
+  "pattern": "Backtracking",
+  "difficulty": "Medium",
+  "code": "0090-subsets-ii",
+  "python": "_sources/leetcode/python/0090-subsets-ii.py",
+  "article": "_sources/leetcode/articles/subsets-ii.md",
+  "hint": "_sources/leetcode/hints/subsets-ii.md",
+  "alt_python": "_sources/NeetCode-Solutions/10_Backtracking/04_Subsets_II/0090-subsets-ii.py"
+ },
+ {
+  "problem": "Combination Sum II",
+  "pattern": "Backtracking",
+  "difficulty": "Medium",
+  "code": "0040-combination-sum-ii",
+  "python": "_sources/leetcode/python/0040-combination-sum-ii.py",
+  "article": "_sources/leetcode/articles/combination-target-sum-ii.md",
+  "hint": "_sources/leetcode/hints/combination-target-sum-ii.md",
+  "alt_python": "_sources/NeetCode-Solutions/10_Backtracking/05_Combination_Sum_II/0040-combination-sum-ii.py"
+ },
+ {
+  "problem": "Word Search",
+  "pattern": "Backtracking",
+  "difficulty": "Medium",
+  "code": "0079-word-search",
+  "python": "_sources/leetcode/python/0079-word-search.py",
+  "article": "_sources/leetcode/articles/search-for-word.md",
+  "hint": "_sources/leetcode/hints/search-for-word.md",
+  "alt_python": "_sources/NeetCode-Solutions/10_Backtracking/06_Word_Search/0079-word-search.py"
+ },
+ {
+  "problem": "Palindrome Partitioning",
+  "pattern": "Backtracking",
+  "difficulty": "Medium",
+  "code": "0131-palindrome-partitioning",
+  "python": "_sources/leetcode/python/0131-palindrome-partitioning.py",
+  "article": "_sources/leetcode/articles/palindrome-partitioning.md",
+  "hint": "_sources/leetcode/hints/palindrome-partitioning.md",
+  "alt_python": "_sources/NeetCode-Solutions/10_Backtracking/07_Palindrome_Partitioning/0131-palindrome-partitioning.py"
+ },
+ {
+  "problem": "Letter Combinations of a Phone Number",
+  "pattern": "Backtracking",
+  "difficulty": "Medium",
+  "code": "0017-letter-combinations-of-a-phone-number",
+  "python": "_sources/leetcode/python/0017-letter-combinations-of-a-phone-number.py",
+  "article": "_sources/leetcode/articles/combinations-of-a-phone-number.md",
+  "hint": "_sources/leetcode/hints/combinations-of-a-phone-number.md",
+  "alt_python": "_sources/NeetCode-Solutions/10_Backtracking/08_Letter_Combinations_of_a_Phone_Number/0017-letter-combinations-of-a-phone-number.py"
+ },
+ {
+  "problem": "N Queens",
+  "pattern": "Backtracking",
+  "difficulty": "Hard",
+  "code": "0051-n-queens",
+  "python": "_sources/leetcode/python/0051-n-queens.py",
+  "article": "_sources/leetcode/articles/n-queens.md",
+  "hint": "_sources/leetcode/hints/n-queens.md",
+  "alt_python": "_sources/NeetCode-Solutions/10_Backtracking/09_N_Queens/0051-n-queens.py"
+ }
+]

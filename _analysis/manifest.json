@@ -1,0 +1,1502 @@
+[
+ {
+  "problem": "Contains Duplicate",
+  "pattern": "Arrays & Hashing",
+  "difficulty": "Easy",
+  "code": "0217-contains-duplicate",
+  "python": "_sources/leetcode/python/0217-contains-duplicate.py",
+  "article": "_sources/leetcode/articles/find-duplicate-integer.md",
+  "hint": "_sources/leetcode/hints/find-duplicate-integer.md",
+  "alt_python": "_sources/NeetCode-Solutions/01_Arrays_&_Hashing/01_Contains_Duplicate/0217-contains-duplicate.py"
+ },
+ {
+  "problem": "Valid Anagram",
+  "pattern": "Arrays & Hashing",
+  "difficulty": "Easy",
+  "code": "0242-valid-anagram",
+  "python": "_sources/leetcode/python/0242-valid-anagram.py",
+  "article": "_sources/leetcode/articles/is-anagram.md",
+  "hint": "_sources/leetcode/hints/is-anagram.md",
+  "alt_python": "_sources/NeetCode-Solutions/01_Arrays_&_Hashing/02_Valid_Anagram/0242-valid-anagram.py"
+ },
+ {
+  "problem": "Two Sum",
+  "pattern": "Arrays & Hashing",
+  "difficulty": "Easy",
+  "code": "0001-two-sum",
+  "python": "_sources/leetcode/python/0001-two-sum.py",
+  "article": "_sources/leetcode/articles/two-integer-sum.md",
+  "hint": "_sources/leetcode/hints/two-integer-sum.md",
+  "alt_python": "_sources/NeetCode-Solutions/01_Arrays_&_Hashing/03_Two_Sum/0001-two-sum.py"
+ },
+ {
+  "problem": "Group Anagrams",
+  "pattern": "Arrays & Hashing",
+  "difficulty": "Medium",
+  "code": "0049-group-anagrams",
+  "python": "_sources/leetcode/python/0049-group-anagrams.py",
+  "article": "_sources/leetcode/articles/anagram-groups.md",
+  "hint": "_sources/leetcode/hints/anagram-groups.md",
+  "alt_python": "_sources/NeetCode-Solutions/01_Arrays_&_Hashing/04_Group_Anagrams/0049-group-anagrams.py"
+ },
+ {
+  "problem": "Top K Frequent Elements",
+  "pattern": "Arrays & Hashing",
+  "difficulty": "Medium",
+  "code": "0347-top-k-frequent-elements",
+  "python": "_sources/leetcode/python/0347-top-k-frequent-elements.py",
+  "article": "_sources/leetcode/articles/top-k-elements-in-list.md",
+  "hint": "_sources/leetcode/hints/top-k-elements-in-list.md",
+  "alt_python": "_sources/NeetCode-Solutions/01_Arrays_&_Hashing/05_Top_K_Frequent_Elements/0347-top-k-frequent-elements.py"
+ },
+ {
+  "problem": "Product of Array Except Self",
+  "pattern": "Arrays & Hashing",
+  "difficulty": "Medium",
+  "code": "0238-product-of-array-except-self",
+  "python": "_sources/leetcode/python/0238-product-of-array-except-self.py",
+  "article": "_sources/leetcode/articles/products-of-array-discluding-self.md",
+  "hint": "_sources/leetcode/hints/products-of-array-discluding-self.md",
+  "alt_python": "_sources/NeetCode-Solutions/01_Arrays_&_Hashing/06_Product_of_Array_Except_Self/0238-product-of-array-except-self.py"
+ },
+ {
+  "problem": "Valid Sudoku",
+  "pattern": "Arrays & Hashing",
+  "difficulty": "Medium",
+  "code": "0036-valid-sudoku",
+  "python": "_sources/leetcode/python/0036-valid-sudoku.py",
+  "article": "_sources/leetcode/articles/valid-sudoku.md",
+  "hint": "_sources/leetcode/hints/valid-sudoku.md",
+  "alt_python": "_sources/NeetCode-Solutions/01_Arrays_&_Hashing/07_Valid_Sudoku/0036-valid-sudoku.py"
+ },
+ {
+  "problem": "Encode and Decode Strings",
+  "pattern": "Arrays & Hashing",
+  "difficulty": "Medium",
+  "code": "0271-encode-and-decode-strings",
+  "python": "_sources/leetcode/python/0271-encode-and-decode-strings.py",
+  "article": "_sources/leetcode/articles/string-encode-and-decode.md",
+  "hint": "_sources/leetcode/hints/string-encode-and-decode.md",
+  "alt_python": "_sources/NeetCode-Solutions/01_Arrays_&_Hashing/08_Encode_and_Decode_Strings/0271-encode-and-decode-strings.py"
+ },
+ {
+  "problem": "Longest Consecutive Sequence",
+  "pattern": "Arrays & Hashing",
+  "difficulty": "Medium",
+  "code": "0128-longest-consecutive-sequence",
+  "python": "_sources/leetcode/python/0128-longest-consecutive-sequence.py",
+  "article": "_sources/leetcode/articles/longest-consecutive-sequence.md",
+  "hint": "_sources/leetcode/hints/longest-consecutive-sequence.md",
+  "alt_python": "_sources/NeetCode-Solutions/01_Arrays_&_Hashing/09_Longest_Consecutive_Sequence/0128-longest-consecutive-sequence.py"
+ },
+ {
+  "problem": "Valid Palindrome",
+  "pattern": "Two Pointers",
+  "difficulty": "Easy",
+  "code": "0125-valid-palindrome",
+  "python": "_sources/leetcode/python/0125-valid-palindrome.py",
+  "article": "_sources/leetcode/articles/is-palindrome.md",
+  "hint": "_sources/leetcode/hints/is-palindrome.md",
+  "alt_python": "_sources/NeetCode-Solutions/02_Two_Pointers/01_Valid_Palindrome/0125-valid-palindrome.py"
+ },
+ {
+  "problem": "Two Sum II Input Array Is Sorted",
+  "pattern": "Two Pointers",
+  "difficulty": "Medium",
+  "code": "0167-two-sum-ii-input-array-is-sorted",
+  "python": "_sources/leetcode/python/0167-two-sum-ii-input-array-is-sorted.py",
+  "article": "_sources/leetcode/articles/two-integer-sum-ii.md",
+  "hint": "_sources/leetcode/hints/two-integer-sum-ii.md",
+  "alt_python": "_sources/NeetCode-Solutions/02_Two_Pointers/02_Two_Sum_II_-_Input_Array_Is_Sorted/0167-two-sum-ii-input-array-is-sorted.py"
+ },
+ {
+  "problem": "3Sum",
+  "pattern": "Two Pointers",
+  "difficulty": "Medium",
+  "code": "0015-3sum",
+  "python": "_sources/leetcode/python/0015-3sum.py",
+  "article": "_sources/leetcode/articles/three-integer-sum.md",
+  "hint": "_sources/leetcode/hints/three-integer-sum.md",
+  "alt_python": "_sources/NeetCode-Solutions/02_Two_Pointers/03_3Sum/0015-3sum.py"
+ },
+ {
+  "problem": "Container With Most Water",
+  "pattern": "Two Pointers",
+  "difficulty": "Medium",
+  "code": "0011-container-with-most-water",
+  "python": "_sources/leetcode/python/0011-container-with-most-water.py",
+  "article": "_sources/leetcode/articles/max-water-container.md",
+  "hint": "_sources/leetcode/hints/max-water-container.md",
+  "alt_python": "_sources/NeetCode-Solutions/02_Two_Pointers/04_Container_With_Most_Water/0011-container-with-most-water.py"
+ },
+ {
+  "problem": "Trapping Rain Water",
+  "pattern": "Two Pointers",
+  "difficulty": "Hard",
+  "code": "0042-trapping-rain-water",
+  "python": "_sources/leetcode/python/0042-trapping-rain-water.py",
+  "article": "_sources/leetcode/articles/trapping-rain-water.md",
+  "hint": "_sources/leetcode/hints/trapping-rain-water.md",
+  "alt_python": "_sources/NeetCode-Solutions/02_Two_Pointers/05_Trapping_Rain_Water/0042-trapping-rain-water.py"
+ },
+ {
+  "problem": "Best Time to Buy And Sell Stock",
+  "pattern": "Sliding Window",
+  "difficulty": "Easy",
+  "code": "0121-best-time-to-buy-and-sell-stock",
+  "python": "_sources/leetcode/python/0121-best-time-to-buy-and-sell-stock.py",
+  "article": "_sources/leetcode/articles/buy-and-sell-crypto.md",
+  "hint": "_sources/leetcode/hints/buy-and-sell-crypto.md",
+  "alt_python": "_sources/NeetCode-Solutions/03_Sliding_Window/01_Best_Time_to_Buy_and_Sell_Stock/0121-best-time-to-buy-and-sell-stock.py"
+ },
+ {
+  "problem": "Longest Substring Without Repeating Characters",
+  "pattern": "Sliding Window",
+  "difficulty": "Medium",
+  "code": "0003-longest-substring-without-repeating-characters",
+  "python": "_sources/leetcode/python/0003-longest-substring-without-repeating-characters.py",
+  "article": "_sources/leetcode/articles/longest-substring-without-duplicates.md",
+  "hint": "_sources/leetcode/hints/longest-substring-without-duplicates.md",
+  "alt_python": "_sources/NeetCode-Solutions/03_Sliding_Window/02_Longest_Substring_Without_Repeating_Characters/0003-longest-substring-without-repeating-characters.py"
+ },
+ {
+  "problem": "Longest Repeating Character Replacement",
+  "pattern": "Sliding Window",
+  "difficulty": "Medium",
+  "code": "0424-longest-repeating-character-replacement",
+  "python": "_sources/leetcode/python/0424-longest-repeating-character-replacement.py",
+  "article": "_sources/leetcode/articles/longest-repeating-substring-with-replacement.md",
+  "hint": "_sources/leetcode/hints/longest-repeating-substring-with-replacement.md",
+  "alt_python": "_sources/NeetCode-Solutions/03_Sliding_Window/03_Longest_Repeating_Character_Replacement/0424-longest-repeating-character-replacement.py"
+ },
+ {
+  "problem": "Permutation In String",
+  "pattern": "Sliding Window",
+  "difficulty": "Medium",
+  "code": "0567-permutation-in-string",
+  "python": "_sources/leetcode/python/0567-permutation-in-string.py",
+  "article": "_sources/leetcode/articles/permutation-string.md",
+  "hint": "_sources/leetcode/hints/permutation-string.md",
+  "alt_python": "_sources/NeetCode-Solutions/03_Sliding_Window/04_Permutation_in_String/0567-permutation-in-string.py"
+ },
+ {
+  "problem": "Minimum Window Substring",
+  "pattern": "Sliding Window",
+  "difficulty": "Hard",
+  "code": "0076-minimum-window-substring",
+  "python": "_sources/leetcode/python/0076-minimum-window-substring.py",
+  "article": "_sources/leetcode/articles/minimum-window-with-characters.md",
+  "hint": "_sources/leetcode/hints/minimum-window-with-characters.md",
+  "alt_python": "_sources/NeetCode-Solutions/03_Sliding_Window/05_Minimum_Window_Substring/0076-minimum-window-substring.py"
+ },
+ {
+  "problem": "Sliding Window Maximum",
+  "pattern": "Sliding Window",
+  "difficulty": "Hard",
+  "code": "0239-sliding-window-maximum",
+  "python": "_sources/leetcode/python/0239-sliding-window-maximum.py",
+  "article": "_sources/leetcode/articles/sliding-window-maximum.md",
+  "hint": "_sources/leetcode/hints/sliding-window-maximum.md",
+  "alt_python": "_sources/NeetCode-Solutions/03_Sliding_Window/06_Sliding_Window_Maximum/0239-sliding-window-maximum.py"
+ },
+ {
+  "problem": "Valid Parentheses",
+  "pattern": "Stack",
+  "difficulty": "Easy",
+  "code": "0020-valid-parentheses",
+  "python": "_sources/leetcode/python/0020-valid-parentheses.py",
+  "article": "_sources/leetcode/articles/validate-parentheses.md",
+  "hint": "_sources/leetcode/hints/validate-parentheses.md",
+  "alt_python": "_sources/NeetCode-Solutions/04_Stack/01_Valid_Parentheses/0020-valid-parentheses.py"
+ },
+ {
+  "problem": "Min Stack",
+  "pattern": "Stack",
+  "difficulty": "Medium",
+  "code": "0155-min-stack",
+  "python": "_sources/leetcode/python/0155-min-stack.py",
+  "article": "_sources/leetcode/articles/minimum-stack.md",
+  "hint": "_sources/leetcode/hints/minimum-stack.md",
+  "alt_python": "_sources/NeetCode-Solutions/04_Stack/02_Min_Stack/0155-min-stack.py"
+ },
+ {
+  "problem": "Evaluate Reverse Polish Notation",
+  "pattern": "Stack",
+  "difficulty": "Medium",
+  "code": "0150-evaluate-reverse-polish-notation",
+  "python": "_sources/leetcode/python/0150-evaluate-reverse-polish-notation.py",
+  "article": "_sources/leetcode/articles/evaluate-reverse-polish-notation.md",
+  "hint": "_sources/leetcode/hints/evaluate-reverse-polish-notation.md",
+  "alt_python": "_sources/NeetCode-Solutions/04_Stack/03_Evaluate_Reverse_Polish_Notation/0150-evaluate-reverse-polish-notation.py"
+ },
+ {
+  "problem": "Generate Parentheses",
+  "pattern": "Stack",
+  "difficulty": "Medium",
+  "code": "0022-generate-parentheses",
+  "python": "_sources/leetcode/python/0022-generate-parentheses.py",
+  "article": "_sources/leetcode/articles/generate-parentheses.md",
+  "hint": "_sources/leetcode/hints/generate-parentheses.md",
+  "alt_python": "_sources/NeetCode-Solutions/04_Stack/04_Generate_Parentheses/0022-generate-parentheses.py"
+ },
+ {
+  "problem": "Daily Temperatures",
+  "pattern": "Stack",
+  "difficulty": "Medium",
+  "code": "0739-daily-temperatures",
+  "python": "_sources/leetcode/python/0739-daily-temperatures.py",
+  "article": "_sources/leetcode/articles/daily-temperatures.md",
+  "hint": "_sources/leetcode/hints/daily-temperatures.md",
+  "alt_python": "_sources/NeetCode-Solutions/04_Stack/05_Daily_Temperatures/0739-daily-temperatures.py"
+ },
+ {
+  "problem": "Car Fleet",
+  "pattern": "Stack",
+  "difficulty": "Medium",
+  "code": "0853-car-fleet",
+  "python": "_sources/leetcode/python/0853-car-fleet.py",
+  "article": "_sources/leetcode/articles/car-fleet.md",
+  "hint": "_sources/leetcode/hints/car-fleet.md",
+  "alt_python": "_sources/NeetCode-Solutions/04_Stack/06_Car_Fleet/0853-car-fleet.py"
+ },
+ {
+  "problem": "Largest Rectangle In Histogram",
+  "pattern": "Stack",
+  "difficulty": "Hard",
+  "code": "0084-largest-rectangle-in-histogram",
+  "python": "_sources/leetcode/python/0084-largest-rectangle-in-histogram.py",
+  "article": "_sources/leetcode/articles/largest-rectangle-in-histogram.md",
+  "hint": "_sources/leetcode/hints/largest-rectangle-in-histogram.md",
+  "alt_python": "_sources/NeetCode-Solutions/04_Stack/07_Largest_Rectangle_In_Histogram/0084-largest-rectangle-in-histogram.py"
+ },
+ {
+  "problem": "Binary Search",
+  "pattern": "Binary Search",
+  "difficulty": "Easy",
+  "code": "0704-binary-search",
+  "python": "_sources/leetcode/python/0704-binary-search.py",
+  "article": "_sources/leetcode/articles/binary-search.md",
+  "hint": "_sources/leetcode/hints/binary-search.md",
+  "alt_python": "_sources/NeetCode-Solutions/05_Binary_Search/01_Binary_Search/0704-binary-search.py"
+ },
+ {
+  "problem": "Search a 2D Matrix",
+  "pattern": "Binary Search",
+  "difficulty": "Medium",
+  "code": "0074-search-a-2d-matrix",
+  "python": "_sources/leetcode/python/0074-search-a-2d-matrix.py",
+  "article": "_sources/leetcode/articles/search-2d-matrix.md",
+  "hint": "_sources/leetcode/hints/search-2d-matrix.md",
+  "alt_python": "_sources/NeetCode-Solutions/05_Binary_Search/02_Search_a_2D_Matrix/0074-search-a-2d-matrix.py"
+ },
+ {
+  "problem": "Koko Eating Bananas",
+  "pattern": "Binary Search",
+  "difficulty": "Medium",
+  "code": "0875-koko-eating-bananas",
+  "python": "_sources/leetcode/python/0875-koko-eating-bananas.py",
+  "article": "_sources/leetcode/articles/eating-bananas.md",
+  "hint": "_sources/leetcode/hints/eating-bananas.md",
+  "alt_python": "_sources/NeetCode-Solutions/05_Binary_Search/03_Koko_Eating_Bananas/0875-koko-eating-bananas.py"
+ },
+ {
+  "problem": "Find Minimum In Rotated Sorted Array",
+  "pattern": "Binary Search",
+  "difficulty": "Medium",
+  "code": "0153-find-minimum-in-rotated-sorted-array",
+  "python": "_sources/leetcode/python/0153-find-minimum-in-rotated-sorted-array.py",
+  "article": "_sources/leetcode/articles/find-minimum-in-rotated-sorted-array.md",
+  "hint": "_sources/leetcode/hints/find-minimum-in-rotated-sorted-array.md",
+  "alt_python": "_sources/NeetCode-Solutions/05_Binary_Search/04_Find_Minimum_In_Rotated_Sorted_Array/0153-find-minimum-in-rotated-sorted-array.py"
+ },
+ {
+  "problem": "Search In Rotated Sorted Array",
+  "pattern": "Binary Search",
+  "difficulty": "Medium",
+  "code": "0033-search-in-rotated-sorted-array",
+  "python": "_sources/leetcode/python/0033-search-in-rotated-sorted-array.py",
+  "article": "_sources/leetcode/articles/find-target-in-rotated-sorted-array.md",
+  "hint": "_sources/leetcode/hints/find-target-in-rotated-sorted-array.md",
+  "alt_python": "_sources/NeetCode-Solutions/05_Binary_Search/05_Search_In_Rotated_Sorted_Array/0033-search-in-rotated-sorted-array.py"
+ },
+ {
+  "problem": "Time Based Key Value Store",
+  "pattern": "Binary Search",
+  "difficulty": "Medium",
+  "code": "0981-time-based-key-value-store",
+  "python": "_sources/leetcode/python/0981-time-based-key-value-store.py",
+  "article": "_sources/leetcode/articles/time-based-key-value-store.md",
+  "hint": "_sources/leetcode/hints/time-based-key-value-store.md",
+  "alt_python": "_sources/NeetCode-Solutions/05_Binary_Search/06_Time_Based_Key_Value_Store/0981-time-based-key-value-store.py"
+ },
+ {
+  "problem": "Median of Two Sorted Arrays",
+  "pattern": "Binary Search",
+  "difficulty": "Hard",
+  "code": "0004-median-of-two-sorted-arrays",
+  "python": "_sources/leetcode/python/0004-median-of-two-sorted-arrays.py",
+  "article": "_sources/leetcode/articles/median-of-two-sorted-arrays.md",
+  "hint": "_sources/leetcode/hints/median-of-two-sorted-arrays.md",
+  "alt_python": "_sources/NeetCode-Solutions/05_Binary_Search/07_Median_of_Two_Sorted_Arrays/0004-median-of-two-sorted-arrays.py"
+ },
+ {
+  "problem": "Reverse Linked List",
+  "pattern": "Linked List",
+  "difficulty": "Easy",
+  "code": "0206-reverse-linked-list",
+  "python": "_sources/leetcode/python/0206-reverse-linked-list.py",
+  "article": "_sources/leetcode/articles/reverse-a-linked-list.md",
+  "hint": "_sources/leetcode/hints/reverse-a-linked-list.md",
+  "alt_python": "_sources/NeetCode-Solutions/06_Linked_List/01_Reverse_Linked_List/0206-reverse-linked-list.py"
+ },
+ {
+  "problem": "Merge Two Sorted Lists",
+  "pattern": "Linked List",
+  "difficulty": "Easy",
+  "code": "0021-merge-two-sorted-lists",
+  "python": "_sources/leetcode/python/0021-merge-two-sorted-lists.py",
+  "article": "_sources/leetcode/articles/merge-two-sorted-linked-lists.md",
+  "hint": "_sources/leetcode/hints/merge-two-sorted-linked-lists.md",
+  "alt_python": "_sources/NeetCode-Solutions/06_Linked_List/02_Merge_Two_Sorted_Lists/0021-merge-two-sorted-lists.py"
+ },
+ {
+  "problem": "Reorder List",
+  "pattern": "Linked List",
+  "difficulty": "Medium",
+  "code": "0143-reorder-list",
+  "python": "_sources/leetcode/python/0143-reorder-list.py",
+  "article": "_sources/leetcode/articles/reorder-linked-list.md",
+  "hint": "_sources/leetcode/hints/reorder-linked-list.md",
+  "alt_python": "_sources/NeetCode-Solutions/06_Linked_List/03_Reorder_List/0143-reorder-list.py"
+ },
+ {
+  "problem": "Remove Nth Node From End of List",
+  "pattern": "Linked List",
+  "difficulty": "Medium",
+  "code": "0019-remove-nth-node-from-end-of-list",
+  "python": "_sources/leetcode/python/0019-remove-nth-node-from-end-of-list.py",
+  "article": "_sources/leetcode/articles/remove-node-from-end-of-linked-list.md",
+  "hint": "_sources/leetcode/hints/remove-node-from-end-of-linked-list.md",
+  "alt_python": "_sources/NeetCode-Solutions/06_Linked_List/04_Remove_Nth_Node_From_End_of_List/0019-remove-nth-node-from-end-of-list.py"
+ },
+ {
+  "problem": "Copy List With Random Pointer",
+  "pattern": "Linked List",
+  "difficulty": "Medium",
+  "code": "0138-copy-list-with-random-pointer",
+  "python": "_sources/leetcode/python/0138-copy-list-with-random-pointer.py",
+  "article": "_sources/leetcode/articles/copy-linked-list-with-random-pointer.md",
+  "hint": "_sources/leetcode/hints/copy-linked-list-with-random-pointer.md",
+  "alt_python": "_sources/NeetCode-Solutions/06_Linked_List/05_Copy_List_With_Random_Pointer/0138-copy-list-with-random-pointer.py"
+ },
+ {
+  "problem": "Add Two Numbers",
+  "pattern": "Linked List",
+  "difficulty": "Medium",
+  "code": "0002-add-two-numbers",
+  "python": "_sources/leetcode/python/0002-add-two-numbers.py",
+  "article": "_sources/leetcode/articles/add-two-numbers.md",
+  "hint": "_sources/leetcode/hints/add-two-numbers.md",
+  "alt_python": "_sources/NeetCode-Solutions/06_Linked_List/06_Add_Two_Numbers/0002-add-two-numbers.py"
+ },
+ {
+  "problem": "Linked List Cycle",
+  "pattern": "Linked List",
+  "difficulty": "Easy",
+  "code": "0141-linked-list-cycle",
+  "python": "_sources/leetcode/python/0141-linked-list-cycle.py",
+  "article": "_sources/leetcode/articles/linked-list-cycle-detection.md",
+  "hint": "_sources/leetcode/hints/linked-list-cycle-detection.md",
+  "alt_python": "_sources/NeetCode-Solutions/06_Linked_List/07_Linked_List_Cycle/0141-linked-list-cycle.py"
+ },
+ {
+  "problem": "Find The Duplicate Number",
+  "pattern": "Linked List",
+  "difficulty": "Medium",
+  "code": "0287-find-the-duplicate-number",
+  "python": "_sources/leetcode/python/0287-find-the-duplicate-number.py",
+  "article": "_sources/leetcode/articles/duplicate-integer.md",
+  "hint": "_sources/leetcode/hints/duplicate-integer.md",
+  "alt_python": "_sources/NeetCode-Solutions/06_Linked_List/08_Find_The_Duplicate_Number/0287-find-the-duplicate-number.py"
+ },
+ {
+  "problem": "LRU Cache",
+  "pattern": "Linked List",
+  "difficulty": "Medium",
+  "code": "0146-lru-cache",
+  "python": "_sources/leetcode/python/0146-lru-cache.py",
+  "article": "_sources/leetcode/articles/lru-cache.md",
+  "hint": "_sources/leetcode/hints/lru-cache.md",
+  "alt_python": "_sources/NeetCode-Solutions/06_Linked_List/09_LRU_Cache/0146-lru-cache.py"
+ },
+ {
+  "problem": "Merge K Sorted Lists",
+  "pattern": "Linked List",
+  "difficulty": "Hard",
+  "code": "0023-merge-k-sorted-lists",
+  "python": "_sources/leetcode/python/0023-merge-k-sorted-lists.py",
+  "article": "_sources/leetcode/articles/merge-k-sorted-linked-lists.md",
+  "hint": "_sources/leetcode/hints/merge-k-sorted-linked-lists.md",
+  "alt_python": "_sources/NeetCode-Solutions/06_Linked_List/10_Merge_K_Sorted_Lists/0023-merge-k-sorted-lists.py"
+ },
+ {
+  "problem": "Reverse Nodes In K Group",
+  "pattern": "Linked List",
+  "difficulty": "Hard",
+  "code": "0025-reverse-nodes-in-k-group",
+  "python": "_sources/leetcode/python/0025-reverse-nodes-in-k-group.py",
+  "article": "_sources/leetcode/articles/reverse-nodes-in-k-group.md",
+  "hint": "_sources/leetcode/hints/reverse-nodes-in-k-group.md",
+  "alt_python": "_sources/NeetCode-Solutions/06_Linked_List/11_Reverse_Nodes_In_K_Group/0025-reverse-nodes-in-k-group.py"
+ },
+ {
+  "problem": "Invert Binary Tree",
+  "pattern": "Trees",
+  "difficulty": "Easy",
+  "code": "0226-invert-binary-tree",
+  "python": "_sources/leetcode/python/0226-invert-binary-tree.py",
+  "article": "_sources/leetcode/articles/invert-a-binary-tree.md",
+  "hint": "_sources/leetcode/hints/invert-a-binary-tree.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/01_Invert_Binary_Tree/0226-invert-binary-tree.py"
+ },
+ {
+  "problem": "Maximum Depth of Binary Tree",
+  "pattern": "Trees",
+  "difficulty": "Easy",
+  "code": "0104-maximum-depth-of-binary-tree",
+  "python": "_sources/leetcode/python/0104-maximum-depth-of-binary-tree.py",
+  "article": "_sources/leetcode/articles/depth-of-binary-tree.md",
+  "hint": "_sources/leetcode/hints/depth-of-binary-tree.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/02_Maximum_Depth_of_Binary_Tree/0104-maximum-depth-of-binary-tree.py"
+ },
+ {
+  "problem": "Diameter of Binary Tree",
+  "pattern": "Trees",
+  "difficulty": "Easy",
+  "code": "0543-diameter-of-binary-tree",
+  "python": "_sources/leetcode/python/0543-diameter-of-binary-tree.py",
+  "article": "_sources/leetcode/articles/binary-tree-diameter.md",
+  "hint": "_sources/leetcode/hints/binary-tree-diameter.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/03_Diameter_of_Binary_Tree/0543-diameter-of-binary-tree.py"
+ },
+ {
+  "problem": "Balanced Binary Tree",
+  "pattern": "Trees",
+  "difficulty": "Easy",
+  "code": "0110-balanced-binary-tree",
+  "python": "_sources/leetcode/python/0110-balanced-binary-tree.py",
+  "article": "_sources/leetcode/articles/balanced-binary-tree.md",
+  "hint": "_sources/leetcode/hints/balanced-binary-tree.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/04_Balanced_Binary_Tree/0110-balanced-binary-tree.py"
+ },
+ {
+  "problem": "Same Tree",
+  "pattern": "Trees",
+  "difficulty": "Easy",
+  "code": "0100-same-tree",
+  "python": "_sources/leetcode/python/0100-same-tree.py",
+  "article": "_sources/leetcode/articles/same-binary-tree.md",
+  "hint": "_sources/leetcode/hints/same-binary-tree.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/05_Same_Tree/0100-same-tree.py"
+ },
+ {
+  "problem": "Subtree of Another Tree",
+  "pattern": "Trees",
+  "difficulty": "Easy",
+  "code": "0572-subtree-of-another-tree",
+  "python": "_sources/leetcode/python/0572-subtree-of-another-tree.py",
+  "article": "_sources/leetcode/articles/subtree-of-a-binary-tree.md",
+  "hint": "_sources/leetcode/hints/subtree-of-a-binary-tree.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/06_Subtree_of_Another_Tree/0572-subtree-of-another-tree.py"
+ },
+ {
+  "problem": "Lowest Common Ancestor of a Binary Search Tree",
+  "pattern": "Trees",
+  "difficulty": "Medium",
+  "code": "0235-lowest-common-ancestor-of-a-binary-search-tree",
+  "python": "_sources/leetcode/python/0235-lowest-common-ancestor-of-a-binary-search-tree.py",
+  "article": "_sources/leetcode/articles/lowest-common-ancestor-in-binary-search-tree.md",
+  "hint": "_sources/leetcode/hints/lowest-common-ancestor-in-binary-search-tree.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/07_Lowest_Common_Ancestor_of_a_Binary_Search_Tree/0235-lowest-common-ancestor-of-a-binary-search-tree.py"
+ },
+ {
+  "problem": "Binary Tree Level Order Traversal",
+  "pattern": "Trees",
+  "difficulty": "Medium",
+  "code": "0102-binary-tree-level-order-traversal",
+  "python": "_sources/leetcode/python/0102-binary-tree-level-order-traversal.py",
+  "article": "_sources/leetcode/articles/level-order-traversal-of-binary-tree.md",
+  "hint": "_sources/leetcode/hints/level-order-traversal-of-binary-tree.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/08_Binary_Tree_Level_Order_Traversal/0102-binary-tree-level-order-traversal.py"
+ },
+ {
+  "problem": "Binary Tree Right Side View",
+  "pattern": "Trees",
+  "difficulty": "Medium",
+  "code": "0199-binary-tree-right-side-view",
+  "python": "_sources/leetcode/python/0199-binary-tree-right-side-view.py",
+  "article": "_sources/leetcode/articles/binary-tree-right-side-view.md",
+  "hint": "_sources/leetcode/hints/binary-tree-right-side-view.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/09_Binary_Tree_Right_Side_View/0199-binary-tree-right-side-view.py"
+ },
+ {
+  "problem": "Count Good Nodes In Binary Tree",
+  "pattern": "Trees",
+  "difficulty": "Medium",
+  "code": "1448-count-good-nodes-in-binary-tree",
+  "python": "_sources/leetcode/python/1448-count-good-nodes-in-binary-tree.py",
+  "article": "_sources/leetcode/articles/count-good-nodes-in-binary-tree.md",
+  "hint": "_sources/leetcode/hints/count-good-nodes-in-binary-tree.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/10_Count_Good_Nodes_In_Binary_Tree/1448-count-good-nodes-in-binary-tree.py"
+ },
+ {
+  "problem": "Validate Binary Search Tree",
+  "pattern": "Trees",
+  "difficulty": "Medium",
+  "code": "0098-validate-binary-search-tree",
+  "python": "_sources/leetcode/python/0098-validate-binary-search-tree.py",
+  "article": "_sources/leetcode/articles/valid-binary-search-tree.md",
+  "hint": "_sources/leetcode/hints/valid-binary-search-tree.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/11_Validate_Binary_Search_Tree/0098-validate-binary-search-tree.py"
+ },
+ {
+  "problem": "Kth Smallest Element In a Bst",
+  "pattern": "Trees",
+  "difficulty": "Medium",
+  "code": "0230-kth-smallest-element-in-a-bst",
+  "python": "_sources/leetcode/python/0230-kth-smallest-element-in-a-bst.py",
+  "article": "_sources/leetcode/articles/kth-smallest-integer-in-bst.md",
+  "hint": "_sources/leetcode/hints/kth-smallest-integer-in-bst.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/12_Kth_Smallest_Element_In_a_BST/0230-kth-smallest-element-in-a-bst.py"
+ },
+ {
+  "problem": "Construct Binary Tree From Preorder And Inorder Traversal",
+  "pattern": "Trees",
+  "difficulty": "Medium",
+  "code": "0105-construct-binary-tree-from-preorder-and-inorder-traversal",
+  "python": "_sources/leetcode/python/0105-construct-binary-tree-from-preorder-and-inorder-traversal.py",
+  "article": "_sources/leetcode/articles/binary-tree-from-preorder-and-inorder-traversal.md",
+  "hint": "_sources/leetcode/hints/binary-tree-from-preorder-and-inorder-traversal.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/13_Construct_Binary_Tree_from_Preorder_and_Inorder_Traversal/0105-construct-binary-tree-from-preorder-and-inorder-traversal.py"
+ },
+ {
+  "problem": "Binary Tree Maximum Path Sum",
+  "pattern": "Trees",
+  "difficulty": "Hard",
+  "code": "0124-binary-tree-maximum-path-sum",
+  "python": "_sources/leetcode/python/0124-binary-tree-maximum-path-sum.py",
+  "article": "_sources/leetcode/articles/binary-tree-maximum-path-sum.md",
+  "hint": "_sources/leetcode/hints/binary-tree-maximum-path-sum.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/14_Binary_Tree_Maximum_Path_Sum/0124-binary-tree-maximum-path-sum.py"
+ },
+ {
+  "problem": "Serialize And Deserialize Binary Tree",
+  "pattern": "Trees",
+  "difficulty": "Hard",
+  "code": "0297-serialize-and-deserialize-binary-tree",
+  "python": "_sources/leetcode/python/0297-serialize-and-deserialize-binary-tree.py",
+  "article": "_sources/leetcode/articles/serialize-and-deserialize-binary-tree.md",
+  "hint": "_sources/leetcode/hints/serialize-and-deserialize-binary-tree.md",
+  "alt_python": "_sources/NeetCode-Solutions/07_Trees/15_Serialize_and_Deserialize_Binary_Tree/0297-serialize-and-deserialize-binary-tree.py"
+ },
+ {
+  "problem": "Implement Trie Prefix Tree",
+  "pattern": "Tries",
+  "difficulty": "Medium",
+  "code": "0208-implement-trie-prefix-tree",
+  "python": "_sources/leetcode/python/0208-implement-trie-prefix-tree.py",
+  "article": "_sources/leetcode/articles/implement-prefix-tree.md",
+  "hint": "_sources/leetcode/hints/implement-prefix-tree.md",
+  "alt_python": "_sources/NeetCode-Solutions/08_Tries/01_Implement_Trie_Prefix_Tree/0208-implement-trie-prefix-tree.py"
+ },
+ {
+  "problem": "Design Add And Search Words Data Structure",
+  "pattern": "Tries",
+  "difficulty": "Medium",
+  "code": "0211-design-add-and-search-words-data-structure",
+  "python": "_sources/leetcode/python/0211-design-add-and-search-words-data-structure.py",
+  "article": "_sources/leetcode/articles/design-word-search-data-structure.md",
+  "hint": "_sources/leetcode/hints/design-word-search-data-structure.md",
+  "alt_python": "_sources/NeetCode-Solutions/08_Tries/02_Design_Add_and_Search_Words_Data_Structure/0211-design-add-and-search-words-data-structure.py"
+ },
+ {
+  "problem": "Word Search II",
+  "pattern": "Tries",
+  "difficulty": "Hard",
+  "code": "0212-word-search-ii",
+  "python": "_sources/leetcode/python/0212-word-search-ii.py",
+  "article": "_sources/leetcode/articles/search-for-word-ii.md",
+  "hint": "_sources/leetcode/hints/search-for-word-ii.md",
+  "alt_python": "_sources/NeetCode-Solutions/08_Tries/03_Word_Search_II/0212-word-search-ii.py"
+ },
+ {
+  "problem": "Kth Largest Element In a Stream",
+  "pattern": "Heap / Priority Queue",
+  "difficulty": "Easy",
+  "code": "0703-kth-largest-element-in-a-stream",
+  "python": "_sources/leetcode/python/0703-kth-largest-element-in-a-stream.py",
+  "article": "_sources/leetcode/articles/kth-largest-integer-in-a-stream.md",
+  "hint": "_sources/leetcode/hints/kth-largest-integer-in-a-stream.md",
+  "alt_python": "_sources/NeetCode-Solutions/09_Heap_Priority_Queues/01_Kth_Largest_Element_in_a_Stream/0703-kth-largest-element-in-a-stream.py"
+ },
+ {
+  "problem": "Last Stone Weight",
+  "pattern": "Heap / Priority Queue",
+  "difficulty": "Easy",
+  "code": "1046-last-stone-weight",
+  "python": "_sources/leetcode/python/1046-last-stone-weight.py",
+  "article": "_sources/leetcode/articles/last-stone-weight.md",
+  "hint": "_sources/leetcode/hints/last-stone-weight.md",
+  "alt_python": "_sources/NeetCode-Solutions/09_Heap_Priority_Queues/02_Last_Stone_Weight/1046-last-stone-weight.py"
+ },
+ {
+  "problem": "K Closest Points to Origin",
+  "pattern": "Heap / Priority Queue",
+  "difficulty": "Medium",
+  "code": "0973-k-closest-points-to-origin",
+  "python": "_sources/leetcode/python/0973-k-closest-points-to-origin.py",
+  "article": "_sources/leetcode/articles/k-closest-points-to-origin.md",
+  "hint": "_sources/leetcode/hints/k-closest-points-to-origin.md",
+  "alt_python": "_sources/NeetCode-Solutions/09_Heap_Priority_Queues/03_K_Closest_Points_to_Origin/0973-k-closest-points-to-origin.py"
+ },
+ {
+  "problem": "Kth Largest Element In An Array",
+  "pattern": "Heap / Priority Queue",
+  "difficulty": "Medium",
+  "code": "0215-kth-largest-element-in-an-array",
+  "python": "_sources/leetcode/python/0215-kth-largest-element-in-an-array.py",
+  "article": "_sources/leetcode/articles/kth-largest-element-in-an-array.md",
+  "hint": "_sources/leetcode/hints/kth-largest-element-in-an-array.md",
+  "alt_python": "_sources/NeetCode-Solutions/09_Heap_Priority_Queues/04_Kth_Largest_Element_in_an_Array/0215-kth-largest-element-in-an-array.py"
+ },
+ {
+  "problem": "Task Scheduler",
+  "pattern": "Heap / Priority Queue",
+  "difficulty": "Medium",
+  "code": "0621-task-scheduler",
+  "python": "_sources/leetcode/python/0621-task-scheduler.py",
+  "article": "_sources/leetcode/articles/task-scheduling.md",
+  "hint": "_sources/leetcode/hints/task-scheduling.md",
+  "alt_python": "_sources/NeetCode-Solutions/09_Heap_Priority_Queues/05_Task_Scheduler/0621-task-scheduler.py"
+ },
+ {
+  "problem": "Design Twitter",
+  "pattern": "Heap / Priority Queue",
+  "difficulty": "Medium",
+  "code": "0355-design-twitter",
+  "python": "_sources/leetcode/python/0355-design-twitter.py",
+  "article": "_sources/leetcode/articles/design-twitter-feed.md",
+  "hint": "_sources/leetcode/hints/design-twitter-feed.md",
+  "alt_python": "_sources/NeetCode-Solutions/09_Heap_Priority_Queues/06_Design_Twitter/0355-design-twitter.py"
+ },
+ {
+  "problem": "Find Median From Data Stream",
+  "pattern": "Heap / Priority Queue",
+  "difficulty": "Hard",
+  "code": "0295-find-median-from-data-stream",
+  "python": "_sources/leetcode/python/0295-find-median-from-data-stream.py",
+  "article": "_sources/leetcode/articles/find-median-in-a-data-stream.md",
+  "hint": "_sources/leetcode/hints/find-median-in-a-data-stream.md",
+  "alt_python": "_sources/NeetCode-Solutions/09_Heap_Priority_Queues/07_Find_Median_from_Data_Stream/0295-find-median-from-data-stream.py"
+ },
+ {
+  "problem": "Subsets",
+  "pattern": "Backtracking",
+  "difficulty": "Medium",
+  "code": "0078-subsets",
+  "python": "_sources/leetcode/python/0078-subsets.py",
+  "article": "_sources/leetcode/articles/subsets.md",
+  "hint": "_sources/leetcode/hints/subsets.md",
+  "alt_python": "_sources/NeetCode-Solutions/10_Backtracking/01_Subsets/0078-subsets.py"
+ },
+ {
+  "problem": "Combination Sum",
+  "pattern": "Backtracking",
+  "difficulty": "Medium",
+  "code": "0039-combination-sum",
+  "python": "_sources/leetcode/python/0039-combination-sum.py",
+  "article": "_sources/leetcode/articles/combination-target-sum.md",
+  "hint": "_sources/leetcode/hints/combination-target-sum.md",
+  "alt_python": "_sources/NeetCode-Solutions/10_Backtracking/02_Combination_Sum/0039-combination-sum.py"
+ },
+ {
+  "problem": "Permutations",
+  "pattern": "Backtracking",
+  "difficulty": "Medium",
+  "code": "0046-permutations",
+  "python": "_sources/leetcode/python/0046-permutations.py",
+  "article": "_sources/leetcode/articles/permutations.md",
+  "hint": "_sources/leetcode/hints/permutations.md",
+  "alt_python": "_sources/NeetCode-Solutions/10_Backtracking/03_Permutations/0046-permutations.py"
+ },
+ {
+  "problem": "Subsets II",
+  "pattern": "Backtracking",
+  "difficulty": "Medium",
+  "code": "0090-subsets-ii",
+  "python": "_sources/leetcode/python/0090-subsets-ii.py",
+  "article": "_sources/leetcode/articles/subsets-ii.md",
+  "hint": "_sources/leetcode/hints/subsets-ii.md",
+  "alt_python": "_sources/NeetCode-Solutions/10_Backtracking/04_Subsets_II/0090-subsets-ii.py"
+ },
+ {
+  "problem": "Combination Sum II",
+  "pattern": "Backtracking",
+  "difficulty": "Medium",
+  "code": "0040-combination-sum-ii",
+  "python": "_sources/leetcode/python/0040-combination-sum-ii.py",
+  "article": "_sources/leetcode/articles/combination-target-sum-ii.md",
+  "hint": "_sources/leetcode/hints/combination-target-sum-ii.md",
+  "alt_python": "_sources/NeetCode-Solutions/10_Backtracking/05_Combination_Sum_II/0040-combination-sum-ii.py"
+ },
+ {
+  "problem": "Word Search",
+  "pattern": "Backtracking",
+  "difficulty": "Medium",
+  "code": "0079-word-search",
+  "python": "_sources/leetcode/python/0079-word-search.py",
+  "article": "_sources/leetcode/articles/search-for-word.md",
+  "hint": "_sources/leetcode/hints/search-for-word.md",
+  "alt_python": "_sources/NeetCode-Solutions/10_Backtracking/06_Word_Search/0079-word-search.py"
+ },
+ {
+  "problem": "Palindrome Partitioning",
+  "pattern": "Backtracking",
+  "difficulty": "Medium",
+  "code": "0131-palindrome-partitioning",
+  "python": "_sources/leetcode/python/0131-palindrome-partitioning.py",
+  "article": "_sources/leetcode/articles/palindrome-partitioning.md",
+  "hint": "_sources/leetcode/hints/palindrome-partitioning.md",
+  "alt_python": "_sources/NeetCode-Solutions/10_Backtracking/07_Palindrome_Partitioning/0131-palindrome-partitioning.py"
+ },
+ {
+  "problem": "Letter Combinations of a Phone Number",
+  "pattern": "Backtracking",
+  "difficulty": "Medium",
+  "code": "0017-letter-combinations-of-a-phone-number",
+  "python": "_sources/leetcode/python/0017-letter-combinations-of-a-phone-number.py",
+  "article": "_sources/leetcode/articles/combinations-of-a-phone-number.md",
+  "hint": "_sources/leetcode/hints/combinations-of-a-phone-number.md",
+  "alt_python": "_sources/NeetCode-Solutions/10_Backtracking/08_Letter_Combinations_of_a_Phone_Number/0017-letter-combinations-of-a-phone-number.py"
+ },
+ {
+  "problem": "N Queens",
+  "pattern": "Backtracking",
+  "difficulty": "Hard",
+  "code": "0051-n-queens",
+  "python": "_sources/leetcode/python/0051-n-queens.py",
+  "article": "_sources/leetcode/articles/n-queens.md",
+  "hint": "_sources/leetcode/hints/n-queens.md",
+  "alt_python": "_sources/NeetCode-Solutions/10_Backtracking/09_N_Queens/0051-n-queens.py"
+ },
+ {
+  "problem": "Number of Islands",
+  "pattern": "Graphs",
+  "difficulty": "Medium",
+  "code": "0200-number-of-islands",
+  "python": "_sources/leetcode/python/0200-number-of-islands.py",
+  "article": "_sources/leetcode/articles/count-number-of-islands.md",
+  "hint": "_sources/leetcode/hints/count-number-of-islands.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/01_Number_of_Islands/0200-number-of-islands.py"
+ },
+ {
+  "problem": "Clone Graph",
+  "pattern": "Graphs",
+  "difficulty": "Medium",
+  "code": "0133-clone-graph",
+  "python": "_sources/leetcode/python/0133-clone-graph.py",
+  "article": "_sources/leetcode/articles/clone-graph.md",
+  "hint": "_sources/leetcode/hints/clone-graph.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/02_Clone_Graph/0133-clone-graph.py"
+ },
+ {
+  "problem": "Max Area of Island",
+  "pattern": "Graphs",
+  "difficulty": "Medium",
+  "code": "0695-max-area-of-island",
+  "python": "_sources/leetcode/python/0695-max-area-of-island.py",
+  "article": "_sources/leetcode/articles/max-area-of-island.md",
+  "hint": "_sources/leetcode/hints/max-area-of-island.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/03_Max_Area_of_Island/0695-max-area-of-island.py"
+ },
+ {
+  "problem": "Pacific Atlantic Water Flow",
+  "pattern": "Graphs",
+  "difficulty": "Medium",
+  "code": "0417-pacific-atlantic-water-flow",
+  "python": "_sources/leetcode/python/0417-pacific-atlantic-water-flow.py",
+  "article": "_sources/leetcode/articles/pacific-atlantic-water-flow.md",
+  "hint": "_sources/leetcode/hints/pacific-atlantic-water-flow.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/04_Pacific_Atlantic_Water_Flow/0417-pacific-atlantic-water-flow.py"
+ },
+ {
+  "problem": "Surrounded Regions",
+  "pattern": "Graphs",
+  "difficulty": "Medium",
+  "code": "0130-surrounded-regions",
+  "python": "_sources/leetcode/python/0130-surrounded-regions.py",
+  "article": "_sources/leetcode/articles/surrounded-regions.md",
+  "hint": "_sources/leetcode/hints/surrounded-regions.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/05_Surrounded_Regions/0130-surrounded-regions.py"
+ },
+ {
+  "problem": "Rotting Oranges",
+  "pattern": "Graphs",
+  "difficulty": "Medium",
+  "code": "0994-rotting-oranges",
+  "python": "_sources/leetcode/python/0994-rotting-oranges.py",
+  "article": "_sources/leetcode/articles/rotting-fruit.md",
+  "hint": "_sources/leetcode/hints/rotting-fruit.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/06_Rotting_Oranges/0994-rotting-oranges.py"
+ },
+ {
+  "problem": "Walls And Gates",
+  "pattern": "Graphs",
+  "difficulty": "Medium",
+  "code": "0286-walls-and-gates",
+  "python": "_sources/leetcode/python/0286-walls-and-gates.py",
+  "article": "_sources/leetcode/articles/islands-and-treasure.md",
+  "hint": "_sources/leetcode/hints/islands-and-treasure.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/07_Walls_and_Gates/0286-walls-and-gates.py"
+ },
+ {
+  "problem": "Course Schedule",
+  "pattern": "Graphs",
+  "difficulty": "Medium",
+  "code": "0207-course-schedule",
+  "python": "_sources/leetcode/python/0207-course-schedule.py",
+  "article": "_sources/leetcode/articles/course-schedule.md",
+  "hint": "_sources/leetcode/hints/course-schedule.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/08_Course_Schedule/0207-course-schedule.py"
+ },
+ {
+  "problem": "Course Schedule II",
+  "pattern": "Graphs",
+  "difficulty": "Medium",
+  "code": "0210-course-schedule-ii",
+  "python": "_sources/leetcode/python/0210-course-schedule-ii.py",
+  "article": "_sources/leetcode/articles/course-schedule-ii.md",
+  "hint": "_sources/leetcode/hints/course-schedule-ii.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/09_Course_Schedule_II/0210-course-schedule-ii.py"
+ },
+ {
+  "problem": "Redundant Connection",
+  "pattern": "Graphs",
+  "difficulty": "Medium",
+  "code": "0684-redundant-connection",
+  "python": "_sources/leetcode/python/0684-redundant-connection.py",
+  "article": "_sources/leetcode/articles/redundant-connection.md",
+  "hint": "_sources/leetcode/hints/redundant-connection.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/10_Redundant_Connection/0684-redundant-connection.py"
+ },
+ {
+  "problem": "Number of Connected Components In An Undirected Graph",
+  "pattern": "Graphs",
+  "difficulty": "Medium",
+  "code": "0323-number-of-connected-components-in-an-undirected-graph",
+  "python": "_sources/leetcode/python/0323-number-of-connected-components-in-an-undirected-graph.py",
+  "article": "_sources/leetcode/articles/count-connected-components.md",
+  "hint": "_sources/leetcode/hints/count-connected-components.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/11_Number_of_Connected_Components_in_an_Undirected_Graph/0323-number-of-connected-components-in-an-undirected-graph.py"
+ },
+ {
+  "problem": "Graph Valid Tree",
+  "pattern": "Graphs",
+  "difficulty": "Medium",
+  "code": "0261-graph-valid-tree",
+  "python": "_sources/leetcode/python/0261-graph-valid-tree.py",
+  "article": "_sources/leetcode/articles/valid-tree.md",
+  "hint": "_sources/leetcode/hints/valid-tree.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/12_Graph_Valid_Tree/0261-graph-valid-tree.py"
+ },
+ {
+  "problem": "Word Ladder",
+  "pattern": "Graphs",
+  "difficulty": "Hard",
+  "code": "0127-word-ladder",
+  "python": "_sources/leetcode/python/0127-word-ladder.py",
+  "article": "_sources/leetcode/articles/word-ladder.md",
+  "hint": "_sources/leetcode/hints/word-ladder.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/13_Word_Ladder/0127-word-ladder.py"
+ },
+ {
+  "problem": "Reconstruct Itinerary",
+  "pattern": "Advanced Graphs",
+  "difficulty": "Hard",
+  "code": "0332-reconstruct-itinerary",
+  "python": "_sources/leetcode/python/0332-reconstruct-itinerary.py",
+  "article": "_sources/leetcode/articles/reconstruct-flight-path.md",
+  "hint": "_sources/leetcode/hints/reconstruct-flight-path.md",
+  "alt_python": "_sources/NeetCode-Solutions/12_Advanced_Graphs/01_Reconstruct_Itinerary/0332-reconstruct-itinerary.py"
+ },
+ {
+  "problem": "Min Cost to Connect All Points",
+  "pattern": "Advanced Graphs",
+  "difficulty": "Medium",
+  "code": "1584-min-cost-to-connect-all-points",
+  "python": "_sources/leetcode/python/1584-min-cost-to-connect-all-points.py",
+  "article": "_sources/leetcode/articles/min-cost-to-connect-points.md",
+  "hint": "_sources/leetcode/hints/min-cost-to-connect-points.md",
+  "alt_python": "_sources/NeetCode-Solutions/12_Advanced_Graphs/02_Min_Cost_to_Connect_All_Points/1584-min-cost-to-connect-all-points.py"
+ },
+ {
+  "problem": "Network Delay Time",
+  "pattern": "Advanced Graphs",
+  "difficulty": "Medium",
+  "code": "0743-network-delay-time",
+  "python": "_sources/leetcode/python/0743-network-delay-time.py",
+  "article": "_sources/leetcode/articles/network-delay-time.md",
+  "hint": "_sources/leetcode/hints/network-delay-time.md",
+  "alt_python": "_sources/NeetCode-Solutions/12_Advanced_Graphs/03_Network_Delay_Time/0743-network-delay-time.py"
+ },
+ {
+  "problem": "Swim In Rising Water",
+  "pattern": "Advanced Graphs",
+  "difficulty": "Hard",
+  "code": "0778-swim-in-rising-water",
+  "python": "_sources/leetcode/python/0778-swim-in-rising-water.py",
+  "article": "_sources/leetcode/articles/swim-in-rising-water.md",
+  "hint": "_sources/leetcode/hints/swim-in-rising-water.md",
+  "alt_python": "_sources/NeetCode-Solutions/12_Advanced_Graphs/04_Swim_in_Rising_Water/0778-swim-in-rising-water.py"
+ },
+ {
+  "problem": "Alien Dictionary",
+  "pattern": "Advanced Graphs",
+  "difficulty": "Hard",
+  "code": "0269-alien-dictionary",
+  "python": "_sources/leetcode/python/0269-alien-dictionary.py",
+  "article": "_sources/leetcode/articles/foreign-dictionary.md",
+  "hint": "_sources/leetcode/hints/foreign-dictionary.md",
+  "alt_python": "_sources/NeetCode-Solutions/12_Advanced_Graphs/05_Alien_Dictionary/0269-alien-dictionary.py"
+ },
+ {
+  "problem": "Cheapest Flights Within K Stops",
+  "pattern": "Advanced Graphs",
+  "difficulty": "Medium",
+  "code": "0787-cheapest-flights-within-k-stops",
+  "python": "_sources/leetcode/python/0787-cheapest-flights-within-k-stops.py",
+  "article": "_sources/leetcode/articles/cheapest-flight-path.md",
+  "hint": "_sources/leetcode/hints/cheapest-flight-path.md",
+  "alt_python": "_sources/NeetCode-Solutions/12_Advanced_Graphs/06_Cheapest_Flights_Within_K_Stops/0787-cheapest-flights-within-k-stops.py"
+ },
+ {
+  "problem": "Climbing Stairs",
+  "pattern": "1-D Dynamic Programming",
+  "difficulty": "Easy",
+  "code": "0070-climbing-stairs",
+  "python": "_sources/leetcode/python/0070-climbing-stairs.py",
+  "article": "_sources/leetcode/articles/climbing-stairs.md",
+  "hint": "_sources/leetcode/hints/climbing-stairs.md",
+  "alt_python": "_sources/NeetCode-Solutions/13_1-D_Dynamic_Programming/01_Climbing_Stairs/0070-climbing-stairs.py"
+ },
+ {
+  "problem": "Min Cost Climbing Stairs",
+  "pattern": "1-D Dynamic Programming",
+  "difficulty": "Easy",
+  "code": "0746-min-cost-climbing-stairs",
+  "python": "_sources/leetcode/python/0746-min-cost-climbing-stairs.py",
+  "article": "_sources/leetcode/articles/min-cost-climbing-stairs.md",
+  "hint": "_sources/leetcode/hints/min-cost-climbing-stairs.md",
+  "alt_python": "_sources/NeetCode-Solutions/13_1-D_Dynamic_Programming/02_Min_Cost_Climbing_Stairs/0746-min-cost-climbing-stairs.py"
+ },
+ {
+  "problem": "House Robber",
+  "pattern": "1-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0198-house-robber",
+  "python": "_sources/leetcode/python/0198-house-robber.py",
+  "article": "_sources/leetcode/articles/house-robber.md",
+  "hint": "_sources/leetcode/hints/house-robber.md",
+  "alt_python": "_sources/NeetCode-Solutions/13_1-D_Dynamic_Programming/03_House_Robber/0198-house-robber.py"
+ },
+ {
+  "problem": "House Robber II",
+  "pattern": "1-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0213-house-robber-ii",
+  "python": "_sources/leetcode/python/0213-house-robber-ii.py",
+  "article": "_sources/leetcode/articles/house-robber-ii.md",
+  "hint": "_sources/leetcode/hints/house-robber-ii.md",
+  "alt_python": "_sources/NeetCode-Solutions/13_1-D_Dynamic_Programming/04_House_Robber_II/0213-house-robber-ii.py"
+ },
+ {
+  "problem": "Longest Palindromic Substring",
+  "pattern": "1-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0005-longest-palindromic-substring",
+  "python": "_sources/leetcode/python/0005-longest-palindromic-substring.py",
+  "article": "_sources/leetcode/articles/longest-palindromic-substring.md",
+  "hint": "_sources/leetcode/hints/longest-palindromic-substring.md",
+  "alt_python": "_sources/NeetCode-Solutions/13_1-D_Dynamic_Programming/05_Longest_Palindromic_Substring/0005-longest-palindromic-substring.py"
+ },
+ {
+  "problem": "Palindromic Substrings",
+  "pattern": "1-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0647-palindromic-substrings",
+  "python": "_sources/leetcode/python/0647-palindromic-substrings.py",
+  "article": "_sources/leetcode/articles/palindromic-substrings.md",
+  "hint": "_sources/leetcode/hints/palindromic-substrings.md",
+  "alt_python": "_sources/NeetCode-Solutions/13_1-D_Dynamic_Programming/06_Palindromic_Substrings/0647-palindromic-substrings.py"
+ },
+ {
+  "problem": "Decode Ways",
+  "pattern": "1-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0091-decode-ways",
+  "python": "_sources/leetcode/python/0091-decode-ways.py",
+  "article": "_sources/leetcode/articles/decode-ways.md",
+  "hint": "_sources/leetcode/hints/decode-ways.md",
+  "alt_python": "_sources/NeetCode-Solutions/13_1-D_Dynamic_Programming/07_Decode_Ways/0091-decode-ways.py"
+ },
+ {
+  "problem": "Coin Change",
+  "pattern": "1-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0322-coin-change",
+  "python": "_sources/leetcode/python/0322-coin-change.py",
+  "article": "_sources/leetcode/articles/coin-change.md",
+  "hint": "_sources/leetcode/hints/coin-change.md",
+  "alt_python": "_sources/NeetCode-Solutions/13_1-D_Dynamic_Programming/08_Coin_Change/0322-coin-change.py"
+ },
+ {
+  "problem": "Maximum Product Subarray",
+  "pattern": "1-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0152-maximum-product-subarray",
+  "python": "_sources/leetcode/python/0152-maximum-product-subarray.py",
+  "article": "_sources/leetcode/articles/maximum-product-subarray.md",
+  "hint": "_sources/leetcode/hints/maximum-product-subarray.md",
+  "alt_python": "_sources/NeetCode-Solutions/13_1-D_Dynamic_Programming/09_Maximum_Product_Subarray/0152-maximum-product-subarray.py"
+ },
+ {
+  "problem": "Word Break",
+  "pattern": "1-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0139-word-break",
+  "python": "_sources/leetcode/python/0139-word-break.py",
+  "article": "_sources/leetcode/articles/word-break.md",
+  "hint": "_sources/leetcode/hints/word-break.md",
+  "alt_python": "_sources/NeetCode-Solutions/13_1-D_Dynamic_Programming/10_Word_Break/0139-word-break.py"
+ },
+ {
+  "problem": "Longest Increasing Subsequence",
+  "pattern": "1-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0300-longest-increasing-subsequence",
+  "python": "_sources/leetcode/python/0300-longest-increasing-subsequence.py",
+  "article": "_sources/leetcode/articles/longest-increasing-subsequence.md",
+  "hint": "_sources/leetcode/hints/longest-increasing-subsequence.md",
+  "alt_python": "_sources/NeetCode-Solutions/13_1-D_Dynamic_Programming/11_Longest_Increasing_Subsequence/0300-longest-increasing-subsequence.py"
+ },
+ {
+  "problem": "Partition Equal Subset Sum",
+  "pattern": "1-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0416-partition-equal-subset-sum",
+  "python": "_sources/leetcode/python/0416-partition-equal-subset-sum.py",
+  "article": "_sources/leetcode/articles/partition-equal-subset-sum.md",
+  "hint": "_sources/leetcode/hints/partition-equal-subset-sum.md",
+  "alt_python": "_sources/NeetCode-Solutions/13_1-D_Dynamic_Programming/12_Partition_Equal_Subset_Sum/0416-partition-equal-subset-sum.py"
+ },
+ {
+  "problem": "Unique Paths",
+  "pattern": "2-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0062-unique-paths",
+  "python": "_sources/leetcode/python/0062-unique-paths.py",
+  "article": "_sources/leetcode/articles/count-paths.md",
+  "hint": "_sources/leetcode/hints/count-paths.md",
+  "alt_python": "_sources/NeetCode-Solutions/14_2-D_Dynamic_Programming/01_Unique_Paths/0062-unique-paths.py"
+ },
+ {
+  "problem": "Longest Common Subsequence",
+  "pattern": "2-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "1143-longest-common-subsequence",
+  "python": "_sources/leetcode/python/1143-longest-common-subsequence.py",
+  "article": "_sources/leetcode/articles/longest-common-subsequence.md",
+  "hint": "_sources/leetcode/hints/longest-common-subsequence.md",
+  "alt_python": "_sources/NeetCode-Solutions/14_2-D_Dynamic_Programming/02_Longest_Common_Subsequence/1143-longest-common-subsequence.py"
+ },
+ {
+  "problem": "Best Time to Buy And Sell Stock With Cooldown",
+  "pattern": "2-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0309-best-time-to-buy-and-sell-stock-with-cooldown",
+  "python": "_sources/leetcode/python/0309-best-time-to-buy-and-sell-stock-with-cooldown.py",
+  "article": "_sources/leetcode/articles/buy-and-sell-crypto-with-cooldown.md",
+  "hint": "_sources/leetcode/hints/buy-and-sell-crypto-with-cooldown.md",
+  "alt_python": "_sources/NeetCode-Solutions/14_2-D_Dynamic_Programming/03_Best_Time_to_Buy_And_Sell_Stock_With_Cooldown/0309-best-time-to-buy-and-sell-stock-with-cooldown.py"
+ },
+ {
+  "problem": "Coin Change II",
+  "pattern": "2-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0518-coin-change-ii",
+  "python": "_sources/leetcode/python/0518-coin-change-ii.py",
+  "article": "_sources/leetcode/articles/coin-change-ii.md",
+  "hint": "_sources/leetcode/hints/coin-change-ii.md",
+  "alt_python": "_sources/NeetCode-Solutions/14_2-D_Dynamic_Programming/04_Coin_Change_II/0518-coin-change-ii.py"
+ },
+ {
+  "problem": "Target Sum",
+  "pattern": "2-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0494-target-sum",
+  "python": "_sources/leetcode/python/0494-target-sum.py",
+  "article": "_sources/leetcode/articles/target-sum.md",
+  "hint": "_sources/leetcode/hints/target-sum.md",
+  "alt_python": "_sources/NeetCode-Solutions/14_2-D_Dynamic_Programming/05_Target_Sum/0494-target-sum.py"
+ },
+ {
+  "problem": "Interleaving String",
+  "pattern": "2-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0097-interleaving-string",
+  "python": "_sources/leetcode/python/0097-interleaving-string.py",
+  "article": "_sources/leetcode/articles/interleaving-string.md",
+  "hint": "_sources/leetcode/hints/interleaving-string.md",
+  "alt_python": "_sources/NeetCode-Solutions/14_2-D_Dynamic_Programming/06_Interleaving_String/0097-interleaving-string.py"
+ },
+ {
+  "problem": "Longest Increasing Path In a Matrix",
+  "pattern": "2-D Dynamic Programming",
+  "difficulty": "Hard",
+  "code": "0329-longest-increasing-path-in-a-matrix",
+  "python": "_sources/leetcode/python/0329-longest-increasing-path-in-a-matrix.py",
+  "article": "_sources/leetcode/articles/longest-increasing-path-in-matrix.md",
+  "hint": "_sources/leetcode/hints/longest-increasing-path-in-matrix.md",
+  "alt_python": "_sources/NeetCode-Solutions/14_2-D_Dynamic_Programming/07_Longest_Increasing_Path_In_a_Matrix/0329-longest-increasing-path-in-a-matrix.py"
+ },
+ {
+  "problem": "Distinct Subsequences",
+  "pattern": "2-D Dynamic Programming",
+  "difficulty": "Hard",
+  "code": "0115-distinct-subsequences",
+  "python": "_sources/leetcode/python/0115-distinct-subsequences.py",
+  "article": "_sources/leetcode/articles/count-subsequences.md",
+  "hint": "_sources/leetcode/hints/count-subsequences.md",
+  "alt_python": "_sources/NeetCode-Solutions/14_2-D_Dynamic_Programming/08_Distinct_Subsequences/0115-distinct-subsequences.py"
+ },
+ {
+  "problem": "Edit Distance",
+  "pattern": "2-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0072-edit-distance",
+  "python": "_sources/leetcode/python/0072-edit-distance.py",
+  "article": "_sources/leetcode/articles/edit-distance.md",
+  "hint": "_sources/leetcode/hints/edit-distance.md",
+  "alt_python": "_sources/NeetCode-Solutions/14_2-D_Dynamic_Programming/09_Edit_Distance/0072-edit-distance.py"
+ },
+ {
+  "problem": "Burst Balloons",
+  "pattern": "2-D Dynamic Programming",
+  "difficulty": "Hard",
+  "code": "0312-burst-balloons",
+  "python": "_sources/leetcode/python/0312-burst-balloons.py",
+  "article": "_sources/leetcode/articles/burst-balloons.md",
+  "hint": "_sources/leetcode/hints/burst-balloons.md",
+  "alt_python": "_sources/NeetCode-Solutions/14_2-D_Dynamic_Programming/10_Burst_Balloons/0312-burst-balloons.py"
+ },
+ {
+  "problem": "Regular Expression Matching",
+  "pattern": "2-D Dynamic Programming",
+  "difficulty": "Hard",
+  "code": "0010-regular-expression-matching",
+  "python": "_sources/leetcode/python/0010-regular-expression-matching.py",
+  "article": "_sources/leetcode/articles/regular-expression-matching.md",
+  "hint": "_sources/leetcode/hints/regular-expression-matching.md",
+  "alt_python": "_sources/NeetCode-Solutions/14_2-D_Dynamic_Programming/11_Regular_Expression_Matching/0010-regular-expression-matching.py"
+ },
+ {
+  "problem": "Maximum Subarray",
+  "pattern": "Greedy",
+  "difficulty": "Medium",
+  "code": "0053-maximum-subarray",
+  "python": "_sources/leetcode/python/0053-maximum-subarray.py",
+  "article": "_sources/leetcode/articles/maximum-subarray.md",
+  "hint": "_sources/leetcode/hints/maximum-subarray.md",
+  "alt_python": "_sources/NeetCode-Solutions/15_Greedy/01_Maximum_Subarray/0053-maximum-subarray.py"
+ },
+ {
+  "problem": "Jump Game",
+  "pattern": "Greedy",
+  "difficulty": "Medium",
+  "code": "0055-jump-game",
+  "python": "_sources/leetcode/python/0055-jump-game.py",
+  "article": "_sources/leetcode/articles/jump-game.md",
+  "hint": "_sources/leetcode/hints/jump-game.md",
+  "alt_python": "_sources/NeetCode-Solutions/15_Greedy/02_Jump_Game/0055-jump-game.py"
+ },
+ {
+  "problem": "Jump Game II",
+  "pattern": "Greedy",
+  "difficulty": "Medium",
+  "code": "0045-jump-game-ii",
+  "python": "_sources/leetcode/python/0045-jump-game-ii.py",
+  "article": "_sources/leetcode/articles/jump-game-ii.md",
+  "hint": "_sources/leetcode/hints/jump-game-ii.md",
+  "alt_python": "_sources/NeetCode-Solutions/15_Greedy/03_Jump_Game_II/0045-jump-game-ii.py"
+ },
+ {
+  "problem": "Gas Station",
+  "pattern": "Greedy",
+  "difficulty": "Medium",
+  "code": "0134-gas-station",
+  "python": "_sources/leetcode/python/0134-gas-station.py",
+  "article": "_sources/leetcode/articles/gas-station.md",
+  "hint": "_sources/leetcode/hints/gas-station.md",
+  "alt_python": "_sources/NeetCode-Solutions/15_Greedy/04_Gas_Station/0134-gas-station.py"
+ },
+ {
+  "problem": "Hand of Straights",
+  "pattern": "Greedy",
+  "difficulty": "Medium",
+  "code": "0846-hand-of-straights",
+  "python": "_sources/leetcode/python/0846-hand-of-straights.py",
+  "article": "_sources/leetcode/articles/hand-of-straights.md",
+  "hint": "_sources/leetcode/hints/hand-of-straights.md",
+  "alt_python": "_sources/NeetCode-Solutions/15_Greedy/05_Hand_of_Straights/0846-hand-of-straights.py"
+ },
+ {
+  "problem": "Merge Triplets to Form Target Triplet",
+  "pattern": "Greedy",
+  "difficulty": "Medium",
+  "code": "1899-merge-triplets-to-form-target-triplet",
+  "python": "_sources/leetcode/python/1899-merge-triplets-to-form-target-triplet.py",
+  "article": "_sources/leetcode/articles/merge-triplets-to-form-target.md",
+  "hint": "_sources/leetcode/hints/merge-triplets-to-form-target.md",
+  "alt_python": "_sources/NeetCode-Solutions/15_Greedy/06_Merge_Triplets_to_Form_Target_Triplet/1899-merge-triplets-to-form-target-triplet.py"
+ },
+ {
+  "problem": "Partition Labels",
+  "pattern": "Greedy",
+  "difficulty": "Medium",
+  "code": "0763-partition-labels",
+  "python": "_sources/leetcode/python/0763-partition-labels.py",
+  "article": "_sources/leetcode/articles/partition-labels.md",
+  "hint": "_sources/leetcode/hints/partition-labels.md",
+  "alt_python": "_sources/NeetCode-Solutions/15_Greedy/07_Partition_Labels/0763-partition-labels.py"
+ },
+ {
+  "problem": "Valid Parenthesis String",
+  "pattern": "Greedy",
+  "difficulty": "Medium",
+  "code": "0678-valid-parenthesis-string",
+  "python": "_sources/leetcode/python/0678-valid-parenthesis-string.py",
+  "article": "_sources/leetcode/articles/valid-parenthesis-string.md",
+  "hint": "_sources/leetcode/hints/valid-parenthesis-string.md",
+  "alt_python": "_sources/NeetCode-Solutions/15_Greedy/08_Valid_Parenthesis_String/0678-valid-parenthesis-string.py"
+ },
+ {
+  "problem": "Insert Interval",
+  "pattern": "Intervals",
+  "difficulty": "Medium",
+  "code": "0057-insert-interval",
+  "python": "_sources/leetcode/python/0057-insert-interval.py",
+  "article": "_sources/leetcode/articles/insert-new-interval.md",
+  "hint": "_sources/leetcode/hints/insert-new-interval.md",
+  "alt_python": "_sources/NeetCode-Solutions/16_Intervals/01_Insert_Interval/0057-insert-interval.py"
+ },
+ {
+  "problem": "Merge Intervals",
+  "pattern": "Intervals",
+  "difficulty": "Medium",
+  "code": "0056-merge-intervals",
+  "python": "_sources/leetcode/python/0056-merge-intervals.py",
+  "article": "_sources/leetcode/articles/merge-intervals.md",
+  "hint": "_sources/leetcode/hints/merge-intervals.md",
+  "alt_python": "_sources/NeetCode-Solutions/16_Intervals/02_Merge_Intervals/0056-merge-intervals.py"
+ },
+ {
+  "problem": "Non Overlapping Intervals",
+  "pattern": "Intervals",
+  "difficulty": "Medium",
+  "code": "0435-non-overlapping-intervals",
+  "python": "_sources/leetcode/python/0435-non-overlapping-intervals.py",
+  "article": "_sources/leetcode/articles/non-overlapping-intervals.md",
+  "hint": "_sources/leetcode/hints/non-overlapping-intervals.md",
+  "alt_python": "_sources/NeetCode-Solutions/16_Intervals/03_Non_Overlapping_Intervals/0435-non-overlapping-intervals.py"
+ },
+ {
+  "problem": "Meeting Rooms",
+  "pattern": "Intervals",
+  "difficulty": "Easy",
+  "code": "0252-meeting-rooms",
+  "python": "_sources/leetcode/python/0252-meeting-rooms.py",
+  "article": "_sources/leetcode/articles/meeting-schedule.md",
+  "hint": "_sources/leetcode/hints/meeting-schedule.md",
+  "alt_python": "_sources/NeetCode-Solutions/16_Intervals/04_Meeting_Rooms/0252-meeting-rooms.py"
+ },
+ {
+  "problem": "Meeting Rooms II",
+  "pattern": "Intervals",
+  "difficulty": "Medium",
+  "code": "0253-meeting-rooms-ii",
+  "python": "_sources/leetcode/python/0253-meeting-rooms-ii.py",
+  "article": "_sources/leetcode/articles/meeting-schedule-ii.md",
+  "hint": "_sources/leetcode/hints/meeting-schedule-ii.md",
+  "alt_python": "_sources/NeetCode-Solutions/16_Intervals/05_Meeting_Rooms_II/0253-meeting-rooms-ii.py"
+ },
+ {
+  "problem": "Minimum Interval to Include Each Query",
+  "pattern": "Intervals",
+  "difficulty": "Hard",
+  "code": "1851-minimum-interval-to-include-each-query",
+  "python": "_sources/leetcode/python/1851-minimum-interval-to-include-each-query.py",
+  "article": "_sources/leetcode/articles/minimum-interval-including-query.md",
+  "hint": "_sources/leetcode/hints/minimum-interval-including-query.md",
+  "alt_python": "_sources/NeetCode-Solutions/16_Intervals/06_Minimum_Interval_to_Include_Each_Query/1851-minimum-interval-to-include-each-query.py"
+ },
+ {
+  "problem": "Rotate Image",
+  "pattern": "Math & Geometry",
+  "difficulty": "Medium",
+  "code": "0048-rotate-image",
+  "python": "_sources/leetcode/python/0048-rotate-image.py",
+  "article": "_sources/leetcode/articles/rotate-matrix.md",
+  "hint": "_sources/leetcode/hints/rotate-matrix.md",
+  "alt_python": "_sources/NeetCode-Solutions/17_Math_&_Geometry/01_Rotate_Image/0048-rotate-image.py"
+ },
+ {
+  "problem": "Spiral Matrix",
+  "pattern": "Math & Geometry",
+  "difficulty": "Medium",
+  "code": "0054-spiral-matrix",
+  "python": "_sources/leetcode/python/0054-spiral-matrix.py",
+  "article": "_sources/leetcode/articles/spiral-matrix.md",
+  "hint": "_sources/leetcode/hints/spiral-matrix.md",
+  "alt_python": "_sources/NeetCode-Solutions/17_Math_&_Geometry/02_Spiral_Matrix/0054-spiral-matrix.py"
+ },
+ {
+  "problem": "Set Matrix Zeroes",
+  "pattern": "Math & Geometry",
+  "difficulty": "Medium",
+  "code": "0073-set-matrix-zeroes",
+  "python": "_sources/leetcode/python/0073-set-matrix-zeroes.py",
+  "article": "_sources/leetcode/articles/set-zeroes-in-matrix.md",
+  "hint": "_sources/leetcode/hints/set-zeroes-in-matrix.md",
+  "alt_python": "_sources/NeetCode-Solutions/17_Math_&_Geometry/03_Set_Matrix_Zeroes/0073-set-matrix-zeroes.py"
+ },
+ {
+  "problem": "Happy Number",
+  "pattern": "Math & Geometry",
+  "difficulty": "Easy",
+  "code": "0202-happy-number",
+  "python": "_sources/leetcode/python/0202-happy-number.py",
+  "article": "_sources/leetcode/articles/non-cyclical-number.md",
+  "hint": "_sources/leetcode/hints/non-cyclical-number.md",
+  "alt_python": "_sources/NeetCode-Solutions/17_Math_&_Geometry/04_Happy_Number/0202-happy-number.py"
+ },
+ {
+  "problem": "Plus One",
+  "pattern": "Math & Geometry",
+  "difficulty": "Easy",
+  "code": "0066-plus-one",
+  "python": "_sources/leetcode/python/0066-plus-one.py",
+  "article": "_sources/leetcode/articles/plus-one.md",
+  "hint": "_sources/leetcode/hints/plus-one.md",
+  "alt_python": "_sources/NeetCode-Solutions/17_Math_&_Geometry/05_Plus_One/0066-plus-one.py"
+ },
+ {
+  "problem": "Pow(x, n)",
+  "pattern": "Math & Geometry",
+  "difficulty": "Medium",
+  "code": "0050-powx-n",
+  "python": "_sources/leetcode/python/0050-powx-n.py",
+  "article": "_sources/leetcode/articles/pow-x-n.md",
+  "hint": "_sources/leetcode/hints/pow-x-n.md",
+  "alt_python": "_sources/NeetCode-Solutions/17_Math_&_Geometry/06_Pow(x,n)/0050-powx-n.py"
+ },
+ {
+  "problem": "Multiply Strings",
+  "pattern": "Math & Geometry",
+  "difficulty": "Medium",
+  "code": "0043-multiply-strings",
+  "python": "_sources/leetcode/python/0043-multiply-strings.py",
+  "article": "_sources/leetcode/articles/multiply-strings.md",
+  "hint": "_sources/leetcode/hints/multiply-strings.md",
+  "alt_python": "_sources/NeetCode-Solutions/17_Math_&_Geometry/07_Multiply_Strings/0043-multiply-strings.py"
+ },
+ {
+  "problem": "Detect Squares",
+  "pattern": "Math & Geometry",
+  "difficulty": "Medium",
+  "code": "2013-detect-squares",
+  "python": "_sources/leetcode/python/2013-detect-squares.py",
+  "article": "_sources/leetcode/articles/count-squares.md",
+  "hint": "_sources/leetcode/hints/count-squares.md",
+  "alt_python": "_sources/NeetCode-Solutions/17_Math_&_Geometry/08_Detect_Squares/2013-detect-squares.py"
+ },
+ {
+  "problem": "Single Number",
+  "pattern": "Bit Manipulation",
+  "difficulty": "Easy",
+  "code": "0136-single-number",
+  "python": "_sources/leetcode/python/0136-single-number.py",
+  "article": "_sources/leetcode/articles/single-number.md",
+  "hint": "_sources/leetcode/hints/single-number.md",
+  "alt_python": "_sources/NeetCode-Solutions/18_Bit_Manipulation/01_Single_Number/0136-single-number.py"
+ },
+ {
+  "problem": "Number of 1 Bits",
+  "pattern": "Bit Manipulation",
+  "difficulty": "Easy",
+  "code": "0191-number-of-1-bits",
+  "python": "_sources/leetcode/python/0191-number-of-1-bits.py",
+  "article": "_sources/leetcode/articles/number-of-one-bits.md",
+  "hint": "_sources/leetcode/hints/number-of-one-bits.md",
+  "alt_python": "_sources/NeetCode-Solutions/18_Bit_Manipulation/02_Number_of_1_Bits/0191-number-of-1-bits.py"
+ },
+ {
+  "problem": "Counting Bits",
+  "pattern": "Bit Manipulation",
+  "difficulty": "Easy",
+  "code": "0338-counting-bits",
+  "python": "_sources/leetcode/python/0338-counting-bits.py",
+  "article": "_sources/leetcode/articles/counting-bits.md",
+  "hint": "_sources/leetcode/hints/counting-bits.md",
+  "alt_python": "_sources/NeetCode-Solutions/18_Bit_Manipulation/03_Counting_Bits/0338-counting-bits.py"
+ },
+ {
+  "problem": "Reverse Bits",
+  "pattern": "Bit Manipulation",
+  "difficulty": "Easy",
+  "code": "0190-reverse-bits",
+  "python": "_sources/leetcode/python/0190-reverse-bits.py",
+  "article": "_sources/leetcode/articles/reverse-bits.md",
+  "hint": "_sources/leetcode/hints/reverse-bits.md",
+  "alt_python": "_sources/NeetCode-Solutions/18_Bit_Manipulation/04_Reverse_Bits/0190-reverse-bits.py"
+ },
+ {
+  "problem": "Missing Number",
+  "pattern": "Bit Manipulation",
+  "difficulty": "Easy",
+  "code": "0268-missing-number",
+  "python": "_sources/leetcode/python/0268-missing-number.py",
+  "article": "_sources/leetcode/articles/missing-number.md",
+  "hint": "_sources/leetcode/hints/missing-number.md",
+  "alt_python": "_sources/NeetCode-Solutions/18_Bit_Manipulation/05_Missing_Number/0268-missing-number.py"
+ },
+ {
+  "problem": "Sum of Two Integers",
+  "pattern": "Bit Manipulation",
+  "difficulty": "Medium",
+  "code": "0371-sum-of-two-integers",
+  "python": "_sources/leetcode/python/0371-sum-of-two-integers.py",
+  "article": "_sources/leetcode/articles/sum-of-two-integers.md",
+  "hint": "_sources/leetcode/hints/sum-of-two-integers.md",
+  "alt_python": "_sources/NeetCode-Solutions/18_Bit_Manipulation/06_Sum_of_Two_Integers/0371-sum-of-two-integers.py"
+ },
+ {
+  "problem": "Reverse Integer",
+  "pattern": "Bit Manipulation",
+  "difficulty": "Medium",
+  "code": "0007-reverse-integer",
+  "python": "_sources/leetcode/python/0007-reverse-integer.py",
+  "article": "_sources/leetcode/articles/reverse-integer.md",
+  "hint": "_sources/leetcode/hints/reverse-integer.md",
+  "alt_python": "_sources/NeetCode-Solutions/18_Bit_Manipulation/07_Reverse_Integer/0007-reverse-integer.py"
+ }
+]

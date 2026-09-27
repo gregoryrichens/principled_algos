@@ -1,0 +1,232 @@
+[
+ {
+  "problem": "Climbing Stairs",
+  "pattern": "1-D Dynamic Programming",
+  "difficulty": "Easy",
+  "code": "0070-climbing-stairs",
+  "python": "_sources/leetcode/python/0070-climbing-stairs.py",
+  "article": "_sources/leetcode/articles/climbing-stairs.md",
+  "hint": "_sources/leetcode/hints/climbing-stairs.md",
+  "alt_python": "_sources/NeetCode-Solutions/13_1-D_Dynamic_Programming/01_Climbing_Stairs/0070-climbing-stairs.py"
+ },
+ {
+  "problem": "Min Cost Climbing Stairs",
+  "pattern": "1-D Dynamic Programming",
+  "difficulty": "Easy",
+  "code": "0746-min-cost-climbing-stairs",
+  "python": "_sources/leetcode/python/0746-min-cost-climbing-stairs.py",
+  "article": "_sources/leetcode/articles/min-cost-climbing-stairs.md",
+  "hint": "_sources/leetcode/hints/min-cost-climbing-stairs.md",
+  "alt_python": "_sources/NeetCode-Solutions/13_1-D_Dynamic_Programming/02_Min_Cost_Climbing_Stairs/0746-min-cost-climbing-stairs.py"
+ },
+ {
+  "problem": "House Robber",
+  "pattern": "1-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0198-house-robber",
+  "python": "_sources/leetcode/python/0198-house-robber.py",
+  "article": "_sources/leetcode/articles/house-robber.md",
+  "hint": "_sources/leetcode/hints/house-robber.md",
+  "alt_python": "_sources/NeetCode-Solutions/13_1-D_Dynamic_Programming/03_House_Robber/0198-house-robber.py"
+ },
+ {
+  "problem": "House Robber II",
+  "pattern": "1-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0213-house-robber-ii",
+  "python": "_sources/leetcode/python/0213-house-robber-ii.py",
+  "article": "_sources/leetcode/articles/house-robber-ii.md",
+  "hint": "_sources/leetcode/hints/house-robber-ii.md",
+  "alt_python": "_sources/NeetCode-Solutions/13_1-D_Dynamic_Programming/04_House_Robber_II/0213-house-robber-ii.py"
+ },
+ {
+  "problem": "Longest Palindromic Substring",
+  "pattern": "1-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0005-longest-palindromic-substring",
+  "python": "_sources/leetcode/python/0005-longest-palindromic-substring.py",
+  "article": "_sources/leetcode/articles/longest-palindromic-substring.md",
+  "hint": "_sources/leetcode/hints/longest-palindromic-substring.md",
+  "alt_python": "_sources/NeetCode-Solutions/13_1-D_Dynamic_Programming/05_Longest_Palindromic_Substring/0005-longest-palindromic-substring.py"
+ },
+ {
+  "problem": "Palindromic Substrings",
+  "pattern": "1-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0647-palindromic-substrings",
+  "python": "_sources/leetcode/python/0647-palindromic-substrings.py",
+  "article": "_sources/leetcode/articles/palindromic-substrings.md",
+  "hint": "_sources/leetcode/hints/palindromic-substrings.md",
+  "alt_python": "_sources/NeetCode-Solutions/13_1-D_Dynamic_Programming/06_Palindromic_Substrings/0647-palindromic-substrings.py"
+ },
+ {
+  "problem": "Decode Ways",
+  "pattern": "1-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0091-decode-ways",
+  "python": "_sources/leetcode/python/0091-decode-ways.py",
+  "article": "_sources/leetcode/articles/decode-ways.md",
+  "hint": "_sources/leetcode/hints/decode-ways.md",
+  "alt_python": "_sources/NeetCode-Solutions/13_1-D_Dynamic_Programming/07_Decode_Ways/0091-decode-ways.py"
+ },
+ {
+  "problem": "Coin Change",
+  "pattern": "1-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0322-coin-change",
+  "python": "_sources/leetcode/python/0322-coin-change.py",
+  "article": "_sources/leetcode/articles/coin-change.md",
+  "hint": "_sources/leetcode/hints/coin-change.md",
+  "alt_python": "_sources/NeetCode-Solutions/13_1-D_Dynamic_Programming/08_Coin_Change/0322-coin-change.py"
+ },
+ {
+  "problem": "Maximum Product Subarray",
+  "pattern": "1-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0152-maximum-product-subarray",
+  "python": "_sources/leetcode/python/0152-maximum-product-subarray.py",
+  "article": "_sources/leetcode/articles/maximum-product-subarray.md",
+  "hint": "_sources/leetcode/hints/maximum-product-subarray.md",
+  "alt_python": "_sources/NeetCode-Solutions/13_1-D_Dynamic_Programming/09_Maximum_Product_Subarray/0152-maximum-product-subarray.py"
+ },
+ {
+  "problem": "Word Break",
+  "pattern": "1-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0139-word-break",
+  "python": "_sources/leetcode/python/0139-word-break.py",
+  "article": "_sources/leetcode/articles/word-break.md",
+  "hint": "_sources/leetcode/hints/word-break.md",
+  "alt_python": "_sources/NeetCode-Solutions/13_1-D_Dynamic_Programming/10_Word_Break/0139-word-break.py"
+ },
+ {
+  "problem": "Longest Increasing Subsequence",
+  "pattern": "1-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0300-longest-increasing-subsequence",
+  "python": "_sources/leetcode/python/0300-longest-increasing-subsequence.py",
+  "article": "_sources/leetcode/articles/longest-increasing-subsequence.md",
+  "hint": "_sources/leetcode/hints/longest-increasing-subsequence.md",
+  "alt_python": "_sources/NeetCode-Solutions/13_1-D_Dynamic_Programming/11_Longest_Increasing_Subsequence/0300-longest-increasing-subsequence.py"
+ },
+ {
+  "problem": "Partition Equal Subset Sum",
+  "pattern": "1-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0416-partition-equal-subset-sum",
+  "python": "_sources/leetcode/python/0416-partition-equal-subset-sum.py",
+  "article": "_sources/leetcode/articles/partition-equal-subset-sum.md",
+  "hint": "_sources/leetcode/hints/partition-equal-subset-sum.md",
+  "alt_python": "_sources/NeetCode-Solutions/13_1-D_Dynamic_Programming/12_Partition_Equal_Subset_Sum/0416-partition-equal-subset-sum.py"
+ },
+ {
+  "problem": "Unique Paths",
+  "pattern": "2-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0062-unique-paths",
+  "python": "_sources/leetcode/python/0062-unique-paths.py",
+  "article": "_sources/leetcode/articles/count-paths.md",
+  "hint": "_sources/leetcode/hints/count-paths.md",
+  "alt_python": "_sources/NeetCode-Solutions/14_2-D_Dynamic_Programming/01_Unique_Paths/0062-unique-paths.py"
+ },
+ {
+  "problem": "Longest Common Subsequence",
+  "pattern": "2-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "1143-longest-common-subsequence",
+  "python": "_sources/leetcode/python/1143-longest-common-subsequence.py",
+  "article": "_sources/leetcode/articles/longest-common-subsequence.md",
+  "hint": "_sources/leetcode/hints/longest-common-subsequence.md",
+  "alt_python": "_sources/NeetCode-Solutions/14_2-D_Dynamic_Programming/02_Longest_Common_Subsequence/1143-longest-common-subsequence.py"
+ },
+ {
+  "problem": "Best Time to Buy And Sell Stock With Cooldown",
+  "pattern": "2-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0309-best-time-to-buy-and-sell-stock-with-cooldown",
+  "python": "_sources/leetcode/python/0309-best-time-to-buy-and-sell-stock-with-cooldown.py",
+  "article": "_sources/leetcode/articles/buy-and-sell-crypto-with-cooldown.md",
+  "hint": "_sources/leetcode/hints/buy-and-sell-crypto-with-cooldown.md",
+  "alt_python": "_sources/NeetCode-Solutions/14_2-D_Dynamic_Programming/03_Best_Time_to_Buy_And_Sell_Stock_With_Cooldown/0309-best-time-to-buy-and-sell-stock-with-cooldown.py"
+ },
+ {
+  "problem": "Coin Change II",
+  "pattern": "2-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0518-coin-change-ii",
+  "python": "_sources/leetcode/python/0518-coin-change-ii.py",
+  "article": "_sources/leetcode/articles/coin-change-ii.md",
+  "hint": "_sources/leetcode/hints/coin-change-ii.md",
+  "alt_python": "_sources/NeetCode-Solutions/14_2-D_Dynamic_Programming/04_Coin_Change_II/0518-coin-change-ii.py"
+ },
+ {
+  "problem": "Target Sum",
+  "pattern": "2-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0494-target-sum",
+  "python": "_sources/leetcode/python/0494-target-sum.py",
+  "article": "_sources/leetcode/articles/target-sum.md",
+  "hint": "_sources/leetcode/hints/target-sum.md",
+  "alt_python": "_sources/NeetCode-Solutions/14_2-D_Dynamic_Programming/05_Target_Sum/0494-target-sum.py"
+ },
+ {
+  "problem": "Interleaving String",
+  "pattern": "2-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0097-interleaving-string",
+  "python": "_sources/leetcode/python/0097-interleaving-string.py",
+  "article": "_sources/leetcode/articles/interleaving-string.md",
+  "hint": "_sources/leetcode/hints/interleaving-string.md",
+  "alt_python": "_sources/NeetCode-Solutions/14_2-D_Dynamic_Programming/06_Interleaving_String/0097-interleaving-string.py"
+ },
+ {
+  "problem": "Longest Increasing Path In a Matrix",
+  "pattern": "2-D Dynamic Programming",
+  "difficulty": "Hard",
+  "code": "0329-longest-increasing-path-in-a-matrix",
+  "python": "_sources/leetcode/python/0329-longest-increasing-path-in-a-matrix.py",
+  "article": "_sources/leetcode/articles/longest-increasing-path-in-matrix.md",
+  "hint": "_sources/leetcode/hints/longest-increasing-path-in-matrix.md",
+  "alt_python": "_sources/NeetCode-Solutions/14_2-D_Dynamic_Programming/07_Longest_Increasing_Path_In_a_Matrix/0329-longest-increasing-path-in-a-matrix.py"
+ },
+ {
+  "problem": "Distinct Subsequences",
+  "pattern": "2-D Dynamic Programming",
+  "difficulty": "Hard",
+  "code": "0115-distinct-subsequences",
+  "python": "_sources/leetcode/python/0115-distinct-subsequences.py",
+  "article": "_sources/leetcode/articles/count-subsequences.md",
+  "hint": "_sources/leetcode/hints/count-subsequences.md",
+  "alt_python": "_sources/NeetCode-Solutions/14_2-D_Dynamic_Programming/08_Distinct_Subsequences/0115-distinct-subsequences.py"
+ },
+ {
+  "problem": "Edit Distance",
+  "pattern": "2-D Dynamic Programming",
+  "difficulty": "Medium",
+  "code": "0072-edit-distance",
+  "python": "_sources/leetcode/python/0072-edit-distance.py",
+  "article": "_sources/leetcode/articles/edit-distance.md",
+  "hint": "_sources/leetcode/hints/edit-distance.md",
+  "alt_python": "_sources/NeetCode-Solutions/14_2-D_Dynamic_Programming/09_Edit_Distance/0072-edit-distance.py"
+ },
+ {
+  "problem": "Burst Balloons",
+  "pattern": "2-D Dynamic Programming",
+  "difficulty": "Hard",
+  "code": "0312-burst-balloons",
+  "python": "_sources/leetcode/python/0312-burst-balloons.py",
+  "article": "_sources/leetcode/articles/burst-balloons.md",
+  "hint": "_sources/leetcode/hints/burst-balloons.md",
+  "alt_python": "_sources/NeetCode-Solutions/14_2-D_Dynamic_Programming/10_Burst_Balloons/0312-burst-balloons.py"
+ },
+ {
+  "problem": "Regular Expression Matching",
+  "pattern": "2-D Dynamic Programming",
+  "difficulty": "Hard",
+  "code": "0010-regular-expression-matching",
+  "python": "_sources/leetcode/python/0010-regular-expression-matching.py",
+  "article": "_sources/leetcode/articles/regular-expression-matching.md",
+  "hint": "_sources/leetcode/hints/regular-expression-matching.md",
+  "alt_python": "_sources/NeetCode-Solutions/14_2-D_Dynamic_Programming/11_Regular_Expression_Matching/0010-regular-expression-matching.py"
+ }
+]

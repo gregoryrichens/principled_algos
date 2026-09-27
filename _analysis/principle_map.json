@@ -1,0 +1,896 @@
+{
+ "217": {
+  "primary": 1,
+  "secondary": [],
+  "note": "set of seen values"
+ },
+ "242": {
+  "primary": 1,
+  "secondary": [],
+  "note": "count signature"
+ },
+ "1": {
+  "primary": 1,
+  "secondary": [
+   18
+  ],
+  "note": "look up the complement"
+ },
+ "49": {
+  "primary": 1,
+  "secondary": [],
+  "note": "canonical count tuple as key"
+ },
+ "347": {
+  "primary": 1,
+  "secondary": [
+   10
+  ],
+  "note": "count, then bucket-sort by frequency"
+ },
+ "238": {
+  "primary": 2,
+  "secondary": [],
+  "note": "prefix and suffix products"
+ },
+ "36": {
+  "primary": 1,
+  "secondary": [],
+  "note": "composite keys (row,val),(col,val),(box,val)"
+ },
+ "271": {
+  "primary": 18,
+  "secondary": [],
+  "note": "memorize: self-describing length-prefix encoding"
+ },
+ "128": {
+  "primary": 1,
+  "secondary": [],
+  "note": "set + start only at run beginnings"
+ },
+ "125": {
+  "primary": 5,
+  "secondary": [],
+  "note": "mirror pointers"
+ },
+ "167": {
+  "primary": 5,
+  "secondary": [],
+  "note": "sorted: discard one end per step"
+ },
+ "15": {
+  "primary": 5,
+  "secondary": [
+   9
+  ],
+  "note": "sort, fix one, two-pointer the rest, skip dups"
+ },
+ "11": {
+  "primary": 5,
+  "secondary": [
+   7
+  ],
+  "note": "drop the shorter wall (exchange argument)"
+ },
+ "42": {
+  "primary": 2,
+  "secondary": [
+   5
+  ],
+  "note": "running left/right max, advance smaller side"
+ },
+ "121": {
+  "primary": 2,
+  "secondary": [],
+  "note": "min so far"
+ },
+ "3": {
+  "primary": 8,
+  "secondary": [
+   1
+  ],
+  "note": "set is the window"
+ },
+ "424": {
+  "primary": 8,
+  "secondary": [],
+  "note": "valid iff len - maxFreq <= k"
+ },
+ "567": {
+  "primary": 8,
+  "secondary": [
+   1
+  ],
+  "note": "fixed window, count signature"
+ },
+ "76": {
+  "primary": 8,
+  "secondary": [
+   1
+  ],
+  "note": "have/need counters, shrink while valid"
+ },
+ "239": {
+  "primary": 6,
+  "secondary": [
+   8
+  ],
+  "note": "monotonic deque"
+ },
+ "20": {
+  "primary": 6,
+  "secondary": [],
+  "note": "nesting: match most recent open"
+ },
+ "155": {
+  "primary": 6,
+  "secondary": [
+   2
+  ],
+  "note": "parallel stack of running mins"
+ },
+ "150": {
+  "primary": 6,
+  "secondary": [],
+  "note": "operator consumes top two"
+ },
+ "22": {
+  "primary": 12,
+  "secondary": [],
+  "note": "prune with open<n, close<open"
+ },
+ "739": {
+  "primary": 6,
+  "secondary": [],
+  "note": "monotonic: next greater"
+ },
+ "853": {
+  "primary": 6,
+  "secondary": [
+   9,
+   18
+  ],
+  "note": "convert to arrival times, sort by position, collapsing stack"
+ },
+ "84": {
+  "primary": 6,
+  "secondary": [],
+  "note": "monotonic: nearest smaller on both sides"
+ },
+ "704": {
+  "primary": 4,
+  "secondary": [],
+  "note": "classic"
+ },
+ "74": {
+  "primary": 4,
+  "secondary": [
+   18
+  ],
+  "note": "flatten 2-D index"
+ },
+ "875": {
+  "primary": 4,
+  "secondary": [
+   18
+  ],
+  "note": "binary search the answer"
+ },
+ "153": {
+  "primary": 4,
+  "secondary": [],
+  "note": "which half is sorted"
+ },
+ "33": {
+  "primary": 4,
+  "secondary": [],
+  "note": "which half is sorted + range check"
+ },
+ "981": {
+  "primary": 4,
+  "secondary": [
+   1
+  ],
+  "note": "map to sorted list, floor search"
+ },
+ "4": {
+  "primary": 4,
+  "secondary": [
+   18
+  ],
+  "note": "memorize: partition search"
+ },
+ "206": {
+  "primary": 16,
+  "secondary": [],
+  "note": "reverse: save next"
+ },
+ "21": {
+  "primary": 16,
+  "secondary": [
+   5
+  ],
+  "note": "dummy head, two-pointer merge"
+ },
+ "143": {
+  "primary": 16,
+  "secondary": [
+   5
+  ],
+  "note": "middle (fast/slow), reverse second half, interleave"
+ },
+ "19": {
+  "primary": 16,
+  "secondary": [],
+  "note": "gap pointers + dummy"
+ },
+ "138": {
+  "primary": 16,
+  "secondary": [
+   1
+  ],
+  "note": "old->new map, two passes"
+ },
+ "2": {
+  "primary": 16,
+  "secondary": [
+   17
+  ],
+  "note": "digit simulation with carry"
+ },
+ "141": {
+  "primary": 16,
+  "secondary": [],
+  "note": "fast/slow"
+ },
+ "287": {
+  "primary": 16,
+  "secondary": [
+   18
+  ],
+  "note": "array as linked list, Floyd"
+ },
+ "146": {
+  "primary": 16,
+  "secondary": [
+   1
+  ],
+  "note": "doubly linked list with sentinels + hash map to nodes"
+ },
+ "23": {
+  "primary": 10,
+  "secondary": [
+   11,
+   16
+  ],
+  "note": "k-way merge heap or pairwise divide & conquer over pointer merges"
+ },
+ "25": {
+  "primary": 16,
+  "secondary": [],
+  "note": "reverse each block, relink"
+ },
+ "226": {
+  "primary": 11,
+  "secondary": [],
+  "note": "swap, recurse"
+ },
+ "104": {
+  "primary": 11,
+  "secondary": [],
+  "note": "1 + max(children)"
+ },
+ "543": {
+  "primary": 11,
+  "secondary": [],
+  "note": "return height, update global"
+ },
+ "110": {
+  "primary": 11,
+  "secondary": [],
+  "note": "return (balanced, height)"
+ },
+ "100": {
+  "primary": 11,
+  "secondary": [],
+  "note": "lockstep recursion"
+ },
+ "572": {
+  "primary": 11,
+  "secondary": [],
+  "note": "outer traversal, inner sameTree"
+ },
+ "235": {
+  "primary": 11,
+  "secondary": [
+   4
+  ],
+  "note": "BST order: one comparison discards a subtree"
+ },
+ "102": {
+  "primary": 11,
+  "secondary": [
+   13
+  ],
+  "note": "BFS, snapshot queue length"
+ },
+ "199": {
+  "primary": 11,
+  "secondary": [
+   13
+  ],
+  "note": "BFS, last node per level"
+ },
+ "1448": {
+  "primary": 11,
+  "secondary": [],
+  "note": "pass running max down"
+ },
+ "98": {
+  "primary": 11,
+  "secondary": [],
+  "note": "pass (low, high) down"
+ },
+ "230": {
+  "primary": 11,
+  "secondary": [
+   4
+  ],
+  "note": "in-order is sorted; stop at k"
+ },
+ "105": {
+  "primary": 11,
+  "secondary": [
+   1
+  ],
+  "note": "preorder head is root; map for inorder index"
+ },
+ "124": {
+  "primary": 11,
+  "secondary": [],
+  "note": "return one-branch sum, update global with both"
+ },
+ "297": {
+  "primary": 11,
+  "secondary": [],
+  "note": "preorder with null markers"
+ },
+ "208": {
+  "primary": 1,
+  "secondary": [],
+  "note": "trie = hash keyed by prefix"
+ },
+ "211": {
+  "primary": 1,
+  "secondary": [
+   12
+  ],
+  "note": "trie + branch on wildcard"
+ },
+ "212": {
+  "primary": 12,
+  "secondary": [
+   1,
+   13
+  ],
+  "note": "trie-guided grid backtracking"
+ },
+ "703": {
+  "primary": 10,
+  "secondary": [],
+  "note": "bounded min-heap of size k"
+ },
+ "1046": {
+  "primary": 10,
+  "secondary": [],
+  "note": "live max oracle"
+ },
+ "973": {
+  "primary": 10,
+  "secondary": [],
+  "note": "k best by derived key"
+ },
+ "215": {
+  "primary": 10,
+  "secondary": [],
+  "note": "bounded heap, quickselect, or sort"
+ },
+ "621": {
+  "primary": 7,
+  "secondary": [
+   10,
+   18
+  ],
+  "note": "most-frequent-first; closed form max(len, (maxf-1)*(n+1)+countMaxf), or heap + cooldown queue"
+ },
+ "355": {
+  "primary": 10,
+  "secondary": [
+   1
+  ],
+  "note": "k-way merge of followee lists"
+ },
+ "295": {
+  "primary": 10,
+  "secondary": [],
+  "note": "two heaps"
+ },
+ "78": {
+  "primary": 12,
+  "secondary": [],
+  "note": "include/exclude"
+ },
+ "39": {
+  "primary": 12,
+  "secondary": [],
+  "note": "reuse index, prune on sum"
+ },
+ "46": {
+  "primary": 12,
+  "secondary": [],
+  "note": "pick any unused"
+ },
+ "90": {
+  "primary": 12,
+  "secondary": [
+   9
+  ],
+  "note": "sort, skip dups at same level"
+ },
+ "40": {
+  "primary": 12,
+  "secondary": [
+   9
+  ],
+  "note": "sort, skip dups, prune on sum"
+ },
+ "79": {
+  "primary": 12,
+  "secondary": [
+   13
+  ],
+  "note": "grid DFS with path set"
+ },
+ "131": {
+  "primary": 12,
+  "secondary": [],
+  "note": "partition points, prune non-palindromes"
+ },
+ "17": {
+  "primary": 12,
+  "secondary": [],
+  "note": "cartesian product"
+ },
+ "51": {
+  "primary": 12,
+  "secondary": [
+   1
+  ],
+  "note": "conflict sets for O(1) checks"
+ },
+ "200": {
+  "primary": 13,
+  "secondary": [],
+  "note": "flood fill"
+ },
+ "133": {
+  "primary": 13,
+  "secondary": [
+   1
+  ],
+  "note": "old->new map as visited"
+ },
+ "695": {
+  "primary": 13,
+  "secondary": [],
+  "note": "flood fill returns size"
+ },
+ "417": {
+  "primary": 13,
+  "secondary": [
+   18
+  ],
+  "note": "search uphill from the oceans"
+ },
+ "130": {
+  "primary": 13,
+  "secondary": [
+   18
+  ],
+  "note": "search from the border"
+ },
+ "994": {
+  "primary": 13,
+  "secondary": [],
+  "note": "multi-source BFS, layer = minute"
+ },
+ "286": {
+  "primary": 13,
+  "secondary": [
+   18
+  ],
+  "note": "multi-source BFS from gates"
+ },
+ "207": {
+  "primary": 14,
+  "secondary": [],
+  "note": "cycle detection via on-path set"
+ },
+ "210": {
+  "primary": 14,
+  "secondary": [],
+  "note": "post-order = topological order"
+ },
+ "684": {
+  "primary": 14,
+  "secondary": [],
+  "note": "first union that fails"
+ },
+ "323": {
+  "primary": 14,
+  "secondary": [],
+  "note": "count successful unions"
+ },
+ "261": {
+  "primary": 14,
+  "secondary": [
+   13
+  ],
+  "note": "n-1 edges + connected"
+ },
+ "127": {
+  "primary": 13,
+  "secondary": [
+   1,
+   18
+  ],
+  "note": "BFS on words; wildcard buckets"
+ },
+ "332": {
+  "primary": 13,
+  "secondary": [
+   9
+  ],
+  "note": "memorize: Hierholzer (sort adjacency, consume edges, post-order, reverse); pure greedy fails"
+ },
+ "1584": {
+  "primary": 15,
+  "secondary": [
+   14,
+   7,
+   10,
+   9
+  ],
+  "note": "Prim (heap frontier) or Kruskal (sort edges + DSU); cut property"
+ },
+ "743": {
+  "primary": 15,
+  "secondary": [
+   10
+  ],
+  "note": "Dijkstra"
+ },
+ "778": {
+  "primary": 15,
+  "secondary": [
+   10
+  ],
+  "note": "Dijkstra with max combiner"
+ },
+ "269": {
+  "primary": 14,
+  "secondary": [
+   18
+  ],
+  "note": "extract edges from adjacent words, topo sort"
+ },
+ "787": {
+  "primary": 15,
+  "secondary": [],
+  "note": "Bellman-Ford, k+1 rounds"
+ },
+ "70": {
+  "primary": 3,
+  "secondary": [],
+  "note": "sum of 2 predecessors, rolling vars"
+ },
+ "746": {
+  "primary": 3,
+  "secondary": [],
+  "note": "min of 2 predecessors"
+ },
+ "198": {
+  "primary": 3,
+  "secondary": [],
+  "note": "take/skip, rolling vars"
+ },
+ "213": {
+  "primary": 3,
+  "secondary": [
+   18
+  ],
+  "note": "two linear runs"
+ },
+ "5": {
+  "primary": 5,
+  "secondary": [
+   3
+  ],
+  "note": "center expansion: pointers expand outward from each center (O(1) space instead of an interval table)"
+ },
+ "647": {
+  "primary": 5,
+  "secondary": [
+   3
+  ],
+  "note": "center expansion, count palindromes per center"
+ },
+ "91": {
+  "primary": 3,
+  "secondary": [],
+  "note": "gated Fibonacci"
+ },
+ "322": {
+  "primary": 3,
+  "secondary": [],
+  "note": "unbounded knapsack, min"
+ },
+ "152": {
+  "primary": 2,
+  "secondary": [
+   3
+  ],
+  "note": "memorize: track running max and min"
+ },
+ "139": {
+  "primary": 3,
+  "secondary": [],
+  "note": "OR over dictionary words"
+ },
+ "300": {
+  "primary": 3,
+  "secondary": [],
+  "note": "max over all smaller predecessors"
+ },
+ "416": {
+  "primary": 3,
+  "secondary": [],
+  "note": "0/1 knapsack, reachable sums"
+ },
+ "62": {
+  "primary": 3,
+  "secondary": [],
+  "note": "sum of up and left, rolling row"
+ },
+ "1143": {
+  "primary": 3,
+  "secondary": [],
+  "note": "two-sequence grid, max"
+ },
+ "309": {
+  "primary": 3,
+  "secondary": [],
+  "note": "state machine: holding flag"
+ },
+ "518": {
+  "primary": 3,
+  "secondary": [],
+  "note": "unbounded knapsack, count, coin-outer loop"
+ },
+ "494": {
+  "primary": 3,
+  "secondary": [
+   18,
+   12
+  ],
+  "note": "memo on (i,total), or subset-sum reduction with parity/bound guards"
+ },
+ "97": {
+  "primary": 3,
+  "secondary": [],
+  "note": "two-sequence grid, OR; k = i+j"
+ },
+ "329": {
+  "primary": 3,
+  "secondary": [
+   13
+  ],
+  "note": "memoized DFS on implicit DAG"
+ },
+ "115": {
+  "primary": 3,
+  "secondary": [],
+  "note": "two-sequence grid, sum"
+ },
+ "72": {
+  "primary": 3,
+  "secondary": [],
+  "note": "two-sequence grid, 1+min"
+ },
+ "312": {
+  "primary": 3,
+  "secondary": [
+   18
+  ],
+  "note": "interval DP, pivot on last"
+ },
+ "10": {
+  "primary": 3,
+  "secondary": [],
+  "note": "two-sequence grid, OR, star transition"
+ },
+ "53": {
+  "primary": 7,
+  "secondary": [
+   2,
+   3
+  ],
+  "note": "reset on negative (Kadane)"
+ },
+ "55": {
+  "primary": 7,
+  "secondary": [
+   18
+  ],
+  "note": "frontier from the end"
+ },
+ "45": {
+  "primary": 7,
+  "secondary": [
+   13
+  ],
+  "note": "frontier per layer = BFS"
+ },
+ "134": {
+  "primary": 7,
+  "secondary": [],
+  "note": "reset on negative + total check"
+ },
+ "846": {
+  "primary": 7,
+  "secondary": [
+   9
+  ],
+  "note": "smallest card starts a run"
+ },
+ "1899": {
+  "primary": 7,
+  "secondary": [],
+  "note": "discard triplets exceeding target"
+ },
+ "763": {
+  "primary": 7,
+  "secondary": [
+   2
+  ],
+  "note": "extend to farthest last index"
+ },
+ "678": {
+  "primary": 7,
+  "secondary": [
+   18
+  ],
+  "note": "range of open counts"
+ },
+ "57": {
+  "primary": 9,
+  "secondary": [],
+  "note": "already sorted; one pass"
+ },
+ "56": {
+  "primary": 9,
+  "secondary": [],
+  "note": "sort by start, merge with last"
+ },
+ "435": {
+  "primary": 7,
+  "secondary": [
+   9
+  ],
+  "note": "sort, keep earliest end"
+ },
+ "252": {
+  "primary": 9,
+  "secondary": [],
+  "note": "sort, compare neighbors"
+ },
+ "253": {
+  "primary": 9,
+  "secondary": [
+   10
+  ],
+  "note": "sweep line +1/-1, or min-heap of end times"
+ },
+ "1851": {
+  "primary": 9,
+  "secondary": [
+   10
+  ],
+  "note": "sort both, heap of active intervals"
+ },
+ "48": {
+  "primary": 17,
+  "secondary": [],
+  "note": "transpose + reverse rows"
+ },
+ "54": {
+  "primary": 5,
+  "secondary": [
+   17
+  ],
+  "note": "four boundary pointers converging inward"
+ },
+ "73": {
+  "primary": 17,
+  "secondary": [],
+  "note": "first row/col as markers"
+ },
+ "202": {
+  "primary": 16,
+  "secondary": [
+   18
+  ],
+  "note": "implicit list, Floyd"
+ },
+ "66": {
+  "primary": 17,
+  "secondary": [],
+  "note": "carry from the right"
+ },
+ "50": {
+  "primary": 17,
+  "secondary": [
+   11
+  ],
+  "note": "square and halve"
+ },
+ "43": {
+  "primary": 17,
+  "secondary": [],
+  "note": "positional accumulator"
+ },
+ "2013": {
+  "primary": 1,
+  "secondary": [
+   18
+  ],
+  "note": "diagonal partner forces the corners; exclude x == px"
+ },
+ "136": {
+  "primary": 17,
+  "secondary": [],
+  "note": "XOR cancels pairs"
+ },
+ "191": {
+  "primary": 17,
+  "secondary": [],
+  "note": "n & (n-1)"
+ },
+ "338": {
+  "primary": 3,
+  "secondary": [
+   17
+  ],
+  "note": "dp[i] = dp[i>>1] + (i&1)"
+ },
+ "190": {
+  "primary": 17,
+  "secondary": [],
+  "note": "shift bits across"
+ },
+ "268": {
+  "primary": 17,
+  "secondary": [],
+  "note": "XOR indices vs values"
+ },
+ "371": {
+  "primary": 17,
+  "secondary": [],
+  "note": "XOR sum, AND carry"
+ },
+ "7": {
+  "primary": 17,
+  "secondary": [],
+  "note": "check overflow before multiply"
+ }
+}

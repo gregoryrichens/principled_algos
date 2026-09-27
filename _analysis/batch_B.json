@@ -1,0 +1,312 @@
+[
+ {
+  "problem": "Binary Search",
+  "pattern": "Binary Search",
+  "difficulty": "Easy",
+  "code": "0704-binary-search",
+  "python": "_sources/leetcode/python/0704-binary-search.py",
+  "article": "_sources/leetcode/articles/binary-search.md",
+  "hint": "_sources/leetcode/hints/binary-search.md",
+  "alt_python": "_sources/NeetCode-Solutions/05_Binary_Search/01_Binary_Search/0704-binary-search.py"
+ },
+ {
+  "problem": "Search a 2D Matrix",
+  "pattern": "Binary Search",
+  "difficulty": "Medium",
+  "code": "0074-search-a-2d-matrix",
+  "python": "_sources/leetcode/python/0074-search-a-2d-matrix.py",
+  "article": "_sources/leetcode/articles/search-2d-matrix.md",
+  "hint": "_sources/leetcode/hints/search-2d-matrix.md",
+  "alt_python": "_sources/NeetCode-Solutions/05_Binary_Search/02_Search_a_2D_Matrix/0074-search-a-2d-matrix.py"
+ },
+ {
+  "problem": "Koko Eating Bananas",
+  "pattern": "Binary Search",
+  "difficulty": "Medium",
+  "code": "0875-koko-eating-bananas",
+  "python": "_sources/leetcode/python/0875-koko-eating-bananas.py",
+  "article": "_sources/leetcode/articles/eating-bananas.md",
+  "hint": "_sources/leetcode/hints/eating-bananas.md",
+  "alt_python": "_sources/NeetCode-Solutions/05_Binary_Search/03_Koko_Eating_Bananas/0875-koko-eating-bananas.py"
+ },
+ {
+  "problem": "Find Minimum In Rotated Sorted Array",
+  "pattern": "Binary Search",
+  "difficulty": "Medium",
+  "code": "0153-find-minimum-in-rotated-sorted-array",
+  "python": "_sources/leetcode/python/0153-find-minimum-in-rotated-sorted-array.py",
+  "article": "_sources/leetcode/articles/find-minimum-in-rotated-sorted-array.md",
+  "hint": "_sources/leetcode/hints/find-minimum-in-rotated-sorted-array.md",
+  "alt_python": "_sources/NeetCode-Solutions/05_Binary_Search/04_Find_Minimum_In_Rotated_Sorted_Array/0153-find-minimum-in-rotated-sorted-array.py"
+ },
+ {
+  "problem": "Search In Rotated Sorted Array",
+  "pattern": "Binary Search",
+  "difficulty": "Medium",
+  "code": "0033-search-in-rotated-sorted-array",
+  "python": "_sources/leetcode/python/0033-search-in-rotated-sorted-array.py",
+  "article": "_sources/leetcode/articles/find-target-in-rotated-sorted-array.md",
+  "hint": "_sources/leetcode/hints/find-target-in-rotated-sorted-array.md",
+  "alt_python": "_sources/NeetCode-Solutions/05_Binary_Search/05_Search_In_Rotated_Sorted_Array/0033-search-in-rotated-sorted-array.py"
+ },
+ {
+  "problem": "Time Based Key Value Store",
+  "pattern": "Binary Search",
+  "difficulty": "Medium",
+  "code": "0981-time-based-key-value-store",
+  "python": "_sources/leetcode/python/0981-time-based-key-value-store.py",
+  "article": "_sources/leetcode/articles/time-based-key-value-store.md",
+  "hint": "_sources/leetcode/hints/time-based-key-value-store.md",
+  "alt_python": "_sources/NeetCode-Solutions/05_Binary_Search/06_Time_Based_Key_Value_Store/0981-time-based-key-value-store.py"
+ },
+ {
+  "problem": "Median of Two Sorted Arrays",
+  "pattern": "Binary Search",
+  "difficulty": "Hard",
+  "code": "0004-median-of-two-sorted-arrays",
+  "python": "_sources/leetcode/python/0004-median-of-two-sorted-arrays.py",
+  "article": "_sources/leetcode/articles/median-of-two-sorted-arrays.md",
+  "hint": "_sources/leetcode/hints/median-of-two-sorted-arrays.md",
+  "alt_python": "_sources/NeetCode-Solutions/05_Binary_Search/07_Median_of_Two_Sorted_Arrays/0004-median-of-two-sorted-arrays.py"
+ },
+ {
+  "problem": "Reverse Linked List",
+  "pattern": "Linked List",
+  "difficulty": "Easy",
+  "code": "0206-reverse-linked-list",
+  "python": "_sources/leetcode/python/0206-reverse-linked-list.py",
+  "article": "_sources/leetcode/articles/reverse-a-linked-list.md",
+  "hint": "_sources/leetcode/hints/reverse-a-linked-list.md",
+  "alt_python": "_sources/NeetCode-Solutions/06_Linked_List/01_Reverse_Linked_List/0206-reverse-linked-list.py"
+ },
+ {
+  "problem": "Merge Two Sorted Lists",
+  "pattern": "Linked List",
+  "difficulty": "Easy",
+  "code": "0021-merge-two-sorted-lists",
+  "python": "_sources/leetcode/python/0021-merge-two-sorted-lists.py",
+  "article": "_sources/leetcode/articles/merge-two-sorted-linked-lists.md",
+  "hint": "_sources/leetcode/hints/merge-two-sorted-linked-lists.md",
+  "alt_python": "_sources/NeetCode-Solutions/06_Linked_List/02_Merge_Two_Sorted_Lists/0021-merge-two-sorted-lists.py"
+ },
+ {
+  "problem": "Reorder List",
+  "pattern": "Linked List",
+  "difficulty": "Medium",
+  "code": "0143-reorder-list",
+  "python": "_sources/leetcode/python/0143-reorder-list.py",
+  "article": "_sources/leetcode/articles/reorder-linked-list.md",
+  "hint": "_sources/leetcode/hints/reorder-linked-list.md",
+  "alt_python": "_sources/NeetCode-Solutions/06_Linked_List/03_Reorder_List/0143-reorder-list.py"
+ },
+ {
+  "problem": "Remove Nth Node From End of List",
+  "pattern": "Linked List",
+  "difficulty": "Medium",
+  "code": "0019-remove-nth-node-from-end-of-list",
+  "python": "_sources/leetcode/python/0019-remove-nth-node-from-end-of-list.py",
+  "article": "_sources/leetcode/articles/remove-node-from-end-of-linked-list.md",
+  "hint": "_sources/leetcode/hints/remove-node-from-end-of-linked-list.md",
+  "alt_python": "_sources/NeetCode-Solutions/06_Linked_List/04_Remove_Nth_Node_From_End_of_List/0019-remove-nth-node-from-end-of-list.py"
+ },
+ {
+  "problem": "Copy List With Random Pointer",
+  "pattern": "Linked List",
+  "difficulty": "Medium",
+  "code": "0138-copy-list-with-random-pointer",
+  "python": "_sources/leetcode/python/0138-copy-list-with-random-pointer.py",
+  "article": "_sources/leetcode/articles/copy-linked-list-with-random-pointer.md",
+  "hint": "_sources/leetcode/hints/copy-linked-list-with-random-pointer.md",
+  "alt_python": "_sources/NeetCode-Solutions/06_Linked_List/05_Copy_List_With_Random_Pointer/0138-copy-list-with-random-pointer.py"
+ },
+ {
+  "problem": "Add Two Numbers",
+  "pattern": "Linked List",
+  "difficulty": "Medium",
+  "code": "0002-add-two-numbers",
+  "python": "_sources/leetcode/python/0002-add-two-numbers.py",
+  "article": "_sources/leetcode/articles/add-two-numbers.md",
+  "hint": "_sources/leetcode/hints/add-two-numbers.md",
+  "alt_python": "_sources/NeetCode-Solutions/06_Linked_List/06_Add_Two_Numbers/0002-add-two-numbers.py"
+ },
+ {
+  "problem": "Linked List Cycle",
+  "pattern": "Linked List",
+  "difficulty": "Easy",
+  "code": "0141-linked-list-cycle",
+  "python": "_sources/leetcode/python/0141-linked-list-cycle.py",
+  "article": "_sources/leetcode/articles/linked-list-cycle-detection.md",
+  "hint": "_sources/leetcode/hints/linked-list-cycle-detection.md",
+  "alt_python": "_sources/NeetCode-Solutions/06_Linked_List/07_Linked_List_Cycle/0141-linked-list-cycle.py"
+ },
+ {
+  "problem": "Find The Duplicate Number",
+  "pattern": "Linked List",
+  "difficulty": "Medium",
+  "code": "0287-find-the-duplicate-number",
+  "python": "_sources/leetcode/python/0287-find-the-duplicate-number.py",
+  "article": "_sources/leetcode/articles/duplicate-integer.md",
+  "hint": "_sources/leetcode/hints/duplicate-integer.md",
+  "alt_python": "_sources/NeetCode-Solutions/06_Linked_List/08_Find_The_Duplicate_Number/0287-find-the-duplicate-number.py"
+ },
+ {
+  "problem": "LRU Cache",
+  "pattern": "Linked List",
+  "difficulty": "Medium",
+  "code": "0146-lru-cache",
+  "python": "_sources/leetcode/python/0146-lru-cache.py",
+  "article": "_sources/leetcode/articles/lru-cache.md",
+  "hint": "_sources/leetcode/hints/lru-cache.md",
+  "alt_python": "_sources/NeetCode-Solutions/06_Linked_List/09_LRU_Cache/0146-lru-cache.py"
+ },
+ {
+  "problem": "Merge K Sorted Lists",
+  "pattern": "Linked List",
+  "difficulty": "Hard",
+  "code": "0023-merge-k-sorted-lists",
+  "python": "_sources/leetcode/python/0023-merge-k-sorted-lists.py",
+  "article": "_sources/leetcode/articles/merge-k-sorted-linked-lists.md",
+  "hint": "_sources/leetcode/hints/merge-k-sorted-linked-lists.md",
+  "alt_python": "_sources/NeetCode-Solutions/06_Linked_List/10_Merge_K_Sorted_Lists/0023-merge-k-sorted-lists.py"
+ },
+ {
+  "problem": "Reverse Nodes In K Group",
+  "pattern": "Linked List",
+  "difficulty": "Hard",
+  "code": "0025-reverse-nodes-in-k-group",
+  "python": "_sources/leetcode/python/0025-reverse-nodes-in-k-group.py",
+  "article": "_sources/leetcode/articles/reverse-nodes-in-k-group.md",
+  "hint": "_sources/leetcode/hints/reverse-nodes-in-k-group.md",
+  "alt_python": "_sources/NeetCode-Solutions/06_Linked_List/11_Reverse_Nodes_In_K_Group/0025-reverse-nodes-in-k-group.py"
+ },
+ {
+  "problem": "Kth Largest Element In a Stream",
+  "pattern": "Heap / Priority Queue",
+  "difficulty": "Easy",
+  "code": "0703-kth-largest-element-in-a-stream",
+  "python": "_sources/leetcode/python/0703-kth-largest-element-in-a-stream.py",
+  "article": "_sources/leetcode/articles/kth-largest-integer-in-a-stream.md",
+  "hint": "_sources/leetcode/hints/kth-largest-integer-in-a-stream.md",
+  "alt_python": "_sources/NeetCode-Solutions/09_Heap_Priority_Queues/01_Kth_Largest_Element_in_a_Stream/0703-kth-largest-element-in-a-stream.py"
+ },
+ {
+  "problem": "Last Stone Weight",
+  "pattern": "Heap / Priority Queue",
+  "difficulty": "Easy",
+  "code": "1046-last-stone-weight",
+  "python": "_sources/leetcode/python/1046-last-stone-weight.py",
+  "article": "_sources/leetcode/articles/last-stone-weight.md",
+  "hint": "_sources/leetcode/hints/last-stone-weight.md",
+  "alt_python": "_sources/NeetCode-Solutions/09_Heap_Priority_Queues/02_Last_Stone_Weight/1046-last-stone-weight.py"
+ },
+ {
+  "problem": "K Closest Points to Origin",
+  "pattern": "Heap / Priority Queue",
+  "difficulty": "Medium",
+  "code": "0973-k-closest-points-to-origin",
+  "python": "_sources/leetcode/python/0973-k-closest-points-to-origin.py",
+  "article": "_sources/leetcode/articles/k-closest-points-to-origin.md",
+  "hint": "_sources/leetcode/hints/k-closest-points-to-origin.md",
+  "alt_python": "_sources/NeetCode-Solutions/09_Heap_Priority_Queues/03_K_Closest_Points_to_Origin/0973-k-closest-points-to-origin.py"
+ },
+ {
+  "problem": "Kth Largest Element In An Array",
+  "pattern": "Heap / Priority Queue",
+  "difficulty": "Medium",
+  "code": "0215-kth-largest-element-in-an-array",
+  "python": "_sources/leetcode/python/0215-kth-largest-element-in-an-array.py",
+  "article": "_sources/leetcode/articles/kth-largest-element-in-an-array.md",
+  "hint": "_sources/leetcode/hints/kth-largest-element-in-an-array.md",
+  "alt_python": "_sources/NeetCode-Solutions/09_Heap_Priority_Queues/04_Kth_Largest_Element_in_an_Array/0215-kth-largest-element-in-an-array.py"
+ },
+ {
+  "problem": "Task Scheduler",
+  "pattern": "Heap / Priority Queue",
+  "difficulty": "Medium",
+  "code": "0621-task-scheduler",
+  "python": "_sources/leetcode/python/0621-task-scheduler.py",
+  "article": "_sources/leetcode/articles/task-scheduling.md",
+  "hint": "_sources/leetcode/hints/task-scheduling.md",
+  "alt_python": "_sources/NeetCode-Solutions/09_Heap_Priority_Queues/05_Task_Scheduler/0621-task-scheduler.py"
+ },
+ {
+  "problem": "Design Twitter",
+  "pattern": "Heap / Priority Queue",
+  "difficulty": "Medium",
+  "code": "0355-design-twitter",
+  "python": "_sources/leetcode/python/0355-design-twitter.py",
+  "article": "_sources/leetcode/articles/design-twitter-feed.md",
+  "hint": "_sources/leetcode/hints/design-twitter-feed.md",
+  "alt_python": "_sources/NeetCode-Solutions/09_Heap_Priority_Queues/06_Design_Twitter/0355-design-twitter.py"
+ },
+ {
+  "problem": "Find Median From Data Stream",
+  "pattern": "Heap / Priority Queue",
+  "difficulty": "Hard",
+  "code": "0295-find-median-from-data-stream",
+  "python": "_sources/leetcode/python/0295-find-median-from-data-stream.py",
+  "article": "_sources/leetcode/articles/find-median-in-a-data-stream.md",
+  "hint": "_sources/leetcode/hints/find-median-in-a-data-stream.md",
+  "alt_python": "_sources/NeetCode-Solutions/09_Heap_Priority_Queues/07_Find_Median_from_Data_Stream/0295-find-median-from-data-stream.py"
+ },
+ {
+  "problem": "Insert Interval",
+  "pattern": "Intervals",
+  "difficulty": "Medium",
+  "code": "0057-insert-interval",
+  "python": "_sources/leetcode/python/0057-insert-interval.py",
+  "article": "_sources/leetcode/articles/insert-new-interval.md",
+  "hint": "_sources/leetcode/hints/insert-new-interval.md",
+  "alt_python": "_sources/NeetCode-Solutions/16_Intervals/01_Insert_Interval/0057-insert-interval.py"
+ },
+ {
+  "problem": "Merge Intervals",
+  "pattern": "Intervals",
+  "difficulty": "Medium",
+  "code": "0056-merge-intervals",
+  "python": "_sources/leetcode/python/0056-merge-intervals.py",
+  "article": "_sources/leetcode/articles/merge-intervals.md",
+  "hint": "_sources/leetcode/hints/merge-intervals.md",
+  "alt_python": "_sources/NeetCode-Solutions/16_Intervals/02_Merge_Intervals/0056-merge-intervals.py"
+ },
+ {
+  "problem": "Non Overlapping Intervals",
+  "pattern": "Intervals",
+  "difficulty": "Medium",
+  "code": "0435-non-overlapping-intervals",
+  "python": "_sources/leetcode/python/0435-non-overlapping-intervals.py",
+  "article": "_sources/leetcode/articles/non-overlapping-intervals.md",
+  "hint": "_sources/leetcode/hints/non-overlapping-intervals.md",
+  "alt_python": "_sources/NeetCode-Solutions/16_Intervals/03_Non_Overlapping_Intervals/0435-non-overlapping-intervals.py"
+ },
+ {
+  "problem": "Meeting Rooms",
+  "pattern": "Intervals",
+  "difficulty": "Easy",
+  "code": "0252-meeting-rooms",
+  "python": "_sources/leetcode/python/0252-meeting-rooms.py",
+  "article": "_sources/leetcode/articles/meeting-schedule.md",
+  "hint": "_sources/leetcode/hints/meeting-schedule.md",
+  "alt_python": "_sources/NeetCode-Solutions/16_Intervals/04_Meeting_Rooms/0252-meeting-rooms.py"
+ },
+ {
+  "problem": "Meeting Rooms II",
+  "pattern": "Intervals",
+  "difficulty": "Medium",
+  "code": "0253-meeting-rooms-ii",
+  "python": "_sources/leetcode/python/0253-meeting-rooms-ii.py",
+  "article": "_sources/leetcode/articles/meeting-schedule-ii.md",
+  "hint": "_sources/leetcode/hints/meeting-schedule-ii.md",
+  "alt_python": "_sources/NeetCode-Solutions/16_Intervals/05_Meeting_Rooms_II/0253-meeting-rooms-ii.py"
+ },
+ {
+  "problem": "Minimum Interval to Include Each Query",
+  "pattern": "Intervals",
+  "difficulty": "Hard",
+  "code": "1851-minimum-interval-to-include-each-query",
+  "python": "_sources/leetcode/python/1851-minimum-interval-to-include-each-query.py",
+  "article": "_sources/leetcode/articles/minimum-interval-including-query.md",
+  "hint": "_sources/leetcode/hints/minimum-interval-including-query.md",
+  "alt_python": "_sources/NeetCode-Solutions/16_Intervals/06_Minimum_Interval_to_Include_Each_Query/1851-minimum-interval-to-include-each-query.py"
+ }
+]

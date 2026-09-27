@@ -1,0 +1,192 @@
+[
+ {
+  "problem": "Number of Islands",
+  "pattern": "Graphs",
+  "difficulty": "Medium",
+  "code": "0200-number-of-islands",
+  "python": "_sources/leetcode/python/0200-number-of-islands.py",
+  "article": "_sources/leetcode/articles/count-number-of-islands.md",
+  "hint": "_sources/leetcode/hints/count-number-of-islands.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/01_Number_of_Islands/0200-number-of-islands.py"
+ },
+ {
+  "problem": "Clone Graph",
+  "pattern": "Graphs",
+  "difficulty": "Medium",
+  "code": "0133-clone-graph",
+  "python": "_sources/leetcode/python/0133-clone-graph.py",
+  "article": "_sources/leetcode/articles/clone-graph.md",
+  "hint": "_sources/leetcode/hints/clone-graph.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/02_Clone_Graph/0133-clone-graph.py"
+ },
+ {
+  "problem": "Max Area of Island",
+  "pattern": "Graphs",
+  "difficulty": "Medium",
+  "code": "0695-max-area-of-island",
+  "python": "_sources/leetcode/python/0695-max-area-of-island.py",
+  "article": "_sources/leetcode/articles/max-area-of-island.md",
+  "hint": "_sources/leetcode/hints/max-area-of-island.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/03_Max_Area_of_Island/0695-max-area-of-island.py"
+ },
+ {
+  "problem": "Pacific Atlantic Water Flow",
+  "pattern": "Graphs",
+  "difficulty": "Medium",
+  "code": "0417-pacific-atlantic-water-flow",
+  "python": "_sources/leetcode/python/0417-pacific-atlantic-water-flow.py",
+  "article": "_sources/leetcode/articles/pacific-atlantic-water-flow.md",
+  "hint": "_sources/leetcode/hints/pacific-atlantic-water-flow.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/04_Pacific_Atlantic_Water_Flow/0417-pacific-atlantic-water-flow.py"
+ },
+ {
+  "problem": "Surrounded Regions",
+  "pattern": "Graphs",
+  "difficulty": "Medium",
+  "code": "0130-surrounded-regions",
+  "python": "_sources/leetcode/python/0130-surrounded-regions.py",
+  "article": "_sources/leetcode/articles/surrounded-regions.md",
+  "hint": "_sources/leetcode/hints/surrounded-regions.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/05_Surrounded_Regions/0130-surrounded-regions.py"
+ },
+ {
+  "problem": "Rotting Oranges",
+  "pattern": "Graphs",
+  "difficulty": "Medium",
+  "code": "0994-rotting-oranges",
+  "python": "_sources/leetcode/python/0994-rotting-oranges.py",
+  "article": "_sources/leetcode/articles/rotting-fruit.md",
+  "hint": "_sources/leetcode/hints/rotting-fruit.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/06_Rotting_Oranges/0994-rotting-oranges.py"
+ },
+ {
+  "problem": "Walls And Gates",
+  "pattern": "Graphs",
+  "difficulty": "Medium",
+  "code": "0286-walls-and-gates",
+  "python": "_sources/leetcode/python/0286-walls-and-gates.py",
+  "article": "_sources/leetcode/articles/islands-and-treasure.md",
+  "hint": "_sources/leetcode/hints/islands-and-treasure.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/07_Walls_and_Gates/0286-walls-and-gates.py"
+ },
+ {
+  "problem": "Course Schedule",
+  "pattern": "Graphs",
+  "difficulty": "Medium",
+  "code": "0207-course-schedule",
+  "python": "_sources/leetcode/python/0207-course-schedule.py",
+  "article": "_sources/leetcode/articles/course-schedule.md",
+  "hint": "_sources/leetcode/hints/course-schedule.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/08_Course_Schedule/0207-course-schedule.py"
+ },
+ {
+  "problem": "Course Schedule II",
+  "pattern": "Graphs",
+  "difficulty": "Medium",
+  "code": "0210-course-schedule-ii",
+  "python": "_sources/leetcode/python/0210-course-schedule-ii.py",
+  "article": "_sources/leetcode/articles/course-schedule-ii.md",
+  "hint": "_sources/leetcode/hints/course-schedule-ii.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/09_Course_Schedule_II/0210-course-schedule-ii.py"
+ },
+ {
+  "problem": "Redundant Connection",
+  "pattern": "Graphs",
+  "difficulty": "Medium",
+  "code": "0684-redundant-connection",
+  "python": "_sources/leetcode/python/0684-redundant-connection.py",
+  "article": "_sources/leetcode/articles/redundant-connection.md",
+  "hint": "_sources/leetcode/hints/redundant-connection.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/10_Redundant_Connection/0684-redundant-connection.py"
+ },
+ {
+  "problem": "Number of Connected Components In An Undirected Graph",
+  "pattern": "Graphs",
+  "difficulty": "Medium",
+  "code": "0323-number-of-connected-components-in-an-undirected-graph",
+  "python": "_sources/leetcode/python/0323-number-of-connected-components-in-an-undirected-graph.py",
+  "article": "_sources/leetcode/articles/count-connected-components.md",
+  "hint": "_sources/leetcode/hints/count-connected-components.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/11_Number_of_Connected_Components_in_an_Undirected_Graph/0323-number-of-connected-components-in-an-undirected-graph.py"
+ },
+ {
+  "problem": "Graph Valid Tree",
+  "pattern": "Graphs",
+  "difficulty": "Medium",
+  "code": "0261-graph-valid-tree",
+  "python": "_sources/leetcode/python/0261-graph-valid-tree.py",
+  "article": "_sources/leetcode/articles/valid-tree.md",
+  "hint": "_sources/leetcode/hints/valid-tree.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/12_Graph_Valid_Tree/0261-graph-valid-tree.py"
+ },
+ {
+  "problem": "Word Ladder",
+  "pattern": "Graphs",
+  "difficulty": "Hard",
+  "code": "0127-word-ladder",
+  "python": "_sources/leetcode/python/0127-word-ladder.py",
+  "article": "_sources/leetcode/articles/word-ladder.md",
+  "hint": "_sources/leetcode/hints/word-ladder.md",
+  "alt_python": "_sources/NeetCode-Solutions/11_Graphs/13_Word_Ladder/0127-word-ladder.py"
+ },
+ {
+  "problem": "Reconstruct Itinerary",
+  "pattern": "Advanced Graphs",
+  "difficulty": "Hard",
+  "code": "0332-reconstruct-itinerary",
+  "python": "_sources/leetcode/python/0332-reconstruct-itinerary.py",
+  "article": "_sources/leetcode/articles/reconstruct-flight-path.md",
+  "hint": "_sources/leetcode/hints/reconstruct-flight-path.md",
+  "alt_python": "_sources/NeetCode-Solutions/12_Advanced_Graphs/01_Reconstruct_Itinerary/0332-reconstruct-itinerary.py"
+ },
+ {
+  "problem": "Min Cost to Connect All Points",
+  "pattern": "Advanced Graphs",
+  "difficulty": "Medium",
+  "code": "1584-min-cost-to-connect-all-points",
+  "python": "_sources/leetcode/python/1584-min-cost-to-connect-all-points.py",
+  "article": "_sources/leetcode/articles/min-cost-to-connect-points.md",
+  "hint": "_sources/leetcode/hints/min-cost-to-connect-points.md",
+  "alt_python": "_sources/NeetCode-Solutions/12_Advanced_Graphs/02_Min_Cost_to_Connect_All_Points/1584-min-cost-to-connect-all-points.py"
+ },
+ {
+  "problem": "Network Delay Time",
+  "pattern": "Advanced Graphs",
+  "difficulty": "Medium",
+  "code": "0743-network-delay-time",
+  "python": "_sources/leetcode/python/0743-network-delay-time.py",
+  "article": "_sources/leetcode/articles/network-delay-time.md",
+  "hint": "_sources/leetcode/hints/network-delay-time.md",
+  "alt_python": "_sources/NeetCode-Solutions/12_Advanced_Graphs/03_Network_Delay_Time/0743-network-delay-time.py"
+ },
+ {
+  "problem": "Swim In Rising Water",
+  "pattern": "Advanced Graphs",
+  "difficulty": "Hard",
+  "code": "0778-swim-in-rising-water",
+  "python": "_sources/leetcode/python/0778-swim-in-rising-water.py",
+  "article": "_sources/leetcode/articles/swim-in-rising-water.md",
+  "hint": "_sources/leetcode/hints/swim-in-rising-water.md",
+  "alt_python": "_sources/NeetCode-Solutions/12_Advanced_Graphs/04_Swim_in_Rising_Water/0778-swim-in-rising-water.py"
+ },
+ {
+  "problem": "Alien Dictionary",
+  "pattern": "Advanced Graphs",
+  "difficulty": "Hard",
+  "code": "0269-alien-dictionary",
+  "python": "_sources/leetcode/python/0269-alien-dictionary.py",
+  "article": "_sources/leetcode/articles/foreign-dictionary.md",
+  "hint": "_sources/leetcode/hints/foreign-dictionary.md",
+  "alt_python": "_sources/NeetCode-Solutions/12_Advanced_Graphs/05_Alien_Dictionary/0269-alien-dictionary.py"
+ },
+ {
+  "problem": "Cheapest Flights Within K Stops",
+  "pattern": "Advanced Graphs",
+  "difficulty": "Medium",
+  "code": "0787-cheapest-flights-within-k-stops",
+  "python": "_sources/leetcode/python/0787-cheapest-flights-within-k-stops.py",
+  "article": "_sources/leetcode/articles/cheapest-flight-path.md",
+  "hint": "_sources/leetcode/hints/cheapest-flight-path.md",
+  "alt_python": "_sources/NeetCode-Solutions/12_Advanced_Graphs/06_Cheapest_Flights_Within_K_Stops/0787-cheapest-flights-within-k-stops.py"
+ }
+]
