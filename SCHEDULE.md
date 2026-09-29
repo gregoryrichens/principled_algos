@@ -4,7 +4,7 @@
 
 *Total: about five weeks at 60–90 minutes a day, then a 20–30 minute daily maintenance routine. Every session follows the same ritual; the schedule only changes what you point it at.*
 
-Files used: `PRINCIPLES.md` (reference), `DRILLS.md` (36 idiom cards), `CONTRASTS.md` (pairs, families, compositions). Problem numbers are LeetCode ids; the coverage index at the end of `PRINCIPLES.md` maps every one to its principle.
+Files used: `PRINCIPLES.md` (reference), `DRILLS.md` (36 idiom cards), `CONTRASTS.md` (pairs, families, compositions). Problem numbers are LeetCode ids; the coverage index at the end of `PRINCIPLES.md` maps every one to its principle. Each is shown as `id Name (difficulty)`. Six are LeetCode Premium (252, 253, 261, 269, 286, 323); without a subscription, use the free versions on neetcode.io or LintCode.
 
 ---
 
@@ -24,7 +24,7 @@ One line per attempt, append-only, in `LOG.md` (create it):
 
 ```
 2026-09-26  #167  P5   clean   "every pair with an index outside [l,r] is ruled out"
-2026-09-26  #435  P7   wrong→P9  "sorted by start instead of end; picked merge logic for a selection problem"
+2026-09-26  #435  P9   wrong→P7  "sorted by start and merged; this is selection, keep earliest end"
 2026-09-27  #739  P6   slow   "forgot to store indices; had to restart"
 ```
 
@@ -42,13 +42,13 @@ Daily format (75–90 min): read the principle section(s) · do the drill cards 
 
 | Day | Read (PRINCIPLES.md) | Drill (DRILLS.md) | Solve |
 |---|---|---|---|
-| 1 | Intro + six questions; P1 Hash; P2 Running aggregates | Cards 1, 2, 3 | 1, 49, 128, 238, 121, 53 |
-| 2 | P3 Dynamic programming | Cards 4, 5, 6, 7 | 322, 198, 518, 1143, 91 |
-| 3 | P4 Binary search; P5 Two pointers | Cards 8, 9, 10 | 875, 153, 704, 167, 11, 15 |
-| 4 | P6 Stack; P7 Greedy | Cards 11, 12 | 739, 84, 20, 55, 435, 134 |
-| 5 | P8 Sliding window; P9 Sort then scan; P10 Heap | Cards 13, 14, 15 | 3, 76, 56, 253, 215, 295 |
-| 6 | P11 Tree recursion; P12 Backtracking | Cards 16, 17, 18, 19 | 543, 98, 102, 78, 39, 51 |
-| 7 | P13, P14, P15 Graphs; P16, P17 Mechanics; P18 Reformulate; the memorize table | Cards 20–27 | 200, 994, 210, 684, 743, 206, 136 |
+| 1 | Intro + six questions; P1 Hash; P2 Running aggregates | Cards 1, 2, 3 | 1 Two Sum (E); 49 Group Anagrams (M); 128 Longest Consecutive Sequence (M); 238 Product of Array Except Self (M); 121 Best Time to Buy And Sell Stock (E) |
+| 2 | P3 Dynamic programming | Cards 4, 5, 6, 7 | 322 Coin Change (M); 198 House Robber (M); 518 Coin Change II (M); 1143 Longest Common Subsequence (M); 91 Decode Ways (M) |
+| 3 | P4 Binary search; P5 Two pointers | Cards 8, 9, 10 | 875 Koko Eating Bananas (M); 153 Find Minimum In Rotated Sorted Array (M); 704 Binary Search (E); 167 Two Sum II Input Array Is Sorted (M); 11 Container With Most Water (M); 15 3Sum (M) |
+| 4 | P6 Stack; P7 Greedy | Cards 11, 12 | 739 Daily Temperatures (M); 84 Largest Rectangle In Histogram (H); 20 Valid Parentheses (E); 55 Jump Game (M); 435 Non Overlapping Intervals (M); 134 Gas Station (M); 53 Maximum Subarray (M) |
+| 5 | P8 Sliding window; P9 Sort then scan; P10 Heap | Cards 13, 14, 15 | 3 Longest Substring Without Repeating Characters (M); 76 Minimum Window Substring (H); 56 Merge Intervals (M); 253 Meeting Rooms II (M, Premium); 215 Kth Largest Element In An Array (M); 295 Find Median From Data Stream (H) |
+| 6 | P11 Tree recursion; P12 Backtracking | Cards 16, 17, 18, 19 | 543 Diameter of Binary Tree (E); 98 Validate Binary Search Tree (M); 102 Binary Tree Level Order Traversal (M); 78 Subsets (M); 39 Combination Sum (M); 51 N Queens (H) |
+| 7 | P13, P14, P15 Graphs; P16, P17 Mechanics; P18 Reformulate; the memorize table | Cards 20–27 | 200 Number of Islands (M); 994 Rotting Oranges (M); 210 Course Schedule II (M); 684 Redundant Connection (M); 743 Network Delay Time (M); 206 Reverse Linked List (E); 136 Single Number (E) |
 
 Cards 28–36 (added after review) enter the Phase 2 drill cycle on Day 8; do 28, 29, 30 on Day 8, 31–33 on Day 9, 34–36 on Day 10 in addition to the daily cycle.
 
@@ -70,25 +70,94 @@ Daily format (60–90 min): 10 min of drill cards (see cycle) · one contrast pa
 
 | Day | Contrast / family (CONTRASTS.md) | Problems inside it | Plus 1 random |
 |---|---|---|---|
-| 8 | A1 Two Sum vs Two Sum II; A11 longest vs shortest window | 1, 167, 3, 76 | ✓ |
-| 9 | A2 Coin Change I vs II; B8 sum-axis knapsack | 322, 518, 416, 494 | ✓ |
-| 10 | A3 directed vs undirected cycles | 207, 684, 261, 323 | ✓ |
-| 11 | A5 Subsets vs Target Sum; A13 Permutations vs Combination Sum | 78, 494, 46, 39 | ✓ |
-| 12 | A6 Islands vs Word Search; B7 reverse the direction | 200, 79, 417, 130 | ✓ |
-| 13 | B1 two pointers by dominance | 167, 15, 11, 42, 125 | ✓ |
+| 8 | A1 Two Sum vs Two Sum II; A11 longest vs shortest window | 1 Two Sum (E); 167 Two Sum II Input Array Is Sorted (M); 3 Longest Substring Without Repeating Characters (M); 76 Minimum Window Substring (H) | ✓ |
+| 9 | A2 Coin Change I vs II; B8 sum-axis knapsack | 322 Coin Change (M); 518 Coin Change II (M); 416 Partition Equal Subset Sum (M); 494 Target Sum (M) | ✓ |
+| 10 | A3 directed vs undirected cycles | 207 Course Schedule (M); 684 Redundant Connection (M); 261 Graph Valid Tree (M, Premium); 323 Number of Connected Components In An Undirected Graph (M, Premium) | ✓ |
+| 11 | A5 Subsets vs Target Sum; A13 Permutations vs Combination Sum | 78 Subsets (M); 494 Target Sum (M); 46 Permutations (M); 39 Combination Sum (M) | ✓ |
+| 12 | A6 Islands vs Word Search; B7 reverse the direction | 200 Number of Islands (M); 79 Word Search (M); 417 Pacific Atlantic Water Flow (M); 130 Surrounded Regions (M) | ✓ |
+| 13 | B1 two pointers by dominance | 167 Two Sum II Input Array Is Sorted (M); 15 3Sum (M); 11 Container With Most Water (M); 42 Trapping Rain Water (H); 125 Valid Palindrome (E) | ✓ |
 | 14 | **Review day:** re-do every wrong-principle and read-solution entry from days 8–13 | from LOG.md | — |
-| 15 | A7 Jump Game I vs II; B11 frontier greedy | 55, 45, 763, 134 | ✓ |
-| 16 | A9 Dijkstra vs hop-limited; add 778 and 1584 | 743, 787, 778, 1584 | ✓ |
-| 17 | B2 BFS layers as distance | 994, 286, 127, 102 | ✓ |
-| 18 | B3 the two-sequence grid | 1143, 72, 115, 97, 10 | ✓ |
-| 19 | A12 nesting vs dominance stacks; B5 monotonic stack | 20, 739, 84, 239, 853 | ✓ |
-| 20 | B4 return one thing, update another; A15 two hash-map roles | 543, 110, 124, 1448, 138, 146 | ✓ |
+| 15 | A7 Jump Game I vs II; B11 frontier greedy | 55 Jump Game (M); 45 Jump Game II (M); 763 Partition Labels (M); 134 Gas Station (M) | ✓ |
+| 16 | A9 Dijkstra vs hop-limited; add 778 and 1584 | 743 Network Delay Time (M); 787 Cheapest Flights Within K Stops (M); 778 Swim In Rising Water (H); 1584 Min Cost to Connect All Points (M) | ✓ |
+| 17 | B2 BFS layers as distance | 994 Rotting Oranges (M); 286 Walls And Gates (M, Premium); 127 Word Ladder (H); 102 Binary Tree Level Order Traversal (M) | ✓ |
+| 18 | B3 the two-sequence grid | 1143 Longest Common Subsequence (M); 72 Edit Distance (M); 115 Distinct Subsequences (H); 97 Interleaving String (M); 10 Regular Expression Matching (H) | ✓ |
+| 19 | A12 nesting vs dominance stacks; B5 monotonic stack | 20 Valid Parentheses (E); 739 Daily Temperatures (M); 84 Largest Rectangle In Histogram (H); 239 Sliding Window Maximum (H); 853 Car Fleet (M) | ✓ |
+| 20 | B4 return one thing, update another; A15 two hash-map roles | 543 Diameter of Binary Tree (E); 110 Balanced Binary Tree (E); 124 Binary Tree Maximum Path Sum (H); 1448 Count Good Nodes In Binary Tree (M); 138 Copy List With Random Pointer (M); 146 LRU Cache (M) | ✓ |
 | 21 | **Review day:** re-do every wrong-principle and read-solution entry from days 15–20 | from LOG.md | — |
-| 22 | A10 merge vs select intervals; B10 sort to make it local | 56, 435, 252, 253, 846, 90 | ✓ |
-| 23 | A4 Kth Largest three ways; B9 heap as current extreme | 215, 703, 1046, 621, 23, 355 | ✓ |
-| 24 | A8 sum vs product; A14 what is being searched; B6 implicit lists | 53, 152, 153, 875, 141, 287, 202 | ✓ |
+| 22 | A10 merge vs select intervals; B10 sort to make it local | 56 Merge Intervals (M); 435 Non Overlapping Intervals (M); 252 Meeting Rooms (E, Premium); 253 Meeting Rooms II (M, Premium); 846 Hand of Straights (M); 90 Subsets II (M) | ✓ |
+| 23 | A4 Kth Largest three ways; B9 heap as current extreme | 215 Kth Largest Element In An Array (M); 703 Kth Largest Element In a Stream (E); 1046 Last Stone Weight (E); 621 Task Scheduler (M); 23 Merge K Sorted Lists (H); 355 Design Twitter (M) | ✓ |
+| 24 | A8 sum vs product; A14 what is being searched; B6 implicit lists | 53 Maximum Subarray (M); 152 Maximum Product Subarray (M); 153 Find Minimum In Rotated Sorted Array (M); 875 Koko Eating Bananas (M); 141 Linked List Cycle (E); 287 Find The Duplicate Number (M); 202 Happy Number (E) | ✓ |
 
-Not scheduled above but in the interleave pool and should surface: 217, 242, 347, 36, 271, 424, 567, 155, 150, 22, 74, 33, 981, 4, 21, 143, 19, 2, 25, 226, 104, 100, 572, 235, 199, 230, 105, 297, 208, 211, 212, 973, 40, 131, 17, 695, 210, 269, 332, 70, 746, 213, 5, 647, 139, 300, 62, 309, 329, 312, 1899, 678, 57, 1851, 48, 54, 73, 66, 50, 43, 2013, 191, 338, 190, 268, 371, 7. If the random draw has not hit one by Day 24, take it in Phase 3.
+Not scheduled above but in the interleave pool and should surface:
+
+- 217 Contains Duplicate (E)
+- 242 Valid Anagram (E)
+- 347 Top K Frequent Elements (M)
+- 36 Valid Sudoku (M)
+- 271 Encode and Decode Strings (M)
+- 424 Longest Repeating Character Replacement (M)
+- 567 Permutation In String (M)
+- 155 Min Stack (M)
+- 150 Evaluate Reverse Polish Notation (M)
+- 22 Generate Parentheses (M)
+- 74 Search a 2D Matrix (M)
+- 33 Search In Rotated Sorted Array (M)
+- 981 Time Based Key Value Store (M)
+- 4 Median of Two Sorted Arrays (H)
+- 21 Merge Two Sorted Lists (E)
+- 143 Reorder List (M)
+- 19 Remove Nth Node From End of List (M)
+- 2 Add Two Numbers (M)
+- 25 Reverse Nodes In K Group (H)
+- 226 Invert Binary Tree (E)
+- 104 Maximum Depth of Binary Tree (E)
+- 100 Same Tree (E)
+- 572 Subtree of Another Tree (E)
+- 235 Lowest Common Ancestor of a Binary Search Tree (M)
+- 199 Binary Tree Right Side View (M)
+- 230 Kth Smallest Element In a Bst (M)
+- 105 Construct Binary Tree From Preorder And Inorder Traversal (M)
+- 297 Serialize And Deserialize Binary Tree (H)
+- 208 Implement Trie Prefix Tree (M)
+- 211 Design Add And Search Words Data Structure (M)
+- 212 Word Search II (H)
+- 973 K Closest Points to Origin (M)
+- 40 Combination Sum II (M)
+- 131 Palindrome Partitioning (M)
+- 17 Letter Combinations of a Phone Number (M)
+- 695 Max Area of Island (M)
+- 269 Alien Dictionary (H, Premium)
+- 332 Reconstruct Itinerary (H)
+- 70 Climbing Stairs (E)
+- 746 Min Cost Climbing Stairs (E)
+- 213 House Robber II (M)
+- 5 Longest Palindromic Substring (M)
+- 647 Palindromic Substrings (M)
+- 139 Word Break (M)
+- 300 Longest Increasing Subsequence (M)
+- 62 Unique Paths (M)
+- 309 Best Time to Buy And Sell Stock With Cooldown (M)
+- 329 Longest Increasing Path In a Matrix (H)
+- 312 Burst Balloons (H)
+- 1899 Merge Triplets to Form Target Triplet (M)
+- 678 Valid Parenthesis String (M)
+- 57 Insert Interval (M)
+- 1851 Minimum Interval to Include Each Query (H)
+- 48 Rotate Image (M)
+- 54 Spiral Matrix (M)
+- 73 Set Matrix Zeroes (M)
+- 66 Plus One (E)
+- 50 Pow(x, n) (M)
+- 43 Multiply Strings (M)
+- 2013 Detect Squares (M)
+- 191 Number of 1 Bits (E)
+- 338 Counting Bits (E)
+- 190 Reverse Bits (E)
+- 268 Missing Number (E)
+- 371 Sum of Two Integers (M)
+- 7 Reverse Integer (M)
+
+If the random draw has not hit one by Day 24, take it in Phase 3.
 
 **Exit check for Phase 2:** on the two review days combined, wrong-principle entries should be under 15%. If not, extend Phase 2 by a week repeating the pairs that produced them.
 
@@ -98,9 +167,9 @@ Not scheduled above but in the interleave pool and should surface: 217, 242, 347
 
 Goal: recognition under uncertainty at interview pace, and coverage of every problem in the 150 at least once cold.
 
-**Days 25–31 (45–60 min):** two random problems a day from the whole 150, timed, full ritual. Then Part C compositions from `CONTRASTS.md`, one a day, naming every layer before coding: 76, 42, 239, 212, 1851, 853, 127 in that order. Drill cards: only those still in the cycle.
+**Days 25–31 (45–60 min):** two random problems a day from the whole 150, timed, full ritual. Then Part C compositions from `CONTRASTS.md`, one a day, naming every layer before coding, in this order: 76 Minimum Window Substring (H); 42 Trapping Rain Water (H); 239 Sliding Window Maximum (H); 212 Word Search II (H); 1851 Minimum Interval to Include Each Query (H); 853 Car Fleet (M); 127 Word Ladder (H). Drill cards: only those still in the cycle.
 
-**Days 32–35 (45–60 min):** the remaining Part C compositions (329, 124, 297, 146, 355, 4, 269, 312, 778), one a day, plus one random problem. Re-read the memorize table in `PRINCIPLES.md` and write each fact from memory.
+**Days 32–35 (45–60 min):** the remaining Part C compositions (329 Longest Increasing Path In a Matrix (H); 124 Binary Tree Maximum Path Sum (H); 297 Serialize And Deserialize Binary Tree (H); 146 LRU Cache (M); 355 Design Twitter (M); 4 Median of Two Sorted Arrays (H); 269 Alien Dictionary (H, Premium); 312 Burst Balloons (H); 778 Swim In Rising Water (H)), one a day, plus one random problem. Re-read the memorize table in `PRINCIPLES.md` and write each fact from memory.
 
 **Day 35: full review.** Count log outcomes per principle for the whole five weeks. For the two weakest, re-read the section, re-do the cards, re-do the family set.
 
