@@ -43,147 +43,262 @@ The single largest family. Nested loops usually mean the inner loop is re-derivi
 
 ---
 
-## P1. Hash it: turn "search for X" into O(1) `X in seen`
+## P1. Hash it: stop searching, start remembering
 
-**One line.** Any time an inner loop exists only to answer "have I seen X?" or "where is X?" or "how many X?", replace it with a set or dictionary and the loop disappears.
+**In one sentence.** If your slow solution has an inner loop whose only job is to *look for something* ("have I seen this before?", "where is it?", "how many of these are there?"), keep a set or dictionary of what you have already seen, and the inner loop disappears.
 
-**Recognize it when**
-- The statement says "find a pair / duplicate / complement / matching element".
-- You need frequency counts ("most common", "anagram", "same characters").
-- The brute force compares every element against every other element (O(n²)) with no ordering requirement.
-- You need to map an object to another object (old node to its copy, value to its index, prefix to its subtree).
-- The check is "no duplicates in each row / column / group" (composite keys).
+### Start with a problem
 
-**The idea.** The brute force is a nested loop: for each element, scan for its partner. The scan is the redundancy. If you record every element as you pass it, the scan becomes a dictionary probe. You pay O(n) memory to buy O(n) time.
+**Two Sum (LeetCode 1).** You are given a list of numbers and a target. Return the positions of the two numbers that add up to the target. Exactly one such pair exists.
 
-The only real decision is the **shape of the key**:
-
-| Key shape | When | Example |
-|---|---|---|
-| The raw value | "seen before?" | Contains Duplicate |
-| The *complement* (`target - x`) | pair with a target | Two Sum |
-| A *canonical signature* (sorted string or 26-count tuple) | equality that ignores order | Group Anagrams |
-| A *composite tuple* `(row, val)` | several constraints in one structure | Valid Sudoku |
-| Object identity (node → new node) | deep copy, "old to new" | Copy List with Random Pointer, Clone Graph |
-| A *bounded integer as array index* | key is in `[0, n]`; skip the hash, use a list | Top K Frequent (bucket sort) |
-| A *prefix* (trie) | many strings share prefixes; need prefix queries | Implement Trie, Word Search II |
-
-**Invariant.** *The structure contains exactly the information about every element processed so far that a future element could need.*
-
-**Template**
-```python
-seen = {}                       # or set()
-for i, x in enumerate(items):
-    key = f(x)                  # raw value, complement, signature, tuple...
-    if key in seen:             # O(1) instead of an inner loop
-        ...                     # found partner / duplicate / group
-    seen[key] = i               # record for the future
+```
+nums = [3, 8, 4, 6]    target = 10
+answer: [2, 3]         because nums[2] + nums[3] = 4 + 6 = 10
 ```
 
-**Worked example 1 — Two Sum (LC 1).** Find indices `i, j` with `nums[i] + nums[j] == target`.
+**The slow way.** Try every pair. For each number, scan everything after it for a number that completes the sum.
 
 ```python
-class Solution:
-    def twoSum(self, nums: List[int], target: int) -> List[int]:
-        prevMap = {}  # val -> index
-        for i, n in enumerate(nums):
-            diff = target - n
-            if diff in prevMap:
-                return [prevMap[diff], i]
-            prevMap[n] = i
+for i in range(len(nums)):
+    for j in range(i + 1, len(nums)):
+        if nums[i] + nums[j] == target:
+            return [i, j]
 ```
-The brute force asks "for this `n`, is there a `j` with `nums[j] == target - n`?" and scans to find out. Rearranging the equation turns a *pair* search into a *single-element* lookup. Recording elements *after* checking guarantees `i != j`. One pass, O(n).
 
-**Worked example 2 — Group Anagrams (LC 49).** Bucket strings that are permutations of each other.
+Four numbers make 6 pairs. Ten thousand numbers make about 50 million pairs. The work grows with the square of the input: O(n²).
+
+**Where the time goes.** Look at what the inner loop is really doing. When we stand on the `4`, the only number that can help is a `6` (because 10 − 4 = 6). So the inner loop is not "trying pairs" at all. It is searching the list for one specific value, and we run a search like that for every number.
+
+Python's sets and dictionaries answer "is 6 in here?" in a single step, however many items they hold. So we can replace the search with a lookup, as long as we store the numbers as we go.
+
+**The fix.** Walk through the list once. For each number:
+
+1. Work out the partner it needs: `target - number`.
+2. Check whether that partner is among the numbers you have already passed. If it is, you are done.
+3. If not, store the current number and its position, so that a *later* number can find it.
+
+Here is that process on the example:
+
+| Position | Number | Partner needed | Already stored (value → position) | Result |
+|---|---|---|---|---|
+| 0 | 3 | 7 | *(nothing)* | no 7 yet; store 3 |
+| 1 | 8 | 2 | 3→0 | no 2 yet; store 8 |
+| 2 | 4 | 6 | 3→0, 8→1 | no 6 yet; store 4 |
+| 3 | 6 | 4 | 3→0, 8→1, 4→2 | **4 is stored at position 2**, so return `[2, 3]` |
 
 ```python
-class Solution:
-    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
-        ans = collections.defaultdict(list)
-        for s in strs:
-            count = [0] * 26
-            for c in s:
-                count[ord(c) - ord("a")] += 1
-            ans[tuple(count)].append(s)
-        return list(ans.values())
+def twoSum(nums, target):
+    seen = {}                          # value -> the position where we saw it
+    for i, n in enumerate(nums):
+        partner = target - n
+        if partner in seen:            # one step, instead of scanning the list
+            return [seen[partner], i]
+        seen[n] = i                    # store this number for later numbers to find
 ```
-Two strings are anagrams if and only if their letter counts match, so the count tuple is a **canonical form**: all anagrams map to one key. Comparing each string to every other (O(n²k)) becomes one hash insert per string (O(nk)). Sorting each string also works as a key, at O(k log k) per string.
 
-**Worked example 3 (the subtle one) — Longest Consecutive Sequence (LC 128).**
+That is one pass over the list, so O(n). We spend some memory (the dictionary) and save a lot of time. That trade is the whole principle.
+
+**Why check first and store second?** Suppose the target is 10 and the current number is 5. Its partner is also 5. If we stored the 5 first and then checked, we would find the number we are standing on and pair it with itself. Checking first guarantees that `seen` only contains numbers *before* the current one.
+
+### What stays true (the invariant)
+
+**"`seen` contains every number I have already walked past, and nothing else."**
+
+Each line of the loop either relies on that sentence (the lookup) or keeps it true (storing the number at the end). If you can say the sentence, you can rebuild the code without memorizing it.
+
+### How to recognize it
+
+The most reliable signal is your own brute force. Write the slow version, then ask: *is the inner loop only searching for something?* If so, this principle applies.
+
+The problem wording often gives it away too:
+
+- "Find a pair", "find a duplicate", "find the matching element."
+- Anything about counting: "most frequent", "uses the same letters", "anagram."
+- You need to connect one thing to another: "each original node to its copy", "each value to its position."
+- "No value may repeat in any row, column, or box."
+
+### The one real decision: what do you store?
+
+The loop barely changes from problem to problem. What changes is the **key**, the thing you store and look up. Each case below has a one-line problem so you can see why that key fits.
+
+1. **The value itself.** *Contains Duplicate (217): does any number appear twice?* Keep a set of numbers seen. If the current number is already in it, you have found a duplicate.
+2. **The partner you need.** *Two Sum*, above. You look up `target - n`, not `n`.
+3. **A signature shared by things you want to treat as equal.** *Group Anagrams (49): group words that use exactly the same letters, such as "eat", "tea", "ate".* These words look different, but they have identical letter counts. Use the letter count as the key and all anagrams land in the same bucket. There is a full worked example below.
+4. **Several facts packed into one key.** *Valid Sudoku (36): check that no digit repeats in any row, column, or 3×3 box.* You could keep 27 separate sets. Or you can keep one set of keys like `("row", 4, "7")`, meaning "a 7 has already appeared in row 4", and check all three rules against that one set.
+5. **One object mapped to another.** *Clone Graph (133), Copy List with Random Pointer (138): make a complete copy of a structure of linked nodes.* Keep a dictionary from each original node to its copy. When you reach a node you have met before, reuse its copy instead of making a second one.
+6. **A small number, used as a list index.** *Top K Frequent Elements (347): return the k numbers that appear most often.* Every frequency is between 1 and n, the length of the list. So instead of a dictionary you can use a plain list where slot `f` holds the numbers that appear `f` times. Reading the slots from the top down gives the most frequent numbers first, and nothing needs sorting.
+7. **A prefix of a word.** This is a *trie*, covered at the end of this section.
+
+### Worked example 2: Group Anagrams (LeetCode 49)
+
+**Problem.** Given a list of lowercase words, group together the words that are anagrams of each other (the same letters, rearranged).
+
+```
+input:  ["eat", "tea", "tan", "ate", "nat", "bat"]
+output: [["eat", "tea", "ate"], ["tan", "nat"], ["bat"]]    (any order)
+```
+
+**The slow way.** Compare every word with every other word and check whether they are anagrams. That is a lot of comparisons, and each one looks at every letter.
+
+**The insight.** Two words are anagrams exactly when they contain the same letters the same number of times. So count the letters of each word *once*, and use the count as a dictionary key. Anagrams produce identical counts and end up under the same key. Words that are not anagrams produce different counts.
+
+```
+"eat" -> a:1, e:1, t:1   \
+"tea" -> a:1, e:1, t:1    }-- same key, same group
+"ate" -> a:1, e:1, t:1   /
+"tan" -> a:1, n:1, t:1   -- a different key
+```
+
 ```python
-numSet = set(nums)
-longest = 0
-for n in numSet:
-    if (n - 1) not in numSet:          # only start from the beginning of a run
-        length = 1
-        while (n + length) in numSet:
-            length += 1
-        longest = max(longest, length)
+from collections import defaultdict
+
+def groupAnagrams(strs):
+    groups = defaultdict(list)         # letter-count key -> words with those letters
+    for word in strs:
+        count = [0] * 26               # count[0] is how many a's, count[1] b's, ...
+        for c in word:
+            count[ord(c) - ord("a")] += 1
+        groups[tuple(count)].append(word)
+    return list(groups.values())
 ```
-The set gives O(1) membership, but the real trick is *anchoring*: only walk forward from numbers that are provably the start of a run. Each run is walked exactly once, so the nested-looking loop is O(n) total.
 
-**Where it applies**
-- NeetCode 150: Contains Duplicate 217 · Valid Anagram 242 · Two Sum 1 · Group Anagrams 49 · Top K Frequent 347 (count, then bucket-sort by frequency) · Valid Sudoku 36 (composite keys) · Longest Consecutive Sequence 128 · Longest Substring Without Repeating 3 and Minimum Window Substring 76 (the window's contents live in a set or count map) · Permutation in String 567 (count signature inside a window) · Copy List with Random Pointer 138 · Clone Graph 133 · LRU Cache 146 (map + linked list) · Time Based Key-Value Store 981 (map to sorted list) · Design Twitter 355 · Construct Tree from Preorder/Inorder 105 (value → inorder index) · Word Search 79 / N-Queens 51 (visited / used sets) · Word Ladder 127 (wildcard-pattern buckets) · Detect Squares 2013 (point counts) · Implement Trie 208 · Add and Search Words 211 · Word Search II 212.
-- Beyond: any "count / group / dedupe / find complement" problem; subarray-sum-equals-k (prefix sum + hash, the fusion of P1 and P2); "first unique", "intersection of arrays", "isomorphic strings", LFU cache, any "design" question that needs O(1) `get`.
+**Why `tuple(count)`?** Python refuses to use a list as a dictionary key, because a list can be changed after it has been stored. A tuple cannot change, so converting the list to a tuple makes it a valid key.
 
-**Two structures that are P1 in disguise (write them cold)**
+**A simpler key.** Sorting a word's letters also produces a shared signature: "eat", "tea" and "ate" all become "aet". `"".join(sorted(word))` works as the key too. It is a little slower on long words, but it is easier to write and perfectly acceptable in an interview.
 
-*Trie* (Implement Trie 208, Add and Search Words 211, Word Search II 212): a hash map keyed by prefix, factored so shared prefixes share nodes. Each operation costs O(word length) regardless of dictionary size.
+### Worked example 3: Longest Consecutive Sequence (LeetCode 128), the subtle one
+
+**Problem.** Given an unsorted list of integers, return the length of the longest run of consecutive values (such as 1, 2, 3, 4). The values can be anywhere in the list. You must do it in O(n) time, which rules out sorting.
+
+```
+input:  [100, 4, 200, 1, 3, 2]
+output: 4          because 1, 2, 3, 4 are all present
+```
+
+**The slow way.** For each number, count upward (is n+1 present? n+2?), searching the list for each one. Every "is it present?" check is a scan of the whole list.
+
+**Step 1: make the checks instant.** Put every number into a set. Now "is n+1 present?" takes one step. That is P1 as usual.
+
+**Step 2: stop repeating work.** There is still a waste. Starting from every number means the run 1, 2, 3, 4 gets counted from 1, then again from 2, then from 3, then from 4. On one long run of n numbers, that adds up to roughly n²/2 steps again.
+
+The fix is to count only from the **start** of a run. A number starts a run exactly when the number just below it is missing. `1` starts a run because `0` is absent. `2` does not start one because `1` is present, so we skip it. Now each run is walked exactly once.
+
+```python
+def longestConsecutive(nums):
+    num_set = set(nums)
+    longest = 0
+    for n in num_set:
+        if n - 1 not in num_set:          # n is the start of a run
+            length = 1
+            while n + length in num_set:  # walk forward to the end of the run
+                length += 1
+            longest = max(longest, length)
+    return longest
+```
+
+The code has a loop inside a loop, but the inner loop only runs from the start of a run, and every number belongs to exactly one run. So the total number of inner steps is at most n, and the whole thing is O(n).
+
+### Two data structures built on this idea
+
+Some interview problems ask you to *build* a data structure. Two common ones are really just dictionaries arranged cleverly.
+
+**The trie (prefix tree).** Used in *Implement Trie (208)*, *Design Add and Search Words (211)* and *Word Search II (212)*.
+
+The problem: store many words so you can quickly answer "is this word stored?" and "does any stored word start with this prefix?"
+
+The idea: build a tree where each node is a dictionary from a letter to the next node. The word "car" is stored as root → `c` → `a` → `r`, with a flag on the `r` node marking "a word ends here". If you also store "cat", it reuses the `c` and `a` nodes and only adds a new `t` node. Looking up a word or a prefix means following one letter at a time, so it takes as many steps as the word has letters. The number of words stored does not matter.
+
 ```python
 class TrieNode:
     def __init__(self):
-        self.children = {}          # char -> TrieNode
-        self.end = False
+        self.children = {}      # letter -> TrieNode
+        self.end = False        # True if a stored word ends at this node
 
 class Trie:
-    def __init__(self): self.root = TrieNode()
-    def insert(self, word):
-        cur = self.root
-        for c in word:
-            cur = cur.children.setdefault(c, TrieNode())
-        cur.end = True
-    def _walk(self, prefix):
-        cur = self.root
-        for c in prefix:
-            if c not in cur.children: return None
-            cur = cur.children[c]
-        return cur
-    def search(self, word):      node = self._walk(word);   return node is not None and node.end
-    def startsWith(self, prefix): return self._walk(prefix) is not None
+    def __init__(self):
+        self.root = TrieNode()
 
-# wildcard search (211): '.' branches over every child
-def search_dot(node, word, i=0):
-    if i == len(word): return node.end
-    if word[i] == '.':
-        return any(search_dot(ch, word, i + 1) for ch in node.children.values())
-    ch = node.children.get(word[i])
-    return ch is not None and search_dot(ch, word, i + 1)
+    def insert(self, word):
+        node = self.root
+        for c in word:
+            if c not in node.children:
+                node.children[c] = TrieNode()
+            node = node.children[c]
+        node.end = True
+
+    def _walk(self, prefix):
+        # Follow the letters of prefix. Return the node you end on, or None if the path breaks.
+        node = self.root
+        for c in prefix:
+            if c not in node.children:
+                return None
+            node = node.children[c]
+        return node
+
+    def search(self, word):
+        node = self._walk(word)
+        return node is not None and node.end     # the path exists AND a word ends here
+
+    def startsWith(self, prefix):
+        return self._walk(prefix) is not None    # the path exists at all
 ```
 
-*LRU Cache* (146): a hash map for O(1) lookup plus an ordered structure for O(1) move-to-front and evict. `OrderedDict` does both; the interview version is a doubly linked list with sentinel head and tail.
+Problem 211 adds a wildcard: in a search, `.` matches any single letter. When the search reaches a `.`, it cannot follow one child, so it tries every child and succeeds if any of them leads to a match:
+
+```python
+def search_with_dots(node, word, i=0):
+    if i == len(word):
+        return node.end
+    if word[i] == ".":
+        return any(search_with_dots(child, word, i + 1) for child in node.children.values())
+    child = node.children.get(word[i])
+    return child is not None and search_with_dots(child, word, i + 1)
+```
+
+**The LRU cache.** *LRU Cache (146)*: build a cache with a fixed capacity. `get(key)` returns a stored value. `put(key, value)` stores one. When the cache is full, adding a new key must throw out the key that was **least recently used** (read or written longest ago). Both operations must take O(1) time.
+
+A dictionary gives O(1) lookup, but it cannot tell you which key is the oldest. So you pair it with a second structure that keeps keys in order of use, where you can move a key to the "most recent" end, or remove the oldest one, in O(1). Python's `OrderedDict` is both structures in one:
+
 ```python
 from collections import OrderedDict
+
 class LRUCache:
     def __init__(self, capacity):
-        self.cap, self.d = capacity, OrderedDict()
+        self.capacity = capacity
+        self.data = OrderedDict()             # oldest key at the front, newest at the back
+
     def get(self, key):
-        if key not in self.d: return -1
-        self.d.move_to_end(key)
-        return self.d[key]
+        if key not in self.data:
+            return -1
+        self.data.move_to_end(key)            # it was just used, so it is now the newest
+        return self.data[key]
+
     def put(self, key, value):
-        if key in self.d: self.d.move_to_end(key)
-        self.d[key] = value
-        if len(self.d) > self.cap: self.d.popitem(last=False)
+        if key in self.data:
+            self.data.move_to_end(key)
+        self.data[key] = value
+        if len(self.data) > self.capacity:
+            self.data.popitem(last=False)     # remove from the front: the oldest key
 ```
-The manual version keeps `Node(key, val, prev, next)`, a `left`/`right` sentinel pair, `remove(node)` and `insert_at_right(node)`; `get` removes and re-inserts, `put` evicts `left.next` when over capacity. See `DRILLS.md` Card 35.
 
-*Design problems generally* (146, 155, 355, 981, 295, 2013): the question is always "which composite of a hash map plus one ordered structure (list, stack, heap, sorted list, linked list) gives every operation its required cost?" List the operations, write the target cost next to each, then pick the structure that pays for the most expensive one.
+Interviewers often ask you to build it without `OrderedDict`. Then you use a dictionary from key to node, plus a doubly linked list of nodes ordered from oldest to newest. That version is Card 35 in `DRILLS.md`.
 
-**Pitfalls**
-- Lists are unhashable; use `tuple(count)` or `"".join(sorted(s))`.
-- Insert *after* the check when the pair must be two distinct indices.
-- If the key is a small bounded integer, an array beats a dict (Top K Frequent's bucket sort is O(n) rather than O(n log n)).
-- A trie is P1 when the key is a prefix: it costs O(word length) per operation regardless of dictionary size, and it lets a grid DFS prune the instant a prefix is dead (Word Search II).
+**Design problems in general** (146, 155, 295, 355, 981, 2013) follow the same recipe. List every operation the structure must support and how fast each one must be. Then pick a dictionary plus whatever one other structure (a list, stack, heap, or linked list) makes the slowest operation fast enough.
+
+### Where else it shows up
+
+**In the NeetCode 150:** Contains Duplicate 217, Valid Anagram 242, Two Sum 1, Group Anagrams 49, Top K Frequent 347, Valid Sudoku 36, Longest Consecutive Sequence 128, Copy List with Random Pointer 138, Clone Graph 133, LRU Cache 146, Time Based Key-Value Store 981, Design Twitter 355, Detect Squares 2013, Implement Trie 208, Add and Search Words 211, Word Search II 212.
+
+It also plays a supporting role in many problems filed under other principles. The sliding-window problems (3, 76, 567) keep the window's contents in a set or count dictionary. Construct Binary Tree from Preorder and Inorder (105) uses a dictionary from value to position. Word Search (79) and N-Queens (51) track "already used" squares in a set. Word Ladder (127) groups words by patterns like `h*t`.
+
+**Beyond the list:** anything that asks you to count, group, remove duplicates, or find a matching partner. Subarray Sum Equals K combines this principle with running totals (P2) and is Card 28.
+
+### Common mistakes
+
+- **Using a list as a dictionary key.** Python raises `TypeError: unhashable type: 'list'`. Convert it with `tuple(...)`, or build a string key.
+- **Storing before checking in a pair problem.** The current element can then pair with itself. Check first, store second.
+- **Reaching for a dictionary when a list would do.** If the keys are small whole numbers (0 to n, or the 26 letters), a list indexed by the key is simpler and faster. Top K Frequent's bucket list is the example.
+- **Forgetting that "seen" means "before now".** In the pair problems, the stored items are only the ones before the current position. If you fill the set with the whole input up front, you need to handle the "pairs with itself" case separately.
 
 ---
 

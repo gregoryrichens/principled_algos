@@ -12,29 +12,53 @@ Scoring per attempt: **clean** (no bug, under 2 min), **slow** (correct, over 2 
 
 ## MOVE 1 — Remember
 
-### Card 1 · Hash lookup with a transformed key (P1)
-**Trigger:** an inner loop that only answers "have I seen X / where is X / how many X".
-**Invariant:** `seen` holds exactly the information about every element before `i` that a later element could need.
-**Write:** Two Sum with a complement key. Then change the key to a 26-count tuple for Group Anagrams.
+### Card 1 · Look it up instead of searching for it (P1)
+
+**The problems**
+
+- **Two Sum (1).** Given a list of numbers and a target, return the positions of the two numbers that add up to the target. Exactly one pair exists.
+  `nums = [3, 8, 4, 6], target = 10` → `[2, 3]` (4 + 6 = 10)
+- **Group Anagrams (49).** Given a list of lowercase words, group together the words that use exactly the same letters.
+  `["eat", "tea", "tan", "ate", "nat", "bat"]` → `[["eat", "tea", "ate"], ["tan", "nat"], ["bat"]]`
+
+**When to reach for this card.** Your slow solution has an inner loop whose only job is to search for something: "is the partner I need somewhere in the list?" or "which other words have the same letters?"
+
+**Say this before you write.** "I'll walk through the input once and keep a dictionary of what I've already seen. For each item, I work out what I'm looking for and check the dictionary instead of scanning the list."
+
+**What stays true.** The dictionary holds every item I have already walked past, and nothing else.
+
+**Write, from memory:**
+1. Two Sum. The key you look up is the *partner* you need: `target - n`.
+2. Group Anagrams. The key is the word's *letter count*, which every anagram shares.
+
 <details><summary>Answer</summary>
 
 ```python
-seen = {}
+# Two Sum
+seen = {}                              # value -> position where we saw it
 for i, n in enumerate(nums):
-    if target - n in seen:
+    if target - n in seen:             # is the partner already behind us?
         return [seen[target - n], i]
-    seen[n] = i
+    seen[n] = i                        # store n so a later number can find it
 
-groups = collections.defaultdict(list)
+# Group Anagrams
+groups = collections.defaultdict(list) # letter-count key -> words with those letters
 for s in strs:
-    key = [0] * 26
-    for c in s: key[ord(c) - 97] += 1
-    groups[tuple(key)].append(s)
+    key = [0] * 26                     # key[0] = number of a's, key[1] = b's, ...
+    for c in s:
+        key[ord(c) - ord("a")] += 1
+    groups[tuple(key)].append(s)       # tuple, because a list can't be a dictionary key
 return list(groups.values())
 ```
-**Check:** insert after the lookup so `i != j` · key must be hashable (tuple, not list) · if the key is a small bounded int, a list indexed by it beats the dict · `ord(c) - 97` assumes lowercase a–z (guaranteed for 49); otherwise key on `tuple(sorted(s))`.
+
+**Compare your answer against these:**
+- **Check, then store.** In Two Sum, if you store `n` before checking, a 5 with target 10 would pair with itself.
+- **The key must be a tuple, not a list.** Python won't accept a list as a dictionary key because lists can change after being stored.
+- **`ord(c) - ord("a")` only works for lowercase a–z.** Problem 49 guarantees that. If the input could contain other characters, use `"".join(sorted(s))` as the key instead.
+- **If the keys are small whole numbers, a plain list beats a dictionary.** You index straight into it and no hashing is needed.
 </details>
-Run on: Two Sum 1 · Group Anagrams 49 · Valid Sudoku 36 (composite tuple keys).
+
+**Now use it on:** Two Sum 1 · Group Anagrams 49 · Valid Sudoku 36 (no digit may repeat in any row, column, or 3×3 box: use keys like `("row", 4, "7")`).
 
 ### Card 2 · Prefix and suffix aggregates (P2)
 **Trigger:** "for every index, something over all the other elements", or a value at `i` that depends on the max/min to its left **and** right.
