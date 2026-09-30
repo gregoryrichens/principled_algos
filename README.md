@@ -1,4 +1,4 @@
-# principled: learning coding interviews by principle, not by memorizing problems
+# PRINCIPLED ALGOS: learning coding interviews by principle, not by memorizing problems
 
 ## What this is
 
