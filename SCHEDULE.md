@@ -20,7 +20,9 @@ Files used: `PRINCIPLES.md` (reference), `DRILLS.md` (36 idiom cards), `CONTRAST
 
 ## The log
 
-One line per attempt, append-only, in `LOG.md` (create it):
+One line per attempt, append-only. 
+You can copy my [GoogleDoc Template](https://docs.google.com/spreadsheets/d/1pUquhKx-FO71kb6b9tPzNTVo4Txe-dwyToXimZ5fKpg/edit?usp=sharing) or 
+create a `LOG.md` file and track in your fork of the repo:
 
 ```
 2026-09-26  #167  P5   clean   "every pair with an index outside [l,r] is ruled out"
