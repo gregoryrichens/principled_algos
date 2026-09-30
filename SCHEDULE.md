@@ -2,7 +2,7 @@
 
 > **New here?** Terms like *principle*, *trigger*, *invariant*, *template* and *card* are defined, with an example, in `README.md` under "The words used everywhere in this folder".
 
-*Total: about five weeks at 60–90 minutes a day, then a 20–30 minute daily maintenance routine. Every session follows the same ritual; the schedule only changes what you point it at.*
+*The exmaple schedule assumes about five weeks at 3-4 hours a day, then a 30 minute daily maintenance routine. I realize this time commitment is not possible for everybody. At the end I have broken down each principle by it's respective drills and practice problems as well as a division between what to learn on day 1 vs what to learn in follow up. With this information, feel free to construct a schedule that matches your available time.*
 
 Files used: `PRINCIPLES.md` (reference), `DRILLS.md` (36 idiom cards), `CONTRASTS.md` (pairs, families, compositions). Problem numbers are LeetCode ids; the coverage index at the end of `PRINCIPLES.md` maps every one to its principle. Each is shown as `id Name (difficulty)`. Six are LeetCode Premium (252, 253, 261, 269, 286, 323); without a subscription, use the free versions on neetcode.io or LintCode.
 
@@ -190,3 +190,53 @@ Goal: recognition under uncertainty at interview pace, and coverage of every pro
 ## What "done" looks like
 
 You are done with the 150 when, for a random problem you have not seen in two weeks, you can within three minutes: state the brute force, name the move and the surface feature that triggered it, state the invariant, and then write it clean inside the time box. At that point stop working the 150 and spend the maintenance time entirely on problems outside it.
+
+---
+
+## Master table: every principle, its drills, and its problems
+
+One row per principle, and each row split into what you do the **first day** you meet the principle, and what is **saved for follow-up**.
+
+The two first-day columns are not a new plan. They are Phase 1 (Days 1–7) rearranged by principle instead of by day: the cards and problems that day already assigns are exactly what a first sitting on that principle should contain. Read the row top to bottom and you have that day's work for that principle. The two follow-up columns are everything else — the material Phases 2 and 3 reach by contrast pair and random draw.
+
+How to read each column:
+
+- **Drills, first day** — write these the day you read the principle, until each one is clean. These are the cards whose whole subject is this principle; nothing in them depends on a principle you have not read yet.
+- **Drills, follow-up** — cards that combine this principle with a second one. They are held back because writing them requires the *other* principle too, so they only make sense once both are in. Cards 28–36 are all of this kind and enter on Days 8–10. A card appears in two rows when it combines two principles; it is first-day in neither if it needs both.
+- **Problems, first day** — solve these on the day, *after* reading the principle. This is fluency practice, not recognition: you already know which move to use, and the point is writing it clean inside the time box.
+- **Problems, follow-up** — the rest of the principle's problems, saved deliberately so that you meet them *cold*, without knowing the category. Doing these on the first day would waste them, because the whole skill Phase 2 trains is choosing the principle from the statement alone.
+
+Only problems where this principle is the *primary* move are listed. Every problem appears in exactly one row, so the four problem columns together account for all 150. Names and difficulties are in the coverage index at the end of `PRINCIPLES.md`; only ids are given here to keep the table readable.
+
+| Principle | Drills: first day | Drills: follow-up | Problems: first day | Problems: follow-up |
+|---|---|---|---|---|
+| **P1. Hash it:** stop searching, start remembering | 1 | 28, 33, 35 | 1, 49, 128 | 36, 208, 211, 217, 242, 347, 2013 |
+| **P2. Running aggregates:** carry a summary forward instead of recomputing it | 2, 3 | 28 | 121, 238 | 42, 152 |
+| **P3. Dynamic programming:** solve each smaller question once and write the answer down | 4, 5, 6, 7 | 32 | 91, 198, 322, 518, 1143 | 10, 62, 70, 72, 97, 115, 139, 213, 300, 309, 312, 329, 338, 416, 494, 746 |
+| **P4. Binary search:** one question rules out half of what is left | 8, 9 | 31, 32 | 153, 704, 875 | 4, 33, 74, 981 |
+| **P5. Two pointers:** start at both ends, and let one comparison rule out a whole side | 10 | — | 11, 15, 167 | 5, 54, 125, 647 |
+| **P6. Stack:** keep the unfinished items in a pile, and settle them from the top | 11 | 34 | 20, 84, 739 | 150, 155, 239, 853 |
+| **P7. Greedy:** make the choice you can prove is never worse, and never look back | 12 | 3 → see note | 53, 55, 134, 435 | 45, 621, 678, 763, 846, 1899 |
+| **P8. Sliding window:** grow the right edge, shrink the left edge, never start over | 13 | 34 | 3, 76 | 424, 567 |
+| **P9. Sort first:** then each item only needs to be compared with its neighbor | 14 | — | 56, 253 | 57, 252, 1851 |
+| **P10. Heap:** when you keep needing the smallest (or largest) of a changing collection | 15 | 31 | 215, 295 | 23, 355, 703, 973, 1046 |
+| **P11. Tree recursion:** decide what each node reports up, and what it passes down | 16, 17, 18 | 30 | 98, 102, 543 | 100, 104, 105, 110, 124, 199, 226, 230, 235, 297, 572, 1448 |
+| **P12. Backtracking:** build answers one choice at a time, undo, and try the next choice | 19 | — | 39, 51, 78 | 17, 22, 40, 46, 79, 90, 131, 212 |
+| **P13. Graph search:** spot the "things" and "connections", then visit each thing once | 20, 21 | 18, 30 | 200, 994 | 127, 130, 133, 286, 332, 417, 695 |
+| **P14. Dependencies and groups:** order what must come first, merge what belongs together | 22, 23 | 29 | 210, 684 | 207, 261, 269, 323 |
+| **P15. Weighted paths:** always extend the cheapest route found so far | 24 | 36 | 743 | 778, 787, 1584 |
+| **P16. Linked-list surgery:** a few pointer moves, done in the right order | 25, 27 | 35, 36 | 206 | 2, 19, 21, 25, 138, 141, 143, 146, 202, 287 |
+| **P17. Bits, digits, and no extra memory:** work with how numbers are written | 26, 27 | — | 136 | 7, 43, 48, 50, 66, 73, 190, 191, 268, 371 |
+| **P18. Reformulate:** describe the problem differently until it becomes one you know | — | — | — | 271 |
+
+**Where the first-day columns come from.** P1 and P2 are Day 1; P3 is Day 2; P4 and P5 are Day 3; P6 and P7 are Day 4; P8, P9 and P10 are Day 5; P11 and P12 are Day 6; P13 through P18 are Day 7. This is why Day 7 is heavy and the later rows have thin first-day columns: six principles share one day. If you are spreading Phase 1 over more than seven days, the natural cut is to give P13–P15 one day and P16–P18 the next.
+
+**Note on cards 3 and 18, the two that move between rows.** Card 3 (best so far, in one pass) is tagged P2 *and* P7, and Card 18 (level by level with a queue) is tagged P11 *and* P13. Both are scheduled on the earlier principle's day — Card 3 on Day 1 with P2, Card 18 on Day 6 with P11 — so by the time you reach P7 and P13 you have already written them once. They sit in the follow-up column of the later row for that reason: write them again once the second principle is in, and notice that the same code now has a second justification. Card 3's reset-on-negative is an *exchange argument* once you know P7; Card 18's queue is *BFS on a graph that happens to be a tree* once you know P13.
+
+Three things worth noticing, because they tell you where to spend your time:
+
+- **P3, P11, P12, P16 and P17 cover 69 of the 150 problems** — nearly half. If your log shows repeated trouble in any one of them, that is the single highest-value re-drill.
+- **The follow-up columns hold 108 of the 150 problems**, against 42 on the first days. That ratio is the design: Phase 1 is a week of vocabulary, and the remaining four weeks are almost entirely cold recognition.
+- **P18 Reformulate has one problem, no card, and an empty first day.** That is not because it is rare; it is because it is almost never the *whole* solution. It appears as a *secondary* principle in 19 problems (1, 4, 55, 74, 127, 130, 202, 213, 269, 286, 287, 312, 417, 494, 621, 678, 853, 875, 2013). You practise it inside those, by asking "what else could this be?" during question 1 of the ritual, not by drilling it alone.
+
+Note on 5 and 647 (Longest Palindromic Substring, Palindromic Substrings): they sit in the P5 row, not the P3 row, because centre expansion — pointers walking outward from each possible centre, in O(1) extra space — is the solution to write. They also have a well-known interval-DP form, so P3's cards are worth having fresh when you meet them. Similarly 338 (Counting Bits) sits in the P3 row rather than P17, and 202 (Happy Number) in the P16 row rather than P17: in both cases the row follows the primary move from the coverage index, not the LeetCode category.
