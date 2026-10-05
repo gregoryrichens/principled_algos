@@ -83,14 +83,14 @@ return list(groups.values())
 
 ```python
 # Product of Array Except Self
-res = [1] * len(nums)
+result = [1] * len(nums)
 for i in range(1, len(nums)):
-    res[i] = res[i - 1] * nums[i - 1]      # product of everything left of i
+    result[i] = result[i - 1] * nums[i - 1]      # product of everything left of i
 right = 1                                  # product of everything right of i
 for i in range(len(nums) - 1, -1, -1):
-    res[i] *= right                        # use it first...
+    result[i] *= right                        # use it first...
     right *= nums[i]                       # ...then include nums[i] for the next position
-return res
+return result
 
 # Trapping Rain Water
 n = len(height)

@@ -356,16 +356,16 @@ Read the "left" column top to bottom: each entry is the one above it times the n
 ```python
 def productExceptSelf(nums):
     n = len(nums)
-    res = [1] * n
-    # Pass 1: res[i] = product of everything to the LEFT of i.
+    result = [1] * n
+    # Pass 1: result[i] = product of everything to the LEFT of i.
     for i in range(1, n):
-        res[i] = res[i - 1] * nums[i - 1]
+        result[i] = result[i - 1] * nums[i - 1]
     # Pass 2: multiply in the product of everything to the RIGHT of i.
     right = 1                            # product of everything after position i
     for i in range(n - 1, -1, -1):
-        res[i] *= right                  # use it first...
+        result[i] *= right                  # use it first...
         right *= nums[i]                 # ...then include nums[i] for the next position
-    return res
+    return result
 ```
 
 Two passes over the list, so O(n). The output list doubles as storage for the left products, and the right product is a single variable, so no extra lists are needed.
@@ -611,10 +611,26 @@ Each row only needs the two rows above it, so you do not even need a list. Two v
 
 ```python
 def climbStairs(n):
-    two_back, one_back = 1, 1            # ways to reach step i-2 and step i-1
+    ways_to_reach_n_from_two_back, ways_to_reach_n_from_one_back = 1, 1            # ways to reach step i-2 and step i-1
     for _ in range(2, n + 1):
-        two_back, one_back = one_back, two_back + one_back
-    return one_back
+        ways_to_reach_n_from_two_back, ways_to_reach_n_from_one_back = ways_to_reach_n_from_one_back, ways_to_reach_n_from_two_back + ways_to_reach_n_from_one_back
+    return ways_to_reach_n_from_one_back
+```
+
+^that optimized for space but is not intuitively understood
+this is more intuitive
+```python
+def climbStairs(n):
+    ways_to_reach_target_steps_at_index = [0] * (n + 1)
+    ways_to_reach_target_steps_at_index[0] = 1 # do nothing you reach 0 steps
+    ways_to_reach_target_steps_at_index[1] = 1 # take 1 step reach 1 steps
+    for i in range(2, n + 1):
+        ways_to_reach_target_steps_at_index[i] = ways_to_reach_target_steps_at_index[i-1] + ways_to_reach_target_steps_at_index[i-2]
+        # it may not be immediately intuitive, but reaching 4 steps is the combo of reaching two steps and 3 steps
+        # why? you still have to move from step 2 to 4 or step 3 to 4
+        # but because there is only one way to go from each step directly to 4, no additional WAYS are spawned by taking the step
+        # so the total number of ways is just the sum of 
+    return ways_to_reach_target_steps_at_index[n]
 ```
 
 Both versions compute each of the `n + 1` answers once: O(n).
