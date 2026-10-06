@@ -188,6 +188,24 @@ def fewest(a):                             # a = the amount still to make
     if a < 0:  return float("inf")         # overshot: this route is impossible
     return min(1 + fewest(a - c) for c in coins)
 
+#lru_cache is a wrapper and likely not allowed in interviewed. This is essentially what it does under the hood
+def min_combo(target, memo={}):
+    if target == 0:
+        return 0
+    # boundary condition if a-c gives us less than 0 we need impossible condition
+    if target < 0:
+        return float("inf")
+    if target in memo:
+        return memo[target]
+    result = min(1 + min_combo(target - c) for c in coins)
+    memo[target] = result
+    return result
+fewest = min_combo(amount)
+if fewest == float("inf"):
+    return -1
+else:
+    return fewest
+
 ans = fewest(amount)
 return -1 if ans == float("inf") else ans
 
