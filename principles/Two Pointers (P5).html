@@ -1,0 +1,374 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Two Pointers (P5)</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one reading column of ~66ch; widgets break out a little wider. Two pointer colors (left = teal, right = amber) are the only accents. */
+:root{
+  --bg:#f6f7f4; --panel:#ffffff; --ink:#1d2321; --muted:#5d6762; --line:#d9ddd6;
+  --left:#0f7f78; --right:#b8640c; --hit:#2f6fd0; --gone:#e6e8e3; --water:#7fb4e8;
+  --display:"Young Serif", Georgia, serif;
+  --body:"Atkinson Hyperlegible", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141917; --panel:#1c2220; --ink:#e7ebe8; --muted:#9aa49f; --line:#323a37;
+  --left:#3cc4b9; --right:#f0a24a; --hit:#7aa9ff; --gone:#262d2a; --water:#3d78b3; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141917; --panel:#1c2220; --ink:#e7ebe8; --muted:#9aa49f; --line:#323a37;
+  --left:#3cc4b9; --right:#f0a24a; --hit:#7aa9ff; --gone:#262d2a; --water:#3d78b3; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;
+  padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px));padding-block:32px 64px}
+main{max-width:46rem;margin:0 auto;display:flex;flex-direction:column;gap:1.1rem}
+h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.4rem,7vw,3.6rem)}
+h2{font-size:1.8rem;margin-top:2.2rem;padding-top:1.4rem;border-top:1px solid var(--line)}
+h3{font-size:1.3rem;margin-top:1.2rem}
+p{margin:0}
+.eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lede{font-size:1.15rem;color:var(--muted)}
+.L{color:var(--left);font-weight:700}.R{color:var(--right);font-weight:700}
+code{font-family:var(--mono);font-size:.88em;background:var(--gone);padding:.05em .3em;border-radius:3px}
+pre{font-family:var(--mono);font-size:.85rem;line-height:1.5;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px;overflow-x:auto;margin:0}
+pre code{background:none;padding:0}
+.cm{color:var(--muted)}
+.widget{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.widget svg{width:100%;height:auto;display:block}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button{font:600 .9rem var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 14px;cursor:pointer}
+button:hover{border-color:var(--muted)}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--hit);outline-offset:2px}
+.status{font-size:.95rem;color:var(--ink);min-height:2.6em}
+.caption{font-size:.9rem;color:var(--muted)}
+table{border-collapse:collapse;font-size:.92rem;font-variant-numeric:tabular-nums;width:100%}
+.tw{overflow-x:auto}
+th,td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--line)}
+th{font-family:var(--mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:400}
+.rule{border-left:3px solid var(--hit);padding:4px 0 4px 14px;font-size:1.08rem}
+details{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+summary{cursor:pointer;font-weight:700}
+details[open] summary{margin-bottom:8px}
+input[type=range]{width:100%;accent-color:var(--hit)}
+.napkin{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:10px}
+.napkin div{border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-variant-numeric:tabular-nums}
+.napkin b{display:block;font-family:var(--mono);font-size:1.15rem}
+.napkin span{font-size:.85rem;color:var(--muted)}
+ul{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<main>
+<header style="display:flex;flex-direction:column;gap:.6rem">
+  <span class="eyebrow">Principled Algos · Principle 5 of 18</span>
+  <h1>Two Pointers</h1>
+  <p class="lede">Put a finger at each end of a sorted list. One comparison tells you that one end can never be part of the answer. Remove that end and move in.</p>
+  <p class="caption">Principle 5 (P5) of 18. Elsewhere, P1 means "keep a dictionary of numbers you have seen" and P8 means "sliding window".</p>
+</header>
+
+<h2>As if to a child</h2>
+<p>You have exactly 10 coins. You must buy exactly two toys and spend all 10 coins. The toys are on a shelf in order of price, from cheapest on the left to most expensive on the right: 1, 3, 4, 6, 8, 11.</p>
+<p>Put your <span class="L">left hand</span> on the cheapest toy and your <span class="R">right hand</span> on the most expensive toy. Add the two prices. 1 + 11 = 12. That is too much. Now think about the 11-coin toy. Even with the cheapest toy on the shelf, it costs too much. So the 11-coin toy cannot be in the answer. Put it back and move your right hand one toy to the left. If the total is too small, do the opposite: the cheap toy is too cheap even with the most expensive partner, so move your left hand to the right. Your hands walk toward each other. They stop when the total is exactly 10, or when the hands meet. If they meet, no two toys cost exactly 10.</p>
+
+<h2>The extended explanation</h2>
+
+<h3>Start from what is true</h3>
+<p>Start with three facts that we can be sure of.</p>
+<ul>
+  <li><b>Fact 1. The list is sorted.</b> Every number to the right of a position is the same or bigger. Every number to the left is the same or smaller.</li>
+  <li><b>Fact 2. A sum gets bigger when one of its parts gets bigger.</b> If <code>a ≤ b</code>, then <code>a + x ≤ b + x</code>.</li>
+  <li><b>Fact 3. The slow way tries every pair.</b> With <i>n</i> numbers there are <i>n × (n − 1) ÷ 2</i> pairs. For 6 numbers that is 15. For large <i>n</i> it is about <i>n × n ÷ 2</i>. This is the cost we want to cut.</li>
+</ul>
+<p>Now join Fact 1 and Fact 2. The <span class="L">left pointer</span> is at position <code>l</code> and the <span class="R">right pointer</span> is at position <code>r</code>. All the numbers still in play are between them.</p>
+<ul>
+  <li>If <code>numbers[l] + numbers[r]</code> is <b>too big</b>: <code>numbers[l]</code> is the smallest partner that <code>numbers[r]</code> can still get. Every other partner gives the same sum or a bigger one. So <code>numbers[r]</code> is in no answer.</li>
+  <li>If the sum is <b>too small</b>: <code>numbers[r]</code> is the biggest partner that <code>numbers[l]</code> can still get. Every other partner gives the same sum or a smaller one. So <code>numbers[l]</code> is in no answer.</li>
+</ul>
+<p>One test removes not one pair but a whole group of pairs. That is the full idea.</p>
+
+<h3>See the pairs disappear</h3>
+<p>The grid shows every pair from the shelf. The row is the left number, the column is the right number, and the square holds the sum. Only the top-right half has squares, because 1 + 11 and 11 + 1 are the same pair, and a toy cannot pair with itself. When a number drops, its pairs turn grey. Some can be grey already from an earlier drop.</p>
+
+<div class="widget" id="w1">
+  <svg id="line1" viewBox="0 0 600 92" role="img" aria-label="Sorted list with left and right pointers"></svg>
+  <svg id="grid1" viewBox="0 0 400 345" role="img" aria-label="Grid of all pairs and their sums"></svg>
+  <div class="status" id="s1" aria-live="polite"></div>
+  <div class="controls">
+    <button id="b1step" type="button">Next step</button>
+    <button id="b1play" type="button">Play</button>
+    <button id="b1reset" type="button">Reset</button>
+  </div>
+  <p class="caption">Target 10. Each step has two clicks: first the test, then the drop. The blue outline is the pair under test. Grey squares are pairs that we proved can never work.</p>
+</div>
+
+<p>Look at the result. The method tested 5 squares. Four tests each removed a full row or column. The fifth test found the answer. Together they settled all 15 pairs. Each removed row or column has a one-line proof, and that proof is the algorithm.</p>
+
+<h3>The sentence that keeps the code correct</h3>
+<p class="rule">Any pair that uses a number outside <code>[l, r]</code> is already ruled out.</p>
+<p>This sentence is the <b>invariant</b>: a statement that stays true after every step. At the start it is true, because nothing is outside the range. Each move keeps it true, because we only remove a number when we have a proof. When the pointers meet, nothing is left to test. Use it as a test for new problems: if you cannot say <i>why</i> the dropped number is hopeless, two pointers is probably the wrong tool.</p>
+
+<h3>Napkin math: is it really that much faster?</h3>
+<p>Assume a laptop does about one billion (10<sup>9</sup>) simple additions each second. Move the slider to change the list size.</p>
+<div class="widget">
+  <label for="nslider" class="caption">List size <i>n</i> = <b id="nval"></b></label>
+  <input type="range" id="nslider" min="1" max="9" step="1" value="6">
+  <div class="napkin">
+    <div><b id="pairs"></b><span>pairs the slow way tests (about n × n ÷ 2)</span></div>
+    <div><b id="steps"></b><span>steps two pointers takes (at most n − 1, so about n)</span></div>
+    <div><b id="tslow"></b><span>time for the slow way</span></div>
+    <div><b id="tfast"></b><span>time for two pointers</span></div>
+  </div>
+</div>
+<p>Do the math once by hand for one million numbers. Pairs: 10<sup>6</sup> × 10<sup>6</sup> ÷ 2 = 5 × 10<sup>11</sup>. At 10<sup>9</sup> per second, that is 500 seconds, or about 8 minutes. Two pointers: at most 10<sup>6</sup> steps, which is 0.001 seconds. The ratio is 5 × 10<sup>11</sup> ÷ 10<sup>6</sup> = 500,000. The claim "a million times faster" is <b>exaggerated by about two times</b>. The correct value is about half a million.</p>
+<p>Why not use a dictionary, as in P1? It also takes about <i>n</i> steps. But it must store up to <i>n</i> numbers. Two pointers stores two positions. Interview problems call this "O(1) extra memory": a fixed amount of memory that does not grow with the list. When a problem gives a sorted list <i>and</i> asks for O(1) extra memory, try two pointers first.</p>
+
+<h3>Worked example 1: Two Sum II (LeetCode 167)</h3>
+<p><b>Problem.</b> The list is sorted. Return the positions (counted from 1) of the two numbers that add to the target. Use no extra list or dictionary. The problem promises that exactly one answer exists.</p>
+<pre><code>def twoSum(numbers, target):
+    l, r = 0, len(numbers) - 1
+    while l &lt; r:
+        total = numbers[l] + numbers[r]
+        if total == target:
+            return [l + 1, r + 1]   <span class="cm"># positions count from 1</span>
+        if total &gt; target:
+            r -= 1                  <span class="cm"># numbers[r] is too big for every partner left</span>
+        else:
+            l += 1                  <span class="cm"># numbers[l] is too small for every partner left</span>
+    return []                       <span class="cm"># pointers met: no pair (cannot happen in 167)</span></code></pre>
+<p>Trace it on <code>[1, 3, 4, 6, 8, 11]</code>, target 10. The grid above shows the same five tests.</p>
+<div class="tw"><table>
+<tr><th>l</th><th>r</th><th>Pair</th><th>Sum</th><th>Decision and reason</th></tr>
+<tr><td>0</td><td>5</td><td>1 + 11</td><td>12</td><td>Too big. 11 + smallest partner is too big. Drop 11.</td></tr>
+<tr><td>0</td><td>4</td><td>1 + 8</td><td>9</td><td>Too small. 1 + biggest partner is too small. Drop 1.</td></tr>
+<tr><td>1</td><td>4</td><td>3 + 8</td><td>11</td><td>Too big. Drop 8.</td></tr>
+<tr><td>1</td><td>3</td><td>3 + 6</td><td>9</td><td>Too small. Drop 3.</td></tr>
+<tr><td>2</td><td>3</td><td>4 + 6</td><td>10</td><td>Found. Return [3, 4].</td></tr>
+</table></div>
+
+<h3>Worked example 2: Container With Most Water (LeetCode 11)</h3>
+<p><b>Problem.</b> Each number is the height of a vertical wall. Pick two walls. The water they hold is <code>shorter wall × distance between them</code>. Find the most water.</p>
+<p>This list is <i>not</i> sorted. So what lets us drop an end? Build the proof from scratch. Take the two walls under the pointers. The water level is set by the shorter wall. Any partner for that wall that is still in play sits between the pointers, so it is closer. (Partners outside the pointers are already ruled out by the invariant.) A closer partner makes a narrower container. Its level cannot be higher than the shorter wall. Narrower and not taller means less water. So the shorter wall has already done its best. Drop it. If the two walls have the same height, the same argument works for each of them, so drop either one. The proof differs from Two Sum II, but its shape is the same.</p>
+
+<div class="widget" id="w2">
+  <svg id="bars" viewBox="0 0 600 290" role="img" aria-label="Walls with water between the two pointers"></svg>
+  <div class="status" id="s2" aria-live="polite"></div>
+  <div class="controls">
+    <button id="b2step" type="button">Next step</button>
+    <button id="b2play" type="button">Play</button>
+    <button id="b2reset" type="button">Reset</button>
+    <button id="b2rand" type="button">New random walls</button>
+  </div>
+  <p class="caption">Blue fill: water for the pair under test. Dashed box: best so far. Each step has two clicks: measure, then drop. When the pointers meet, the status line checks the answer against the slow way (all pairs). Try random walls. The answers always agree.</p>
+</div>
+
+<pre><code>def maxArea(height):
+    l, r = 0, len(height) - 1
+    best = 0
+    while l &lt; r:
+        best = max(best, min(height[l], height[r]) * (r - l))
+        if height[l] &lt; height[r]:
+            l += 1     <span class="cm"># the left wall cannot do better with a closer partner</span>
+        else:
+            r -= 1     <span class="cm"># the right wall is shorter or equal: same reason</span>
+    return best</code></pre>
+<p>On <code>[1, 8, 6, 2, 5, 4, 8, 3, 7]</code> the answer is 49: walls of height 8 and 7, seven positions apart, so 7 × 7 = 49.</p>
+
+<h3>Worked example 3: 3Sum (LeetCode 15)</h3>
+<p><b>Problem.</b> Return every different group of three numbers that adds to 0. No group can appear twice.</p>
+<p>Turn the new problem into the old one. Sort the list, then fix the first number with a normal loop. For each first number <code>a</code>, you need two more numbers that add to <code>−a</code>. That is Two Sum II on the rest of the list, with two changes. First, there can be many answers, so after a match the search continues. Second, sorting puts equal numbers side by side, so you skip a number that is the same as the one before it. Do this for the first number and for the second number. Without the second skip, <code>[-2, 0, 0, 2, 2]</code> records <code>[-2, 0, 2]</code> twice.</p>
+<pre><code>def threeSum(nums):
+    nums.sort()
+    res = []
+    for i in range(len(nums)):
+        if i &gt; 0 and nums[i] == nums[i - 1]:
+            continue                     <span class="cm"># same first number: same groups</span>
+        l, r = i + 1, len(nums) - 1      <span class="cm"># Two Sum II for target -nums[i]</span>
+        while l &lt; r:
+            total = nums[i] + nums[l] + nums[r]
+            if total &lt; 0:
+                l += 1
+            elif total &gt; 0:
+                r -= 1
+            else:
+                res.append([nums[i], nums[l], nums[r]])
+                l += 1
+                r -= 1                   <span class="cm"># keep searching for more groups</span>
+                while l &lt; r and nums[l] == nums[l - 1]:
+                    l += 1               <span class="cm"># same second number: same group</span>
+    return res</code></pre>
+<p>Cost for 1,000 numbers. A good sort takes about <i>n</i> × log₂ <i>n</i> steps, where log₂ <i>n</i> is how many times you can halve <i>n</i> to reach 1. For 1,000 that is about 1,000 × 10 = 10,000 steps. Then 1,000 first numbers, each with a search of up to 1,000 steps, give about 1,000,000 steps. The slow way tests every group of three. There are 1,000 × 999 × 998 ÷ 6 ≈ 166,000,000 groups. We divide by 6 because the same three numbers can be put in 6 orders. Two pointers does about 160 times less work.</p>
+
+<h3>The same idea, other shapes</h3>
+<p>The core of P5 is two pointers that move toward each other. A test on the two ends tells you which end to drop. The same "one test, many pairs removed" idea also works in these shapes:</p>
+<div class="tw"><table>
+<tr><th>Shape</th><th>Example</th><th>What one test proves</th></tr>
+<tr><td>Move inward</td><td>Valid Palindrome (125)</td><td>The outer two letters match, so they cannot break the palindrome. Drop both and check the inner part.</td></tr>
+<tr><td>Move outward</td><td>Longest Palindromic Substring (5)</td><td>Start at each center and grow while the ends match. At the first mismatch, every longer string with this center fails too. Stop.</td></tr>
+<tr><td>Same direction, two lists</td><td>Merge Two Sorted Lists (21)</td><td>The smaller front item is smaller than every item not yet taken, so it goes next.</td></tr>
+</table></div>
+<p><b>Do not mix this up with a sliding window (P8).</b> Both use two positions. In P5, you care only about the two items under the pointers. In a sliding window, both pointers move the same way along one list, and you care about every item between them, for example their sum.</p>
+
+<h3>Try it yourself</h3>
+<p>List <code>[2, 5, 9, 12, 20]</code>, target 21. Do the trace on paper. For each step, write the sum and the reason for the drop.</p>
+<details><summary>Show the answer</summary>
+<p>2 + 20 = 22, too big: drop 20. 2 + 12 = 14, too small: drop 2. 5 + 12 = 17, too small: drop 5. 9 + 12 = 21: found, positions [3, 4]. Four tests instead of ten pairs.</p>
+</details>
+<details><summary>Harder: why does Two Sum (LeetCode 1) need a dictionary instead?</summary>
+<p>Two Sum gives an unsorted list, so Fact 1 is false. When 1 + 11 is too big, a smaller number in the middle can still work with 11. You cannot prove that 11 is hopeless, so you cannot drop it. P1 solves it instead: walk the list once, and for each number check a dictionary for the partner you need.</p>
+</details>
+
+<h2>In the real world</h2>
+<p><b>A story from 1945.</b> In <i>The Art of Computer Programming</i>, Volume 3, Donald Knuth reports that John von Neumann wrote one of the first programs for a stored-program computer in 1945. It was a <i>merge</i>: take two sorted stacks of records and make one sorted stack. One pointer sits at the front of each stack. Compare the two front items and take the smaller. This is the same-direction shape from the table.</p>
+<ul>
+  <li><b>Search engines.</b> For each word, the index keeps a sorted list of the pages that contain it. To find pages with both "red" and "boat", walk one pointer down each list. Move the pointer at the smaller page number. When both pointers show the same number, that page has both words.</li>
+  <li><b>Databases.</b> A "merge join" matches rows from two tables that are already sorted by the same key, such as a customer number. It uses the same walk. The other common method, a hash join, first builds a dictionary of one whole table in memory. When the sort order already exists, the merge join does not need that dictionary.</li>
+</ul>
+<p>In each case, a sorted order lets one comparison make a safe decision about many items. That saves time and memory.</p>
+</main>
+
+<script>
+(function(){
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NS='http://www.w3.org/2000/svg';
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e};
+const txt=(p,x,y,s,a={})=>{const t=el('text',Object.assign({x,y,'text-anchor':'middle','font-family':'JetBrains Mono, monospace','font-size':14,fill:'var(--ink)'},a),p);t.textContent=s;return t};
+const keyOf=(i,j)=>i+','+j;
+
+/* ---------- Widget 1: number line + pair grid (two clicks per step: test, then drop) ---------- */
+const A=[1,3,4,6,8,11], T=10, n=A.length;
+const line=document.getElementById('line1'), grid=document.getElementById('grid1'), s1=document.getElementById('s1');
+let l,r,gone,done,phase,timer1=null,tests;
+function reset1(){l=0;r=n-1;gone=new Set();done=false;phase='test';tests=0;stop1();draw1(false,'Left pointer on 1, right pointer on 11. Press Next step to test this pair.');}
+function draw1(showTest,msg){
+  line.innerHTML='';
+  const w=80, x0=100;
+  A.forEach((v,i)=>{
+    const out=i<l||i>r;
+    el('rect',{x:x0+i*w-30,y:30,width:60,height:40,rx:6,fill:out?'var(--gone)':'var(--panel)',stroke:i===l?'var(--left)':i===r?'var(--right)':'var(--line)','stroke-width':i===l||i===r?3:1},line);
+    txt(line,x0+i*w,56,v,{fill:out?'var(--muted)':'var(--ink)','font-size':18});
+  });
+  if(l<=r){txt(line,x0+l*w,20,'l ▼',{fill:'var(--left)','font-weight':600});txt(line,x0+r*w,88,'▲ r',{fill:'var(--right)','font-weight':600});}
+  grid.innerHTML='';
+  const c=48, gx=96, gy=34;
+  for(let j=0;j<n;j++) txt(grid,gx+j*c+c/2,gy-12,A[j],{fill:j===r?'var(--right)':'var(--muted)','font-weight':j===r?600:400});
+  for(let i=0;i<n;i++) txt(grid,gx-16,gy+i*c+c/2+5,A[i],{fill:i===l?'var(--left)':'var(--muted)','font-weight':i===l?600:400,'text-anchor':'end'});
+  txt(grid,gx-16,gy-12,'L↓ R→',{'text-anchor':'end','font-size':11,fill:'var(--muted)'});
+  let alive=0;
+  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){
+    const g=gone.has(keyOf(i,j)); if(!g) alive++;
+    const cur=showTest&&i===l&&j===r;
+    const found=done&&i===l&&j===r;
+    el('rect',{x:gx+j*c+2,y:gy+i*c+2,width:c-4,height:c-4,rx:4,fill:found?'var(--hit)':g?'var(--gone)':'var(--panel)',stroke:cur||found?'var(--hit)':'var(--line)','stroke-width':cur?3:1},grid);
+    txt(grid,gx+j*c+c/2,gy+i*c+c/2+5,A[i]+A[j],{fill:found?'var(--panel)':g?'var(--muted)':'var(--ink)','text-decoration':g?'line-through':'none'});
+  }
+  const label=done?`found after ${tests} tests · 14 pairs ruled out, 1 found`:`pairs still possible: ${alive} of 15 · tests so far: ${tests}`;
+  txt(grid,200,gy+n*c+20,label,{fill:"var(--muted)","font-size":12});
+  s1.textContent=msg;
+}
+function step1(){
+  if(done){s1.textContent='Done. The answer is [3, 4]. Press Reset to start again.';return}
+  const s=A[l]+A[r];
+  if(phase==='test'){
+    tests++;
+    if(s===T){done=true;draw1(true,`Test: ${A[l]} + ${A[r]} = ${s}. That is the target. Answer: positions [${l+1}, ${r+1}].`);stop1();return}
+    phase='drop';
+    draw1(true, s>T?`Test: ${A[l]} + ${A[r]} = ${s}. Too big. ${A[l]} is the smallest partner ${A[r]} can still get, so ${A[r]} can never work.`
+                   :`Test: ${A[l]} + ${A[r]} = ${s}. Too small. ${A[r]} is the biggest partner ${A[l]} can still get, so ${A[l]} can never work.`);
+  } else {
+    phase='test';
+    if(s>T){for(let i=0;i<r;i++)gone.add(keyOf(i,r));const v=A[r];r--;draw1(false,`Drop ${v}: its whole column goes grey. Right pointer moves left to ${A[r]}.`);}
+    else{for(let j=l+1;j<n;j++)gone.add(keyOf(l,j));const v=A[l];l++;draw1(false,`Drop ${v}: its whole row goes grey. Left pointer moves right to ${A[l]}.`);}
+  }
+}
+function stop1(){clearInterval(timer1);timer1=null;document.getElementById('b1play').textContent='Play'}
+document.getElementById('b1step').onclick=()=>{stop1();step1()};
+document.getElementById('b1reset').onclick=reset1;
+document.getElementById('b1play').onclick=()=>{
+  if(timer1){stop1();return}
+  if(done) reset1();
+  document.getElementById('b1play').textContent='Pause';
+  step1(); timer1=setInterval(()=>{step1(); if(done) stop1();}, reduce?500:1400);
+};
+reset1();
+
+/* ---------- Widget 2: container (two clicks per step: measure, then drop) ---------- */
+const bars=document.getElementById('bars'), s2=document.getElementById('s2');
+let H=[1,8,6,2,5,4,8,3,7], bl,br,best,bestPair,fin,ph2,timer2=null;
+function brute(h){let b=0;for(let i=0;i<h.length;i++)for(let j=i+1;j<h.length;j++)b=Math.max(b,Math.min(h[i],h[j])*(j-i));return b}
+function reset2(){bl=0;br=H.length-1;best=0;bestPair=null;fin=false;ph2='measure';stop2();draw2(false,'Start with the widest container: the first and last walls. Press Next step to measure it.');}
+function draw2(showWater,msg){
+  bars.innerHTML='';
+  const m=H.length, max=Math.max(...H), bw=Math.min(44,520/m-8), gap=560/m, x0=30, base=220, sc=180/max;
+  const X=i=>x0+i*gap+(gap-bw)/2;
+  if(showWater&&bl<br){const lv=Math.min(H[bl],H[br]);el('rect',{x:X(bl)+bw,y:base-lv*sc,width:X(br)-X(bl)-bw,height:lv*sc,fill:'var(--water)',opacity:.6},bars);}
+  if(bestPair){const [i,j]=bestPair, lv=Math.min(H[i],H[j]);el('rect',{x:X(i)+bw,y:base-lv*sc,width:X(j)-X(i)-bw,height:lv*sc,fill:'none',stroke:'var(--hit)','stroke-width':2,'stroke-dasharray':'6 4'},bars);}
+  H.forEach((h,i)=>{
+    const out=i<bl||i>br;
+    const col=!fin&&i===bl?'var(--left)':!fin&&i===br?'var(--right)':out?'var(--gone)':'var(--muted)';
+    el('rect',{x:X(i),y:base-h*sc,width:bw,height:h*sc,rx:2,fill:col},bars);
+    txt(bars,X(i)+bw/2,base+18,h,{fill:out?'var(--muted)':'var(--ink)'});
+  });
+  if(!fin){txt(bars,X(bl)+bw/2,base+38,'▲ l',{fill:'var(--left)','font-weight':600});txt(bars,X(br)+bw/2,base+38,'▲ r',{fill:'var(--right)','font-weight':600});}
+  el('line',{x1:20,x2:590,y1:base,y2:base,stroke:'var(--line)'},bars);
+  txt(bars,300,base+44+(fin?-6:12),`best so far: ${best}`,{fill:'var(--muted)','font-size':13});
+  s2.textContent=msg;
+}
+function step2(){
+  if(fin){s2.textContent=`Done. The answer is ${best}. Press Reset or New random walls.`;return}
+  if(bl>=br){fin=true;const b=brute(H);draw2(false,`Pointers met. Two pointers found ${best}. The slow way (all pairs) finds ${b}. ${b===best?'They agree.':'They differ.'}`);stop2();return}
+  const lv=Math.min(H[bl],H[br]), w=br-bl, a=lv*w;
+  if(ph2==='measure'){
+    let m=`Measure: walls ${H[bl]} and ${H[br]}, width ${w}. Water = ${lv} × ${w} = ${a}.`;
+    if(a>best){best=a;bestPair=[bl,br];m+=' New best.'}
+    ph2='drop'; draw2(true,m);
+  } else {
+    ph2='measure';
+    let m;
+    if(H[bl]<H[br]){m=`Drop the left wall (${H[bl]}). It is shorter, and every partner still in play is closer, so it cannot hold more.`;bl++}
+    else if(H[bl]>H[br]){m=`Drop the right wall (${H[br]}). It is shorter, and every partner still in play is closer, so it cannot hold more.`;br--}
+    else{m=`Both walls are ${H[br]}. Each one is the shorter wall, so neither can do better. Drop the right one.`;br--}
+    draw2(false,m);
+  }
+}
+function stop2(){clearInterval(timer2);timer2=null;document.getElementById('b2play').textContent='Play'}
+document.getElementById('b2step').onclick=()=>{stop2();step2()};
+document.getElementById('b2reset').onclick=reset2;
+document.getElementById('b2rand').onclick=()=>{H=Array.from({length:9},()=>1+Math.floor(Math.random()*9));reset2()};
+document.getElementById('b2play').onclick=()=>{
+  if(timer2){stop2();return}
+  if(fin) reset2();
+  document.getElementById('b2play').textContent='Pause';
+  step2(); timer2=setInterval(()=>{step2(); if(fin) stop2();}, reduce?500:1200);
+};
+reset2();
+
+/* ---------- Napkin slider ---------- */
+const sl=document.getElementById('nslider');
+const SUP='⁰¹²³⁴⁵⁶⁷⁸⁹';
+const sup=e=>String(e).split('').map(d=>SUP[d]).join('');
+function sci(x){const e=Math.floor(Math.log10(x)+1e-9), m=Math.round(x/10**e*10)/10; return (e<4?Math.round(x).toLocaleString('en-US'):(m===1?'':m+' × ')+'10'+sup(e));}
+const nice=v=>{const r=Number(v.toPrecision(2));return r.toLocaleString('en-US')};
+function fmtT(s){
+  if(s<1e-6) return nice(s*1e9)+' nanoseconds';
+  if(s<1e-3) return nice(s*1e6)+' microseconds';
+  if(s<1) return nice(s*1e3)+' milliseconds';
+  if(s<120) return nice(s)+' seconds';
+  if(s<7200) return nice(s/60)+' minutes';
+  if(s<172800) return nice(s/3600)+' hours';
+  if(s<6.3e7) return nice(s/86400)+' days';
+  return nice(s/3.15e7)+' years';
+}
+function napkin(){
+  const e=+sl.value, N=10**e, p=N*N/2;
+  document.getElementById('nval').textContent=N.toLocaleString('en-US')+' (10'+sup(e)+')';
+  document.getElementById('pairs').textContent=sci(p);
+  document.getElementById('steps').textContent=sci(N);
+  document.getElementById('tslow').textContent=fmtT(p/1e9);
+  document.getElementById('tfast').textContent=fmtT(N/1e9);
+}
+sl.oninput=napkin; napkin();
+})();
+</script>
+
+</body></html>
