@@ -1,0 +1,416 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Stack (P6)</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one reading column of ~66ch; widgets break out a little wider. Accents: teal = item now arriving, amber = items waiting on the stack, blue = answer or match. */
+:root{
+  --bg:#f6f7f4; --panel:#ffffff; --ink:#1d2321; --muted:#5d6762; --line:#d9ddd6;
+  --left:#0f7f78; --right:#b8640c; --hit:#2f6fd0; --gone:#e6e8e3; --water:#7fb4e8; --bad:#c2372f;
+  --display:"Young Serif", Georgia, serif;
+  --body:"Atkinson Hyperlegible", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141917; --panel:#1c2220; --ink:#e7ebe8; --muted:#9aa49f; --line:#323a37;
+  --left:#3cc4b9; --right:#f0a24a; --hit:#7aa9ff; --gone:#262d2a; --water:#3d78b3; --bad:#ff6b5e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141917; --panel:#1c2220; --ink:#e7ebe8; --muted:#9aa49f; --line:#323a37;
+  --left:#3cc4b9; --right:#f0a24a; --hit:#7aa9ff; --gone:#262d2a; --water:#3d78b3; --bad:#ff6b5e; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;
+  padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px));padding-block:32px 64px}
+main{max-width:46rem;margin:0 auto;display:flex;flex-direction:column;gap:1.1rem}
+h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.4rem,7vw,3.6rem)}
+h2{font-size:1.8rem;margin-top:2.2rem;padding-top:1.4rem;border-top:1px solid var(--line)}
+h3{font-size:1.3rem;margin-top:1.2rem}
+p{margin:0}
+.eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lede{font-size:1.15rem;color:var(--muted)}
+.L{color:var(--left);font-weight:700}.R{color:var(--right);font-weight:700}
+code{font-family:var(--mono);font-size:.88em;background:var(--gone);padding:.05em .3em;border-radius:3px}
+pre{font-family:var(--mono);font-size:.85rem;line-height:1.5;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px;overflow-x:auto;margin:0}
+pre code{background:none;padding:0}
+.cm{color:var(--muted)}
+.widget{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.widget svg{width:100%;height:auto;display:block}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button{font:600 .9rem var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 14px;cursor:pointer}
+button:hover{border-color:var(--muted)}
+button[aria-pressed="true"]{border-color:var(--hit);box-shadow:inset 0 0 0 1px var(--hit)}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--hit);outline-offset:2px}
+.status{font-size:.95rem;color:var(--ink);min-height:2.6em}
+.caption{font-size:.9rem;color:var(--muted)}
+table{border-collapse:collapse;font-size:.92rem;font-variant-numeric:tabular-nums;width:100%}
+.tw{overflow-x:auto}
+th,td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--line)}
+th{font-family:var(--mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:400}
+.rule{border-left:3px solid var(--hit);padding:4px 0 4px 14px;font-size:1.08rem}
+details{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+summary{cursor:pointer;font-weight:700}
+details[open] summary{margin-bottom:8px}
+input[type=range]{width:100%;accent-color:var(--hit)}
+.pile{font-family:var(--mono)}
+.napkin{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:10px}
+.napkin div{border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-variant-numeric:tabular-nums}
+.napkin b{display:block;font-family:var(--mono);font-size:1.15rem}
+.napkin span{font-size:.85rem;color:var(--muted)}
+ul{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<main>
+<header style="display:flex;flex-direction:column;gap:.6rem">
+  <span class="eyebrow">Principled Algos · Principle 6 of 18</span>
+  <h1>The Stack</h1>
+  <p class="lede">Keep the items that still wait for an answer in a pile. A new item answers the waiting items at the top that it beats. Then it waits too.</p>
+</header>
+
+<h2>As if to a child</h2>
+<p>Think of a pile of plates. You put plates on the top and take them off the top, never from the middle. That is a <b>stack</b>: the last thing in is the first thing out.</p>
+<p>Now a game. Each day, you write the temperature on a card. You want to know, for each day, how many days you wait until a warmer day. When a new day comes, look at the card on the top of the pile. If that card is colder than today, today is its warmer day. Write the answer on the card and take it off. Look at the next card. Stop when the top card is not colder. Then put today's card on the pile, because today must wait too. Cards that stay on the pile at the end never got a warmer day.</p>
+
+<h2>The extended explanation</h2>
+
+<h3>Start from what is true</h3>
+<p>Take the temperature game as the problem. It is Daily Temperatures, problem 739 on LeetCode, a website of practice problems for coding interviews. The input is a list of temperatures, one per day. For each day, return how many days until a warmer day, or 0 if no warmer day comes.</p>
+<pre><code>temperatures = [73, 74, 75, 71, 69, 72, 76, 73]
+answer       = [ 1,  1,  4,  2,  1,  1,  0,  0]</code></pre>
+<p>For example, day 2 (75°) waits 4 days for day 6 (76°). The slow way: from each day, look forward until a warmer day appears. Now look for facts we can be sure of.</p>
+<ul>
+  <li><b>Fact 1. Turn the question around.</b> A day learns its answer only when a warmer day arrives. So let each new day look <i>back</i> and tell the waiting days "I am your answer".</li>
+  <li><b>Fact 2. A new day answers every waiting day that is colder than it.</b> All of those days leave the waiting group at once.</li>
+  <li><b>Fact 3. So the waiting days are always in order.</b> After today answers all colder waiting days, every day still waiting is at least as warm as today. Then today joins as the coldest. From oldest to newest, the temperatures never go up.</li>
+</ul>
+<p>Fact 3 is the key. The newest waiting day is the coldest. If today is not warmer than it, today is not warmer than any older one. So today only checks the newest, then the next newest, and stops at the first day that is not colder. "Add at the top, check the top, remove from the top" is exactly a stack.</p>
+
+<h3>Watch the pile</h3>
+<p>Each bar is one day. The pile on the right is the stack of days that still wait, with the newest on top. Each click does one small action: check the top, remove a day and write its answer, or add today.</p>
+<div class="widget" id="w1">
+  <svg id="t1" viewBox="0 0 400 270" role="img" aria-label="Days as bars, with the stack of waiting days on the right"></svg>
+  <div class="status" id="s1" aria-live="polite"></div>
+  <div class="controls">
+    <button id="b1step" type="button">Next step</button>
+    <button id="b1play" type="button">Play</button>
+    <button id="b1reset" type="button">Reset</button>
+  </div>
+  <div class="controls">
+    <span class="caption">Data:</span>
+    <button type="button" data-set="ex">Example</button>
+    <button type="button" data-set="cool">Long cold spell</button>
+    <button type="button" data-set="rand">Random</button>
+  </div>
+  <p class="caption">Teal: today. Amber: days that wait on the stack. Grey with a number below: days that have an answer. Outline only: days that have not arrived yet. Blue outline: the top day under check. The counter shows how many times the method checks the top.</p>
+</div>
+<p>Try "Long cold spell". The pile grows, then one hot day clears it in one burst. That looks expensive. But count the work. Each day goes onto the stack one time and comes off at most one time. Each check of the top either pops a day, or stops the loop for today. So with <i>n</i> days there are at most <i>n</i> pops, and at most <i>n</i> checks that stop, which is at most 2<i>n</i> checks in total, whatever the order of the days. On 8 days both methods do about the same work. The gap grows with the length of the list.</p>
+
+<h3>The sentence that keeps the code correct</h3>
+<p class="rule">Of the days seen so far, the stack holds exactly the days with no warmer day yet, and their temperatures never go up from bottom to top.</p>
+<p>This is the <b>invariant</b>: a statement that is true after every step. A stack kept in order like this is a <b>monotonic stack</b>: "monotonic" means "goes in one direction only".</p>
+
+<h3>Worked example 1: Daily Temperatures (LeetCode 739)</h3>
+<pre><code>def dailyTemperatures(temperatures):
+    answer = [0] * len(temperatures)
+    waiting = []                        <span class="cm"># positions of days with no warmer day yet</span>
+    for today, temp in enumerate(temperatures):
+        while waiting and temperatures[waiting[-1]] &lt; temp:
+            day = waiting.pop()         <span class="cm"># today is the first warmer day after `day`</span>
+            answer[day] = today - day
+        waiting.append(today)           <span class="cm"># today waits too</span>
+    return answer                       <span class="cm"># days left on the stack keep 0</span></code></pre>
+<p>In Python, a list is a stack. <code>append</code> adds to the top, <code>pop()</code> removes from the top, and <code>waiting[-1]</code> reads the top. <code>enumerate</code> gives each item with its position. Three details matter:</p>
+<ul>
+  <li><b>Store positions, not temperatures.</b> The answer is a distance in days, so you need to know <i>when</i> each day was. You can always look up its temperature.</li>
+  <li><b>Use <code>&lt;</code>, not <code>&lt;=</code>.</b> An equal temperature is not warmer.</li>
+  <li><b>Deal with what is left.</b> Days still on the stack at the end never found a warmer day. Here their answer stays 0.</li>
+</ul>
+
+<h3>Napkin math: is it really faster?</h3>
+<p>Count "checks": one comparison of two temperatures. Assume a computer does about 10<sup>9</sup> checks each second. Take <i>n</i> = 10<sup>6</sup> readings. (A sensor that reads once each second makes 10<sup>6</sup> readings in 10<sup>6</sup> ÷ 86,400 ≈ 12 days.)</p>
+<div class="tw"><table>
+<tr><th>Data</th><th>Slow way: checks</th><th>Slow way: time</th><th>Stack: time</th></tr>
+<tr><td>Falls all the way, then one hot reading</td><td><i>n</i> × <i>n</i> ÷ 2 = 5 × 10<sup>11</sup></td><td>500 s ≈ 8 min</td><td rowspan="3">at most 2<i>n</i> = 2 × 10<sup>6</sup> checks: 2 ms</td></tr>
+<tr><td>Random, all values different</td><td>≈ <i>n</i> × ln <i>n</i> ≈ 1.4 × 10<sup>7</sup></td><td>14 ms</td></tr>
+<tr><td>Random whole degrees, 20 possible values</td><td>≈ <i>n</i> × <i>n</i> ÷ 40 = 2.5 × 10<sup>10</sup></td><td>25 s</td></tr>
+</table></div>
+<p><b>Row 1.</b> Each reading scans to the end of the list, so the scans are <i>n</i> − 1, <i>n</i> − 2, ... 1 long. They add up to about <i>n</i> × <i>n</i> ÷ 2.</p>
+<p><b>Row 2.</b> When all values are different, a warmer reading usually comes soon. On average a scan is about ln <i>n</i> long. (ln is the natural logarithm, and ln 10<sup>6</sup> ≈ 14.) A test program that counts the checks agrees.</p>
+<p><b>Row 3.</b> Real readings are often rounded to whole degrees, so many are equal. Equal is not warmer. Say 20 values are possible. Then about 1 reading in 20 has the highest value, and it never finds a warmer reading. Each of those <i>n</i> ÷ 20 readings scans to the end, an average of <i>n</i> ÷ 2 checks. That is <i>n</i> ÷ 20 × <i>n</i> ÷ 2 = <i>n</i> × <i>n</i> ÷ 40.</p>
+<p>So the statement "the slow way takes minutes on a million readings" is <b>accurate for row 1</b>, <b>exaggerated about 36,000 times for row 2</b> (500 s ÷ 0.014 s), and <b>close to true for row 3</b>, which looks the most like real data. The stack does not care. It always stays under 2<i>n</i> checks. That guarantee is its real value.</p>
+
+<h3>The other kind of stack problem: matching</h3>
+<p><b>Valid Parentheses (LeetCode 20).</b> A string contains only <code>( ) [ ] { }</code>. Return whether every bracket closes with the correct type, in the correct order. <code>"([]{})"</code> is valid. <code>"([)]"</code> is not.</p>
+<p>Start from what is true. A closing bracket must close the most recent bracket that is still open. "Most recent, still waiting" is again the top of a stack. The open brackets wait for their answer, and the answer is the closing bracket.</p>
+<div class="widget" id="w2">
+  <svg id="t2" viewBox="0 0 400 230" role="img" aria-label="Brackets read left to right, with the stack of open brackets"></svg>
+  <div class="status" id="s2" aria-live="polite"></div>
+  <div class="controls">
+    <button id="b2step" type="button">Next step</button>
+    <button id="b2play" type="button">Play</button>
+    <button id="b2reset" type="button">Reset</button>
+  </div>
+  <div class="controls">
+    <span class="caption">String:</span>
+    <button type="button" data-br="([]{})">([]{})</button>
+    <button type="button" data-br="([)]">([)]</button>
+    <button type="button" data-br="{[()]}(">{[()]}(</button>
+    <button type="button" data-br="())">())</button>
+  </div>
+  <p class="caption">Teal: the bracket read now. Grey: brackets already read. Amber boxes: open brackets that wait on the stack. Blue outline: the top matches. Red: the step that fails.</p>
+</div>
+<pre><code>def isValid(s):
+    match = {")": "(", "]": "[", "}": "{"}
+    stack = []                          <span class="cm"># open brackets not yet closed</span>
+    for c in s:
+        if c not in match:
+            stack.append(c)             <span class="cm"># an open bracket waits</span>
+        elif not stack or stack[-1] != match[c]:
+            return False                <span class="cm"># nothing to close, or the wrong type</span>
+        else:
+            stack.pop()                 <span class="cm"># closes the most recent open bracket</span>
+    return not stack                    <span class="cm"># anything left never closed</span></code></pre>
+<p>The first preset is valid. The string can fail in three ways, and each of the other presets shows one. <code>([)]</code>: a closing bracket meets the wrong type on top. <code>())</code>: a closing bracket finds an empty stack. <code>{[()]}(</code>: an open bracket is still on the stack at the end.</p>
+
+<h3>Worked example 2: Largest Rectangle in Histogram (LeetCode 84)</h3>
+<p><b>Problem.</b> <code>heights[i]</code> is the height of a bar of width 1. Return the area of the largest rectangle that fits inside the bars. For <code>[2, 1, 5, 6, 2, 3]</code> the answer is 10: the bars of height 5 and 6 hold a rectangle 5 high and 2 wide.</p>
+<p>Build it from facts. Take the best rectangle. Its height is the height of the shortest bar under it. Call that bar B. Now take the widest rectangle that has B's full height. It stretches left and right from B until it meets a <i>shorter</i> bar. It contains the best rectangle, so it is at least as big. So we lose nothing if we check only one rectangle per bar: the widest one at that bar's full height. To find it, each bar needs its nearest shorter bar on the right and on the left.</p>
+<p><b>The right edge.</b> The stack holds bars that have not found their right edge yet. When a shorter bar arrives, it is the right edge of every taller bar on the stack. Pop each one and measure its rectangle. Note the direction. Here we look for the next <i>shorter</i> bar, so the stack keeps heights that never go <i>down</i> from bottom to top. Daily Temperatures looks for the next <i>warmer</i> day, so its stack never goes <i>up</i>. This direction is the most common bug.</p>
+<p><b>The left edge.</b> The stack stores pairs: (start, height). The start is the leftmost position the bar's rectangle can cover. When a new bar pops some taller entries, its rectangle can also cover all the positions those entries covered, because those bars were all taller. So its start becomes the start of the last entry it popped. If it pops nothing, its start is its own position.</p>
+<div class="widget" id="w3">
+  <svg id="t3" viewBox="0 0 400 270" role="img" aria-label="Histogram bars with the rectangle being measured"></svg>
+  <div class="status" id="s3" aria-live="polite"></div>
+  <div class="controls">
+    <button id="b3step" type="button">Next step</button>
+    <button id="b3play" type="button">Play</button>
+    <button id="b3reset" type="button">Reset</button>
+    <button id="b3rand" type="button">New random bars</button>
+  </div>
+  <p class="caption">Teal: the bar that arrives now. Blue fill: the rectangle measured now. Dashed box: best so far. Blue outline on the stack: the top under check. Entries read (start, height). At the end, position 6 means "one past the last bar". The status line then checks the answer against the slow way, which tries every start and end.</p>
+</div>
+<pre><code>def largestRectangleArea(heights):
+    best = 0
+    stack = []                          <span class="cm"># (start, height), heights go up</span>
+    for i, h in enumerate(heights):
+        start = i
+        while stack and stack[-1][1] &gt; h:   <span class="cm"># [1] is the height of the top pair</span>
+            s, height = stack.pop()     <span class="cm"># bar i is the first shorter bar on its right</span>
+            best = max(best, height * (i - s))
+            start = s                   <span class="cm"># the new bar stretches back to here</span>
+        stack.append((start, h))
+    for s, height in stack:             <span class="cm"># never met a shorter bar: stretch to the end</span>
+        best = max(best, height * (len(heights) - s))
+    return best</code></pre>
+
+<h3>How to recognize it</h3>
+<ul>
+  <li>"For each item, find the <b>next</b> (or previous) item that is <b>bigger</b> (or smaller)."</li>
+  <li>"How long until ...", "how far back until ...".</li>
+  <li>Something stretches until a smaller item blocks it, like the rectangle.</li>
+  <li>Matching or nesting: brackets, HTML tags.</li>
+  <li>"Undo the most recent action first."</li>
+</ul>
+<p>The test question: <i>does a new item answer the most recent waiting items first?</i> If it answers the oldest first, use a queue (first in, first out).</p>
+
+<h3>Try it yourself</h3>
+<p>Temperatures <code>[70, 68, 72, 71, 75]</code>. Trace the stack on paper. Write the stack after each day and the answer list at the end.</p>
+<details><summary>Show the answer</summary>
+<p>Day 0 (70): push. Stack [0]. Day 1 (68): 70 is not colder, push. Stack [0, 1]. Day 2 (72): pop day 1 (wait 1), pop day 0 (wait 2), push. Stack [2]. Day 3 (71): push. Stack [2, 3]. Day 4 (75): pop day 3 (wait 1), pop day 2 (wait 2), push. Stack [4]. Day 4 is left, so it gets 0. Answer: <code>[2, 1, 2, 1, 0]</code>.</p>
+</details>
+<details><summary>Harder: Evaluate Reverse Polish Notation (LeetCode 150)</summary>
+<p>The input <code>["2", "1", "+", "3", "*"]</code> means (2 + 1) × 3. Each operator uses the two numbers just before it. Push each number. For an operator, pop two numbers, apply the operator, and push the result. Stack: [2], [2, 1], [3], [3, 3], [9]. The answer is 9. Note: the first pop gives the right-hand number. For <code>"-"</code> and <code>"/"</code>, the order matters. Also, the problem rounds division toward zero. In Python, <code>//</code> rounds down, so <code>-7 // 2</code> gives −4, not −3. Use <code>int(a / b)</code> instead.</p>
+</details>
+
+<h2>In the real world</h2>
+<p><b>A story from 1957.</b> In Germany, Friedrich Bauer and Klaus Samelson wanted a machine to read formulas such as (2 + 1) × 3. Brackets inside brackets made this hard. Their solution kept each unfinished part in a pile and finished the newest part first. They patented it as the <i>Kellerprinzip</i>, the "cellar principle": the last thing you put in the cellar is the first thing you get out.</p>
+<ul>
+  <li><b>Every running program.</b> When function A calls function B, A must wait until B is done. If B calls C, C finishes first, then B, then A. The computer keeps the waiting functions on the <b>call stack</b>. A "stack overflow" error means this pile became too tall.</li>
+  <li><b>Undo and Back.</b> An editor pushes each change. Undo pops the most recent one. The browser Back button works the same way.</li>
+  <li><b>Code checkers.</b> A compiler (the program that turns code into a running program) checks that each <code>{</code> closes in the correct order. That is Valid Parentheses. A browser also keeps a stack of open HTML tags, but it repairs mistakes instead of rejecting the page.</li>
+  <li><b>Stock charts.</b> "For how many days in a row has the price been at or below today's price?" is the stock span problem. Each day looks back for the most recent higher price. A monotonic stack of earlier prices answers it in one pass, the same way it answers Daily Temperatures.</li>
+</ul>
+<p>In each case, the most recent unfinished item comes next. A stack finds it in one step.</p>
+</main>
+
+<script>
+(function(){
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NS='http://www.w3.org/2000/svg';
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e};
+const txt=(p,x,y,s,a={})=>{const t=el('text',Object.assign({x,y,'text-anchor':'middle','font-family':'JetBrains Mono, monospace','font-size':13,fill:'var(--ink)'},a),p);t.textContent=s;return t};
+
+/* Generic stepper: frames[] precomputed, draw(frame) renders */
+function stepper(prefix, build, draw){
+  let frames=[], k=0, timer=null;
+  const play=document.getElementById(prefix+'play');
+  function stop(){clearInterval(timer);timer=null;play.textContent='Play'}
+  function load(){frames=build();k=0;stop();draw(frames[0])}
+  function next(){ if(k<frames.length-1){k++;draw(frames[k]);return true} draw(Object.assign({},frames[k],{msg:frames[k].msg+' (Finished. Press Reset to start again.)'}));return false}
+  document.getElementById(prefix+'step').onclick=()=>{stop();next()};
+  document.getElementById(prefix+'reset').onclick=load;
+  play.onclick=()=>{ if(timer){stop();return} if(k>=frames.length-1) load(); play.textContent='Pause';
+    timer=setInterval(()=>{ if(!next()||k>=frames.length-1) stop(); }, reduce?500:1100); };
+  return {load};
+}
+function drawPile(svg, items, x, yBottom, opts={}){
+  const w=opts.w||96, h=20;
+  el('line',{x1:x-6,x2:x+w+6,y1:yBottom+2,y2:yBottom+2,stroke:'var(--muted)','stroke-width':2},svg);
+  txt(svg,x+w/2,yBottom+18,'bottom',{'font-size':10,fill:'var(--muted)'});
+  items.forEach((s,i)=>{
+    const y=yBottom-(i+1)*(h+2);
+    const top=i===items.length-1;
+    const hl=top&&opts.hl; el('rect',{x,y,width:w,height:h,rx:4,fill:'var(--panel)',stroke:hl?(opts.bad?'var(--bad)':'var(--hit)'):'var(--right)','stroke-width':hl?3:1.5},svg);
+    txt(svg,x+w/2,y+14,s,{'font-size':12});
+  });
+  const yt=yBottom-items.length*(h+2)-6;
+  txt(svg,x+w/2,Math.max(10,yt),items.length?'top':'empty',{'font-size':10,fill:'var(--muted)'});
+}
+
+/* ---------- Widget 1: Daily Temperatures ---------- */
+const SETS={ex:[73,74,75,71,69,72,76,73], cool:[78,76,75,73,71,70,68,80], rand:null};
+let T=SETS.ex;
+function build1(){
+  const n=T.length, ans=Array(n).fill(null), st=[]; let chk=0; const F=[];
+  const snap=(o)=>F.push(Object.assign({st:st.slice(),ans:ans.slice(),chk},o));
+  snap({cur:-1,msg:'The stack is empty. Press Next step for day 0.'});
+  for(let i=0;i<n;i++){
+    snap({cur:i,msg:`Day ${i} arrives: ${T[i]}°.`+(st.length?' Check the top of the stack.':' The stack is empty.')});
+    while(st.length){
+      const j=st[st.length-1]; chk++;
+      if(T[j]<T[i]){
+        snap({cur:i,top:true,msg:`Top is day ${j} (${T[j]}°). ${T[j]} < ${T[i]}, so today is its warmer day.`});
+        st.pop(); ans[j]=i-j;
+        snap({cur:i,msg:`Pop day ${j}. Its answer is ${i} − ${j} = ${i-j}.`+(st.length?' Check the new top.':' The stack is now empty.')});
+      } else {
+        snap({cur:i,top:true,msg:`Top is day ${j} (${T[j]}°). It is not colder than ${T[i]}°. Stop: every day below it is at least as warm.`});
+        break;
+      }
+    }
+    st.push(i);
+    snap({cur:i,msg:`Push day ${i}. It waits for a warmer day.`});
+  }
+  st.forEach(j=>ans[j]=0);
+  let slow=0; for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){slow++; if(T[j]>T[i])break;}
+  snap({cur:-1,end:true,msg:`End. Days left on the stack never got a warmer day, so they get 0. The stack made ${chk} checks. The slow way would make ${slow}.`});
+  return F;
+}
+const svg1=document.getElementById('t1'), s1=document.getElementById('s1');
+function draw1(f){
+  svg1.innerHTML='';
+  const n=T.length, lo=Math.min(...T)-4, hi=Math.max(...T), bw=26, gap=33, x0=12, base=200;
+  const sc=t=>(t-lo)/(hi-lo)*150;
+  txt(svg1,x0+n*gap/2,16,'days',{'font-size':11,fill:'var(--muted)'});
+  T.forEach((t,i)=>{
+    const x=x0+i*gap, onSt=f.st.includes(i), cur=i===f.cur, done=f.ans[i]!==null;
+    const future=!cur&&!onSt&&!done;
+    const fill=cur?'var(--left)':onSt?'var(--right)':done?'var(--muted)':'var(--panel)';
+    const ck=f.top&&f.st[f.st.length-1]===i;
+    el('rect',{x,y:base-sc(t),width:bw,height:sc(t),rx:2,fill,'fill-opacity':done?.35:1,stroke:ck?'var(--hit)':future?'var(--muted)':'none','stroke-width':ck?3:1,'stroke-dasharray':future?'3 3':'none'},svg1);
+    txt(svg1,x+bw/2,base-sc(t)-5,t,{'font-size':12});
+    txt(svg1,x+bw/2,base+16,i,{'font-size':11,fill:'var(--muted)'});
+    txt(svg1,x+bw/2,base+36,done?f.ans[i]:'·',{fill:done?'var(--hit)':'var(--muted)','font-weight':600});
+  });
+  el('line',{x1:x0-4,x2:x0+n*gap-4,y1:base,y2:base,stroke:'var(--line)'},svg1);
+  txt(svg1,x0+n*gap/2,base+56,'answer row (days to wait)',{'font-size':10,fill:'var(--muted)'});
+  drawPile(svg1,f.st.map(j=>`d${j}: ${T[j]}°`),290,base,{hl:f.top});
+  txt(svg1,338,base+40,`checks: ${f.chk}`,{'font-size':11,fill:'var(--muted)'});
+  s1.textContent=f.msg;
+}
+const st1=stepper('b1',build1,draw1);
+const P1=document.querySelectorAll('#w1 [data-set]');P1.forEach(b=>b.setAttribute('aria-pressed',b.dataset.set==='ex'));
+P1.forEach(b=>b.onclick=()=>{P1.forEach(x=>x.setAttribute('aria-pressed',x===b));
+  const k=b.dataset.set; T=k==='rand'?Array.from({length:8},()=>60+Math.floor(Math.random()*20)):SETS[k]; st1.load();
+});
+st1.load();
+
+/* ---------- Widget 2: brackets ---------- */
+let S='([]{})';
+const PAIR={')':'(',']':'[','}':'{'};
+function build2(){
+  const st=[], F=[]; const snap=o=>F.push(Object.assign({st:st.slice()},o));
+  snap({cur:-1,msg:'Read the string from left to right. Press Next step.'});
+  for(let i=0;i<S.length;i++){
+    const c=S[i];
+    if(!PAIR[c]){st.push(c);snap({cur:i,msg:`"${c}" opens. Push it. It waits for its closing bracket.`});continue}
+    if(!st.length){snap({cur:i,bad:true,end:true,msg:`"${c}" closes, but the stack is empty. Nothing is open to close. Not valid.`});return F}
+    const top=st[st.length-1];
+    if(top!==PAIR[c]){snap({cur:i,bad:true,end:true,top:true,msg:`"${c}" closes, but the most recent open bracket is "${top}". Wrong type. Not valid.`});return F}
+    snap({cur:i,top:true,msg:`"${c}" closes. The top is "${top}", which matches.`});
+    st.pop(); snap({cur:i,msg:`Pop "${top}". That pair is done.`});
+  }
+  snap({cur:S.length,end:true,bad:st.length>0,msg:st.length?`End of string, but ${st.length} open bracket(s) never closed. Not valid.`:'End of string and the stack is empty. Valid.'});
+  return F;
+}
+const svg2=document.getElementById('t2'), s2=document.getElementById('s2');
+function draw2(f){
+  svg2.innerHTML='';
+  const base=190, cw=Math.min(36,250/S.length);
+  [...S].forEach((c,i)=>{
+    const x=14+i*cw, cur=i===f.cur;
+    el('rect',{x,y:60,width:cw-4,height:36,rx:4,fill:cur?(f.bad?'var(--bad)':'var(--left)'):i<f.cur?'var(--gone)':'var(--panel)',stroke:'var(--line)'},svg2);
+    txt(svg2,x+(cw-4)/2,84,c,{'font-size':18,fill:cur?'var(--panel)':'var(--ink)'});
+  });
+  txt(svg2,140,40,'string, read left to right',{'font-size':11,fill:'var(--muted)'});
+  if(f.end) txt(svg2,140,130,f.bad?'NOT VALID':'VALID',{'font-size':18,'font-weight':600,fill:f.bad?'var(--bad)':'var(--hit)'});
+  drawPile(svg2,f.st,300,base,{w:80,hl:f.top,bad:f.bad});
+  s2.textContent=f.msg;
+}
+const st2=stepper('b2',build2,draw2);
+const P2=document.querySelectorAll('#w2 [data-br]');P2.forEach(b=>b.setAttribute('aria-pressed',b.dataset.br===S));
+P2.forEach(b=>b.onclick=()=>{P2.forEach(x=>x.setAttribute('aria-pressed',x===b));S=b.dataset.br;st2.load()});
+st2.load();
+
+/* ---------- Widget 3: histogram ---------- */
+let Hs=[2,1,5,6,2,3];
+function build3(){
+  const n=Hs.length, st=[], F=[]; let best=0,bestR=null;
+  const snap=o=>F.push(Object.assign({st:st.map(e=>e.slice()),best,bestR},o));
+  snap({cur:-1,msg:'Bars arrive from left to right. Press Next step.'});
+  for(let i=0;i<=n;i++){
+    const h=i<n?Hs[i]:0, end=i===n;
+    snap({cur:i,msg:end?'End of the bars. Every bar still on the stack stretches to the right end.':`Bar ${i} arrives, height ${h}.`+(st.length?' Check the top of the stack.':' The stack is empty.')});
+    let start=i;
+    while(st.length){
+      const [ts,th]=st[st.length-1];
+      if(!end&&!(th>h)){snap({cur:i,top:true,msg:`Top is (${ts}, ${th}). ${th} is not taller than ${h}, so stop popping.`});break}
+      if(!end) snap({cur:i,top:true,msg:`Top is (${ts}, ${th}). ${th} is taller than ${h}, so bar ${i} is its right edge.`});
+      const [s,ht]=st.pop(), a=ht*(i-s);
+      if(a>best){best=a;bestR=[s,i,ht]}
+      snap({cur:i,rect:[s,i,ht],msg:`Pop (${s}, ${ht}). ${end?'It never met a shorter bar, so it stretches to the end':`Bar ${i} is shorter, so it is the right edge`}. Area = ${ht} × (${i} − ${s}) = ${a}.`+(a===best&&bestR&&bestR[0]===s&&bestR[1]===i?' New best.':'')});
+      start=s;
+    }
+    if(!end){
+      st.push([start,h]);
+      snap({cur:i,msg:start<i?`Push (${start}, ${h}). Bar ${i} can stretch back to position ${start}, where the last popped bar started.`:`Push (${i}, ${h}). It starts at its own position.`});
+    }
+  }
+  let b=0; for(let i=0;i<n;i++){let m=1e9;for(let j=i;j<n;j++){m=Math.min(m,Hs[j]);b=Math.max(b,m*(j-i+1))}}
+  snap({cur:-1,msg:`Done. The stack method found ${best}. The slow way finds ${b}. ${b===best?'They agree.':'They differ.'}`});
+  return F;
+}
+const svg3=document.getElementById('t3'), s3=document.getElementById('s3');
+function draw3(f){
+  svg3.innerHTML='';
+  const n=Hs.length, max=Math.max(...Hs), gap=Math.min(40,260/n), x0=14, base=200, sc=160/max;
+  const X=i=>x0+i*gap;
+  Hs.forEach((h,i)=>{
+    const cur=i===f.cur;
+    el('rect',{x:X(i)+1,y:base-h*sc,width:gap-2,height:h*sc,fill:cur?'var(--left)':'var(--muted)','fill-opacity':cur?1:.45,stroke:'var(--line)'},svg3);
+    txt(svg3,X(i)+gap/2,base+16,h,{'font-size':12});
+    txt(svg3,X(i)+gap/2,base+32,i,{'font-size':10,fill:'var(--muted)'});
+  });
+  if(f.rect){const [s,e,h]=f.rect;el('rect',{x:X(s)+1,y:base-h*sc,width:(e-s)*gap-2,height:h*sc,fill:'var(--water)',opacity:.75,stroke:'var(--hit)','stroke-width':2},svg3);}
+  if(f.bestR){const [s,e,h]=f.bestR;el('rect',{x:X(s)+1,y:base-h*sc,width:(e-s)*gap-2,height:h*sc,fill:'none',stroke:'var(--hit)','stroke-width':2,'stroke-dasharray':'6 4'},svg3);}
+  el('line',{x1:x0-2,x2:X(n)+2,y1:base,y2:base,stroke:'var(--line)'},svg3);
+  txt(svg3,x0+n*gap/2,base+50,`best so far: ${f.best}`,{'font-size':12,fill:'var(--muted)'});
+  drawPile(svg3,f.st.map(([s,h])=>`(${s}, ${h})`),300,base,{w:84,hl:f.top});
+  s3.textContent=f.msg;
+}
+const st3=stepper('b3',build3,draw3);
+document.getElementById('b3rand').onclick=()=>{Hs=Array.from({length:6},()=>1+Math.floor(Math.random()*7));st3.load()};
+st3.load();
+})();
+</script>
+
+</body></html>
