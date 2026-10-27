@@ -1,0 +1,62 @@
+body {
+  font-family: system-ui, sans-serif;
+  line-height: 1.4;
+  margin: 0 auto;
+  max-width: 60rem;
+  padding: 1rem;
+}
+
+nav {
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+nav a {
+  font-weight: 600;
+}
+
+.notices {
+  background: #eef6ee;
+  border: 1px solid #9c9;
+  border-radius: 4px;
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  border-bottom: 1px solid #ddd;
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+form.stack label {
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+form.stack input,
+form.stack select,
+form.stack textarea {
+  box-sizing: border-box;
+  display: block;
+  font: inherit;
+  max-width: 28rem;
+  width: 100%;
+}
+
+.error {
+  color: #b00020;
+}
