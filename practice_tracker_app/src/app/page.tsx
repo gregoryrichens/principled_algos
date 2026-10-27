@@ -42,7 +42,7 @@ export default async function TodayPage({
                     <td>{`#${r.problem} ${r.title}`.trim()}</td>
                     <td>{r.stepLabel}</td>
                     <td>
-                      {r.dueOn}
+                      <span className="nowrap">{r.dueOn}</span>
                       {r.daysOverdue > 0 && ` (${r.daysOverdue} days overdue)`}
                     </td>
                     <td>

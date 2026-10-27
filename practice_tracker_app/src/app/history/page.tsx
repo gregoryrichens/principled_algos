@@ -33,7 +33,7 @@ export default async function HistoryPage({
           <tbody>
             {attempts.map((a) => (
               <tr key={a.id}>
-                <td>{a.attemptedOn}</td>
+                <td className="nowrap">{a.attemptedOn}</td>
                 <td>{`#${a.problem} ${a.title}`.trim()}</td>
                 <td>{principle(a.chosenPrinciple)}</td>
                 <td>{principle(a.correctPrinciple)}</td>
