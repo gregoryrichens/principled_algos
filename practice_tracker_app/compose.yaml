@@ -1,0 +1,51 @@
+name: practice-tracker
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: tracker
+      POSTGRES_PASSWORD: tracker
+      POSTGRES_DB: tracker
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tracker -d tracker"]
+      interval: 2s
+      retries: 15
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      target: runner
+    ports:
+      - "127.0.0.1:${TRACKER_PORT:-8000}:3000"
+    environment:
+      DATABASE_URL: postgresql://tracker:tracker@db:5432/tracker
+      TZ: ${TZ:-UTC}
+      PRINCIPLE_MAP_PATH: /app/data/principle_map.json
+    volumes:
+      - ../_analysis/principle_map.json:/app/data/principle_map.json:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  test:
+    profiles: ["test"]
+    build:
+      context: .
+      target: test
+    environment:
+      DATABASE_URL: postgresql://tracker:tracker@db:5432/tracker_test
+      TZ: UTC
+      PRINCIPLE_MAP_PATH: /app/data/principle_map.json
+    volumes:
+      - ../_analysis/principle_map.json:/app/data/principle_map.json:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

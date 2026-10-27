@@ -47,7 +47,7 @@ Three more things to know:
 ## What you need
 
 - **Git**, to copy the repository. On a Mac, running `git --version` in Terminal will offer to install it if it's missing.
-- **Docker Desktop**, which runs the app and its database in isolated "containers", so you don't have to install Node.js or PostgreSQL yourself. Download it from <https://www.docker.com/products/docker-desktop/>, install it and open it once. When the whale icon in your menu bar (Mac) or system tray (Windows) stops animating, Docker is ready.
+- **Docker Desktop**, which runs the app and its database in isolated "containers", so you don't have to install Node.js or PostgreSQL yourself. Download it from <https://www.docker.com/products/docker-desktop/>, install it and open it once. When the whale icon in your menu bar (Mac) or system tray (Windows) stops animating, Docker is ready. If you had a terminal window open while installing, close it and open a new one so it can find the `docker` command.
 
 To check both are working, open a terminal and run:
 
@@ -185,14 +185,14 @@ Your log is kept in a Docker **volume** named `practice-tracker_pgdata`. A volum
 **Back it up** by writing the whole database to a file:
 
 ```bash
-docker compose exec db pg_dump -U tracker tracker > tracker-backup.sql
+docker compose exec -T db pg_dump -U tracker tracker > tracker-backup.sql
 ```
 
 **Restore a backup** onto a fresh, empty database. Start only the database, load the file, then start the app:
 
 ```bash
 docker compose down -v          # deletes the current data. Back up first!
-docker compose up -d db
+docker compose up -d --wait db
 docker compose exec -T db psql -U tracker tracker < tracker-backup.sql
 docker compose up -d
 ```
