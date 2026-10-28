@@ -3,7 +3,7 @@
 `SCHEDULE.md` asks you to log every problem you attempt, and to do the ones you got wrong again a few days later. Keeping that log in a spreadsheet means you have to work out each morning which problems are due. This small app does that for you.
 
 - **You log each attempt:** the date, the problem, which principle you chose, how it went, and one line about why.
-- **Each day it tells you what to redo.** Any problem you failed comes back 1, 3 and 7 days later until you get it right on the 7th day.
+- **Each day it tells you what to redo.** Any problem you failed comes back 1, 3 and 7 days later until you get it right on the 7th day. A problem you solve cleanly comes back once more, 14 days later.
 
 It runs on your own computer. Your log is stored in a PostgreSQL database that also runs on your computer, so nothing goes to the cloud and nothing costs money.
 
@@ -23,9 +23,9 @@ Every attempt gets one of five **outcomes**:
 | `wrong-principle` | You reached for the wrong idea | **fail** |
 | `read-solution` | You had to read the hint or solution | **fail** |
 
-**The rule:** when you fail a problem, it comes back for review **1 day, 3 days and 7 days later**. If you fail any of those reviews, the cycle starts again from that day. If you pass the 7-day review, the problem is **retired** and leaves your list. It only returns if you fail it again some time later.
+**The rule:** when you fail a problem, it comes back for review **1 day, 3 days and 7 days later**. If you fail any of those reviews, the cycle starts again from that day. If you pass the 7-day review cleanly, it comes back once more for a **Day 14** check, 14 days after that clean solve. The same goes for a problem you solve `clean` on the first try: it comes back 14 days later. Pass the Day 14 check and the problem is **retired** and leaves your list. Fail it and the 1, 3 and 7 day cycle starts again. (A `slow` pass counts as a pass but doesn't queue a Day 14 check: passing the 7-day review with `slow` retires the problem straight away.)
 
-An example. You fail #435 on Monday the 5th:
+An example. You fail #435 on Monday the 5th (Day 14 here is two weeks after the Day 7 pass):
 
 | Date | What happens |
 |---|---|
@@ -34,7 +34,8 @@ An example. You fail #435 on Monday the 5th:
 | Thu 8 | It's on your list as **Day 3**. You fail again: `bug`. The cycle restarts, so it's now due on the 9th, 11th and 15th. |
 | Fri 9 | **Day 1**: `clean`. |
 | Sun 11 | **Day 3**: `clean`. |
-| Thu 15 | **Day 7**: `clean`. #435 is retired. |
+| Thu 15 | **Day 7**: `clean`. It's now due once more on the 29th. |
+| Thu 29 | **Day 14**: `clean`. #435 is retired. |
 
 Three more things to know:
 

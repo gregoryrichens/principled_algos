@@ -126,13 +126,13 @@ describe("core", () => {
   it("6: todayView lists the due reviews after importing the fixture", async () => {
     await importCsv(FIXTURE, TODAY);
     const view = await todayView(TODAY);
-    expect(view.due.map((d) => d.problem)).toEqual([76, 300]);
-    expect(view.due.some((d) => d.problem === 33)).toBe(false);
+    expect(view.due.map((d) => d.problem)).toEqual([76, 300, 33]);
+    expect(view.due.find((d) => d.problem === 33)!.stepLabel).toBe("Day 14");
     const r76 = view.due.find((d) => d.problem === 76)!;
     expect(r76.daysOverdue).toBe(33);
     expect(r76.title).toBe("Minimum Window Substring");
     expect(r76.anchor.outcome).toBe("bug");
-    expect(view.counts).toEqual({ due: 2, inCycle: 2, retired: 0 });
+    expect(view.counts).toEqual({ due: 3, inCycle: 3, retired: 0 });
   });
 
   it("7: removeAttempt deletes the row and returns the notice", async () => {

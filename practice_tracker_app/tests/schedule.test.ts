@@ -45,16 +45,19 @@ describe("review schedule", () => {
     ]);
   });
 
-  it("case 2: a pass with no earlier failure does nothing and is never due", () => {
+  it("case 2: a first-try clean queues one Day 14 review", () => {
     const attempts = [a(1, "2026-10-01", "clean")];
     expect(stateOf(attempts)).toMatchObject({
-      status: "none",
-      anchorDate: null,
-      anchorAttemptId: null,
-      nextStep: null,
-      nextDue: null,
+      status: "in_cycle",
+      anchorDate: "2026-10-01",
+      anchorAttemptId: 1,
+      nextStep: 0,
+      nextDue: "2026-10-15",
     });
-    expect(dueReviews(attempts, "2030-01-01")).toEqual([]);
+    expect(dueReviews(attempts, "2026-10-14")).toEqual([]);
+    expect(dueReviews(attempts, "2026-10-15")).toEqual([
+      { problem: 1, stepLabel: "Day 14", dueOn: "2026-10-15", daysOverdue: 0, anchorAttemptId: 1 },
+    ]);
   });
 
   it("case 3: a slow with no earlier failure leaves the problem at status none", () => {
@@ -62,7 +65,7 @@ describe("review schedule", () => {
     expect(stateOf(attempts)).toMatchObject({ status: "none" });
   });
 
-  it("case 4: Day 1, Day 3, Day 7 passes walk the ladder and then retire the problem", () => {
+  it("case 4: Day 1, Day 3, Day 7 clean passes walk the ladder and then queue a Day 14 review", () => {
     expect(STEP_LABELS).toEqual(["Day 1", "Day 3", "Day 7"]);
     expect(OFFSETS).toEqual([1, 3, 7]);
 
@@ -83,16 +86,18 @@ describe("review schedule", () => {
       { problem: 1, stepLabel: "Day 7", dueOn: "2026-10-08", daysOverdue: 0, anchorAttemptId: 1 },
     ]);
 
-    // After the pass on 10-08: retired, and never due again.
+    // After the clean pass on 10-08: the Day 14 review is anchored on that pass.
     expect(stateOf(attempts)).toMatchObject({
-      status: "retired",
-      anchorDate: null,
-      anchorAttemptId: null,
-      nextStep: null,
-      nextDue: null,
+      status: "in_cycle",
+      anchorDate: "2026-10-08",
+      anchorAttemptId: 4,
+      nextStep: 0,
+      nextDue: "2026-10-22",
     });
     expect(dueReviews(attempts, "2026-10-08")).toEqual([]);
-    expect(dueReviews(attempts, "2026-12-31")).toEqual([]);
+    expect(dueReviews(attempts, "2026-10-22")).toEqual([
+      { problem: 1, stepLabel: "Day 14", dueOn: "2026-10-22", daysOverdue: 0, anchorAttemptId: 4 },
+    ]);
   });
 
   it("case 5: a new failure on 10-04 restarts the cycle from 10-04", () => {
@@ -130,14 +135,14 @@ describe("review schedule", () => {
     ]);
   });
 
-  it("case 8: a pass on 10-09 completes all three reviews and retires the problem", () => {
+  it("case 8: a clean pass on 10-09 completes all three reviews and queues Day 14 from 10-09", () => {
     const attempts = [a(1, "2026-10-01", "bug"), a(2, "2026-10-09", "clean")];
     expect(stateOf(attempts)).toMatchObject({
-      status: "retired",
-      anchorDate: null,
-      anchorAttemptId: null,
-      nextStep: null,
-      nextDue: null,
+      status: "in_cycle",
+      anchorDate: "2026-10-09",
+      anchorAttemptId: 2,
+      nextStep: 0,
+      nextDue: "2026-10-23",
     });
   });
 
@@ -167,8 +172,8 @@ describe("review schedule", () => {
     });
   });
 
-  it("case 12: a pass on 10-20 after a retirement still leaves the problem retired", () => {
-    const attempts = [...case4(), a(5, "2026-10-20", "clean")];
+  it("case 12: a clean pass on 10-22 completes the Day 14 review and retires the problem", () => {
+    const attempts = [...case4(), a(5, "2026-10-22", "clean")];
     expect(stateOf(attempts)).toMatchObject({
       status: "retired",
       anchorDate: null,
@@ -176,6 +181,7 @@ describe("review schedule", () => {
       nextStep: null,
       nextDue: null,
     });
+    expect(dueReviews(attempts, "2026-12-31")).toEqual([]);
   });
 
   it("case 13: a second failure on 10-02 replaces the anchor", () => {
@@ -219,11 +225,11 @@ describe("review schedule", () => {
     const shuffled = [ordered[3], ordered[0], ordered[2], ordered[1]];
     expect(problemStates(shuffled)).toEqual(problemStates(case4()));
     expect(stateOf(shuffled)).toMatchObject({
-      status: "retired",
-      anchorDate: null,
-      anchorAttemptId: null,
-      nextStep: null,
-      nextDue: null,
+      status: "in_cycle",
+      anchorDate: "2026-10-08",
+      anchorAttemptId: 4,
+      nextStep: 0,
+      nextDue: "2026-10-22",
     });
   });
 
@@ -257,6 +263,42 @@ describe("review schedule", () => {
       anchorDate: "2026-12-31",
       nextStep: 0,
       nextDue: "2027-01-01",
+    });
+  });
+
+  it("case 22: a clean pass on 10-20, before Day 14 is due, is early and changes nothing", () => {
+    const attempts = [...case4(), a(5, "2026-10-20", "clean")];
+    expect(stateOf(attempts)).toMatchObject({ status: "in_cycle", anchorAttemptId: 4, nextDue: "2026-10-22" });
+  });
+
+  it("case 23: a slow pass at or after Day 14 retires the problem", () => {
+    const attempts = [a(1, "2026-10-01", "clean"), a(2, "2026-10-15", "slow")];
+    expect(stateOf(attempts)).toMatchObject({ status: "retired", nextStep: null, nextDue: null });
+  });
+
+  it("case 24: failing the Day 14 review starts the Day 1/3/7 cycle", () => {
+    const attempts = [a(1, "2026-10-01", "clean"), a(2, "2026-10-15", "bug")];
+    expect(stateOf(attempts)).toMatchObject({
+      status: "in_cycle",
+      anchorAttemptId: 2,
+      nextStep: 0,
+      nextDue: "2026-10-16",
+    });
+    expect(dueReviews(attempts, "2026-10-16")[0].stepLabel).toBe("Day 1");
+  });
+
+  it("case 25: a slow pass that finishes Day 7 retires the problem without a Day 14 review", () => {
+    const attempts = [a(1, "2026-10-01", "bug"), a(2, "2026-10-08", "slow")];
+    expect(stateOf(attempts)).toMatchObject({ status: "retired", nextStep: null, nextDue: null });
+  });
+
+  it("case 26: a clean solve of a retired problem queues a new Day 14 review", () => {
+    const attempts = [...case4(), a(5, "2026-10-22", "clean"), a(6, "2026-11-01", "clean")];
+    expect(stateOf(attempts)).toMatchObject({
+      status: "in_cycle",
+      anchorAttemptId: 6,
+      nextStep: 0,
+      nextDue: "2026-11-15",
     });
   });
 });
