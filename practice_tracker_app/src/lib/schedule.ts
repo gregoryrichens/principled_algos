@@ -8,6 +8,15 @@ export const FAILS: ReadonlySet<Outcome> = new Set<Outcome>(["bug", "wrong-princ
 export const OFFSETS = [1, 3, 7] as const;
 export const STEP_LABELS = ["Day 1", "Day 3", "Day 7"] as const;
 
+// A review cycle is a list of days after its anchor attempt, each with a label.
+// A failure starts the Day 1/3/7 cycle; a clean solve, or finishing that cycle, starts a one-step Day 14 cycle.
+interface Cycle {
+  offsets: readonly number[];
+  labels: readonly string[];
+}
+const FAIL_CYCLE: Cycle = { offsets: OFFSETS, labels: STEP_LABELS };
+const CLEAN_CYCLE: Cycle = { offsets: [14], labels: ["Day 14"] };
+
 export interface Attempt {
   id: number;
   attemptedOn: string;
@@ -18,15 +27,16 @@ export interface Attempt {
 export interface ProblemState {
   problem: number;
   status: "none" | "in_cycle" | "retired";
-  anchorDate: string | null; // F: date of the failure that started the current cycle
-  anchorAttemptId: number | null; // id of that failing attempt
-  nextStep: 0 | 1 | 2 | null; // index into OFFSETS while in_cycle, else null
-  nextDue: string | null; // addDays(anchorDate, OFFSETS[nextStep]) while in_cycle, else null
+  anchorDate: string | null; // F: date of the attempt that started the current cycle
+  anchorAttemptId: number | null; // id of that attempt (a failure, or a clean solve)
+  cycle: Cycle | null; // FAIL_CYCLE or CLEAN_CYCLE while in_cycle, else null
+  nextStep: number | null; // index into cycle.offsets while in_cycle, else null
+  nextDue: string | null; // addDays(anchorDate, cycle.offsets[nextStep]) while in_cycle, else null
 }
 
 export interface DueReview {
   problem: number;
-  stepLabel: string; // STEP_LABELS[nextStep]
+  stepLabel: string; // cycle.labels[nextStep]
   dueOn: string;
   daysOverdue: number; // daysBetween(dueOn, today), >= 0
   anchorAttemptId: number;
@@ -53,32 +63,44 @@ export function problemStates(attempts: Iterable<Attempt>): Map<number, ProblemS
       status: "none",
       anchorDate: null,
       anchorAttemptId: null,
+      cycle: null,
       nextStep: null,
       nextDue: null,
     };
 
+    const start = (cycle: Cycle, attempt: Attempt) => {
+      state.status = "in_cycle";
+      state.anchorDate = attempt.attemptedOn;
+      state.anchorAttemptId = attempt.id;
+      state.cycle = cycle;
+      state.nextStep = 0;
+    };
+
     for (const attempt of group) {
       if (FAILS.has(attempt.outcome)) {
-        state.status = "in_cycle";
-        state.anchorDate = attempt.attemptedOn;
-        state.anchorAttemptId = attempt.id;
-        state.nextStep = 0;
-      } else if (state.status === "in_cycle" && state.anchorDate !== null && state.nextStep !== null) {
+        start(FAIL_CYCLE, attempt);
+      } else if (state.status === "in_cycle" && state.anchorDate !== null && state.cycle !== null && state.nextStep !== null) {
         const anchor = state.anchorDate;
-        const k = OFFSETS.filter((o) => addDays(anchor, o) <= attempt.attemptedOn).length;
+        const cycle = state.cycle;
+        const k = cycle.offsets.filter((o) => addDays(anchor, o) <= attempt.attemptedOn).length;
         if (k <= state.nextStep) continue; // early pass
-        if (k === OFFSETS.length) {
+        if (k < cycle.offsets.length) {
+          state.nextStep = k;
+        } else if (cycle === FAIL_CYCLE) {
+          start(CLEAN_CYCLE, attempt); // finished the failure ladder: confirm 14 days later
+        } else {
           state.status = "retired";
           state.anchorDate = null;
           state.anchorAttemptId = null;
+          state.cycle = null;
           state.nextStep = null;
-        } else {
-          state.nextStep = k as 1 | 2;
         }
+      } else if (attempt.outcome === "clean") {
+        start(CLEAN_CYCLE, attempt);
       }
       state.nextDue =
-        state.status === "in_cycle" && state.anchorDate !== null && state.nextStep !== null
-          ? addDays(state.anchorDate, OFFSETS[state.nextStep])
+        state.status === "in_cycle" && state.anchorDate !== null && state.cycle !== null && state.nextStep !== null
+          ? addDays(state.anchorDate, state.cycle.offsets[state.nextStep])
           : null;
     }
 
@@ -92,6 +114,7 @@ export function dueReviews(attempts: Iterable<Attempt>, today: string): DueRevie
   for (const state of problemStates(attempts).values()) {
     if (
       state.status === "in_cycle" &&
+      state.cycle !== null &&
       state.nextDue !== null &&
       state.nextStep !== null &&
       state.anchorAttemptId !== null &&
@@ -99,7 +122,7 @@ export function dueReviews(attempts: Iterable<Attempt>, today: string): DueRevie
     ) {
       due.push({
         problem: state.problem,
-        stepLabel: STEP_LABELS[state.nextStep],
+        stepLabel: state.cycle.labels[state.nextStep],
         dueOn: state.nextDue,
         daysOverdue: daysBetween(state.nextDue, today),
         anchorAttemptId: state.anchorAttemptId,

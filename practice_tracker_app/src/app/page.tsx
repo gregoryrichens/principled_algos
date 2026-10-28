@@ -30,7 +30,7 @@ export default async function TodayPage({
                 <th>Problem</th>
                 <th>Review</th>
                 <th>Due</th>
-                <th>Last failure</th>
+                <th>Started from</th>
                 <th></th>
               </tr>
             </thead>
