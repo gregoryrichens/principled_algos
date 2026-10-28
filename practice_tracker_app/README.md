@@ -229,7 +229,7 @@ Then try `SELECT attempted_on, problem, outcome, note FROM attempts ORDER BY att
 The rules for scheduling and importing have automated tests. To run them:
 
 ```bash
-docker compose --profile test run --rm test
+docker compose --profile test run --rm --build test
 ```
 
 The tests use their own database, `tracker_test`, so they never touch your log.
