@@ -9,7 +9,7 @@ export const OFFSETS = [1, 3, 7] as const;
 export const STEP_LABELS = ["Day 1", "Day 3", "Day 7"] as const;
 
 // A review cycle is a list of days after its anchor attempt, each with a label.
-// A failure starts the Day 1/3/7 cycle; a clean solve starts a one-step Day 14 cycle.
+// A failure starts the Day 1/3/7 cycle; a clean solve, or finishing that cycle, starts a one-step Day 14 cycle.
 interface Cycle {
   offsets: readonly number[];
   labels: readonly string[];
@@ -86,8 +86,8 @@ export function problemStates(attempts: Iterable<Attempt>): Map<number, ProblemS
         if (k <= state.nextStep) continue; // early pass
         if (k < cycle.offsets.length) {
           state.nextStep = k;
-        } else if (cycle === FAIL_CYCLE && attempt.outcome === "clean") {
-          start(CLEAN_CYCLE, attempt); // finished the failure ladder cleanly: confirm 14 days later
+        } else if (cycle === FAIL_CYCLE) {
+          start(CLEAN_CYCLE, attempt); // finished the failure ladder: confirm 14 days later
         } else {
           state.status = "retired";
           state.anchorDate = null;

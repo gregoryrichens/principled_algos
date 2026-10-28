@@ -23,7 +23,7 @@ Every attempt gets one of five **outcomes**:
 | `wrong-principle` | You reached for the wrong idea | **fail** |
 | `read-solution` | You had to read the hint or solution | **fail** |
 
-**The rule:** when you fail a problem, it comes back for review **1 day, 3 days and 7 days later**. If you fail any of those reviews, the cycle starts again from that day. If you pass the 7-day review cleanly, it comes back once more for a **Day 14** check, 14 days after that clean solve. The same goes for a problem you solve `clean` on the first try: it comes back 14 days later. Pass the Day 14 check and the problem is **retired** and leaves your list. Fail it and the 1, 3 and 7 day cycle starts again. (A `slow` pass counts as a pass but doesn't queue a Day 14 check: passing the 7-day review with `slow` retires the problem straight away.)
+**The rule:** when you fail a problem, it comes back for review **1 day, 3 days and 7 days later**. If you fail any of those reviews, the cycle starts again from that day. If you pass the 7-day review, it comes back once more for a **Day 14** check, 14 days after that pass. A problem you solve `clean` on the first try also comes back 14 days later (a first-try `slow` doesn't). Pass the Day 14 check and the problem is **retired** and leaves your list. Fail it and the 1, 3 and 7 day cycle starts again.
 
 An example. You fail #435 on Monday the 5th (Day 14 here is two weeks after the Day 7 pass):
 

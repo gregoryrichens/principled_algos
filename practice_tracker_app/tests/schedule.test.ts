@@ -287,9 +287,14 @@ describe("review schedule", () => {
     expect(dueReviews(attempts, "2026-10-16")[0].stepLabel).toBe("Day 1");
   });
 
-  it("case 25: a slow pass that finishes Day 7 retires the problem without a Day 14 review", () => {
+  it("case 25: a slow pass that finishes Day 7 also queues a Day 14 review", () => {
     const attempts = [a(1, "2026-10-01", "bug"), a(2, "2026-10-08", "slow")];
-    expect(stateOf(attempts)).toMatchObject({ status: "retired", nextStep: null, nextDue: null });
+    expect(stateOf(attempts)).toMatchObject({
+      status: "in_cycle",
+      anchorAttemptId: 2,
+      nextStep: 0,
+      nextDue: "2026-10-22",
+    });
   });
 
   it("case 26: a clean solve of a retired problem queues a new Day 14 review", () => {
