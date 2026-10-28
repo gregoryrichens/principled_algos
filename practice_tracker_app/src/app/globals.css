@@ -268,13 +268,15 @@ a.button {
   text-decoration: none;
 }
 
-.actions {
-  white-space: nowrap;
+.actions a.button,
+.actions button {
+  display: block;
+  text-align: center;
+  width: 100%;
 }
 
 .actions form {
-  display: inline;
-  margin-left: 0.4rem;
+  margin-top: 0.4rem;
 }
 
 button:disabled {
