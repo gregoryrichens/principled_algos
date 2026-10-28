@@ -82,6 +82,17 @@ export async function deleteAttempt(id: number): Promise<AttemptRow | null> {
   return res.rows.length ? toAttempt(res.rows[0]) : null;
 }
 
+export async function updateAttempt(id: number, row: ParsedRow): Promise<boolean> {
+  const res = await pool.query(
+    `UPDATE attempts
+     SET attempted_on = $2, problem = $3, title = $4, chosen_principle = $5,
+         correct_principle = $6, outcome = $7, note = $8
+     WHERE id = $1`,
+    [id, ...toParams(row)],
+  );
+  return res.rowCount === 1;
+}
+
 export async function importRows(
   rows: ParsedRow[],
 ): Promise<{ inserted: number; skipped: number }> {
