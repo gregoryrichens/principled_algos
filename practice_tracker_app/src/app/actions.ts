@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { importCsv, logAttempt, removeAttempt, type LogInput } from "@/lib/core";
+import { editAttempt, importCsv, logAttempt, removeAttempt, type LogInput } from "@/lib/core";
 import { todayIn } from "@/lib/dates";
 
 export type LogFormState = {
@@ -24,8 +24,8 @@ function field(formData: FormData, name: string): string {
   return typeof value === "string" ? value : "";
 }
 
-export async function logAction(_prev: LogFormState, formData: FormData): Promise<LogFormState> {
-  const values: LogInput = {
+function logValues(formData: FormData): LogInput {
+  return {
     attemptedOn: field(formData, "attemptedOn"),
     problem: field(formData, "problem"),
     title: field(formData, "title"),
@@ -34,9 +34,20 @@ export async function logAction(_prev: LogFormState, formData: FormData): Promis
     outcome: field(formData, "outcome"),
     note: field(formData, "note"),
   };
+}
+
+export async function logAction(_prev: LogFormState, formData: FormData): Promise<LogFormState> {
+  const values = logValues(formData);
   const result = await logAttempt(values, today());
   if (!result.ok) return { errors: result.errors, values };
   redirect(withNotices("/", result.notices));
+}
+
+export async function editAction(_prev: LogFormState, formData: FormData): Promise<LogFormState> {
+  const values = logValues(formData);
+  const result = await editAttempt(Number(field(formData, "id")), values, today());
+  if (!result.ok) return { errors: result.errors, values };
+  redirect(withNotices("/history", result.notices));
 }
 
 export async function importAction(

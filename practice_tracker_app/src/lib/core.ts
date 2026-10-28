@@ -7,6 +7,7 @@ import {
   insertAttempt,
   latestTitles,
   listAttempts,
+  updateAttempt,
   type AttemptRow,
 } from "@/lib/db";
 import {
@@ -36,10 +37,12 @@ function withMapPrinciple(row: ParsedRow): ParsedRow {
   return entry ? { ...row, correctPrinciple: entry.primary } : row;
 }
 
-export async function logAttempt(
+type FieldErrors = Record<keyof LogInput, string | undefined>;
+
+function validate(
   input: LogInput,
   today: string,
-): Promise<{ ok: true; notices: string[] } | { ok: false; errors: Record<keyof LogInput, string | undefined> }> {
+): { ok: true; row: ParsedRow } | { ok: false; errors: FieldErrors } {
   const date = parseDate(input.attemptedOn, today);
   const problem = parseProblem(input.problem);
   const chosen = parsePrinciple(input.chosenPrinciple);
@@ -61,29 +64,54 @@ export async function logAttempt(
     };
   }
 
-  const n = problem.value.problem;
-  await insertAttempt(
-    withMapPrinciple({
+  return {
+    ok: true,
+    row: withMapPrinciple({
       attemptedOn: date.value,
-      problem: n,
+      problem: problem.value.problem,
       title: input.title.trim(),
       chosenPrinciple: chosen.value,
       correctPrinciple: correct.value,
       outcome: outcome.value,
       note: input.note.trim(),
     }),
-  );
+  };
+}
 
-  const notices = [`Logged #${n} (${outcome.value}).`];
+export async function logAttempt(
+  input: LogInput,
+  today: string,
+): Promise<{ ok: true; notices: string[] } | { ok: false; errors: FieldErrors }> {
+  const v = validate(input, today);
+  if (!v.ok) return v;
+
+  const { problem: n, outcome, chosenPrinciple: chosen } = v.row;
+  await insertAttempt(v.row);
+
+  const notices = [`Logged #${n} (${outcome}).`];
   const entry = principleMap().get(n);
-  if (entry && chosen.value !== null && chosen.value !== entry.primary) {
+  if (entry && chosen !== null && chosen !== entry.primary) {
     let notice = `Principle map says P${entry.primary} for #${n}: ${entry.note}.`;
-    if (entry.secondary.includes(chosen.value)) {
-      notice += ` (P${chosen.value} is listed as a secondary principle.)`;
+    if (entry.secondary.includes(chosen)) {
+      notice += ` (P${chosen} is listed as a secondary principle.)`;
     }
     notices.push(notice);
   }
   return { ok: true, notices };
+}
+
+export async function editAttempt(
+  id: number,
+  input: LogInput,
+  today: string,
+): Promise<{ ok: true; notices: string[] } | { ok: false; errors: FieldErrors }> {
+  const v = validate(input, today);
+  if (!v.ok) return v;
+  const updated = await updateAttempt(id, v.row);
+  return {
+    ok: true,
+    notices: [updated ? `Updated attempt from ${v.row.attemptedOn} for #${v.row.problem}.` : "That attempt no longer exists."],
+  };
 }
 
 export async function importCsv(

@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { logAction } from "@/app/actions";
+import { editAction, logAction } from "@/app/actions";
 import type { LogInput } from "@/lib/core";
 import { OUTCOMES } from "@/lib/schedule";
 
@@ -19,20 +19,24 @@ function PrincipleOptions({ blank, names }: { blank: string; names: Record<numbe
   );
 }
 
+// With an id the form edits that attempt; without one it logs a new attempt.
 export function LogForm({
   defaults,
   principleNames,
+  id,
 }: {
   defaults: LogInput;
   principleNames: Record<number, string>;
+  id?: number;
 }) {
-  const [state, action, pending] = useActionState(logAction, null);
+  const [state, action, pending] = useActionState(id === undefined ? logAction : editAction, null);
   const v = state?.values ?? defaults;
   const e = state?.errors;
   const err = (key: keyof LogInput) => (e?.[key] ? <span className="error">{e[key]}</span> : null);
 
   return (
     <form action={action} className="stack">
+      {id !== undefined && <input type="hidden" name="id" value={id} />}
       <label>
         Date
         <input type="date" name="attemptedOn" defaultValue={v.attemptedOn} />

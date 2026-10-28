@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { DeleteButton } from "@/components/DeleteButton";
 import { Notices } from "@/components/Notices";
 import { listAttempts } from "@/lib/db";
@@ -39,7 +40,10 @@ export default async function HistoryPage({
                 <td>{principle(a.correctPrinciple)}</td>
                 <td>{a.outcome}</td>
                 <td>{a.note}</td>
-                <td>
+                <td className="actions">
+                  <Link href={`/history/${a.id}/edit`} className="button">
+                    Edit
+                  </Link>
                   <DeleteButton id={a.id} date={a.attemptedOn} problem={a.problem} />
                 </td>
               </tr>

@@ -132,7 +132,7 @@ The app knows the correct principle for each of the NeetCode 150 from `_analysis
 
 **3. Do the review.** Click **Log attempt** on that row. The problem number and title are filled in for you. Set the outcome to `clean` and save. #435 drops off today's list and will come back as **Day 3**.
 
-**4. Clean up the test entries (optional).** Open **History**. Every row has a **Delete** button. Press it on one of the #435 rows. A popup asks you to confirm, which guards against deleting by accident. Press **OK**, then do the same for the other #435 row.
+**4. Clean up the test entries (optional).** Open **History**. Every row has a **Delete** button. Press it on one of the #435 rows. A popup asks you to confirm, which guards against deleting by accident. Press **OK**, then do the same for the other #435 row. Made a typo? Press **Edit** on any row to fix it instead.
 
 You're set up. From now on, follow `SCHEDULE.md` as usual, and at step 5 of the ritual ("Log one line"), log the attempt here.
 

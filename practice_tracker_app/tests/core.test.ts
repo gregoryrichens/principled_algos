@@ -1,6 +1,6 @@
 import pg from "pg";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { importCsv, logAttempt, removeAttempt, todayView, type LogInput } from "@/lib/core";
+import { editAttempt, importCsv, logAttempt, removeAttempt, todayView, type LogInput } from "@/lib/core";
 import { listAttempts, pool } from "@/lib/db";
 import { SCHEMA_SQL } from "@/lib/schema";
 
@@ -141,5 +141,30 @@ describe("core", () => {
     expect(await removeAttempt(target.id)).toEqual(["Deleted attempt from 2026-09-22 for #76."]);
     expect((await listAttempts()).some((a) => a.id === target.id)).toBe(false);
     expect(await removeAttempt(target.id)).toEqual([]);
+  });
+
+  it("8: editAttempt changes the row in place, keeping its id", async () => {
+    await importCsv(FIXTURE, TODAY);
+    const target = (await listAttempts()).find((a) => a.problem === 76)!;
+    const result = await editAttempt(
+      target.id,
+      input({ attemptedOn: "2026-09-22", problem: "76", outcome: "clean", note: "fixed" }),
+      TODAY,
+    );
+    expect(result).toEqual({ ok: true, notices: ["Updated attempt from 2026-09-22 for #76."] });
+    const after = (await listAttempts()).find((a) => a.id === target.id)!;
+    expect(after.outcome).toBe("clean");
+    expect(after.note).toBe("fixed");
+    expect(await listAttempts()).toHaveLength(3);
+  });
+
+  it("9: editAttempt rejects bad input and a missing id changes nothing", async () => {
+    await importCsv(FIXTURE, TODAY);
+    const target = (await listAttempts())[0];
+    const bad = await editAttempt(target.id, input({ outcome: "nope" }), TODAY);
+    expect(bad.ok).toBe(false);
+    expect((await listAttempts()).find((a) => a.id === target.id)).toEqual(target);
+    const missing = await editAttempt(999999, input({}), TODAY);
+    expect(missing).toEqual({ ok: true, notices: ["That attempt no longer exists."] });
   });
 });

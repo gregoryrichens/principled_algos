@@ -208,7 +208,8 @@ textarea:focus {
   outline-offset: 2px;
 }
 
-input[type="file"]::file-selector-button {
+input[type="file"]::file-selector-button,
+a.button {
   background: transparent;
   border: 1px solid var(--fg);
   color: var(--fg);
@@ -242,20 +243,40 @@ button {
   white-space: nowrap;
 }
 
-button::before {
+button::before,
+a.button::before {
   content: "[ ";
 }
 
-button::after {
+button::after,
+a.button::after {
   content: " ]";
 }
 
 button:hover:not(:disabled),
-button:focus-visible {
+button:focus-visible,
+a.button:hover,
+a.button:focus-visible {
   background: var(--fg);
   color: var(--bg);
   outline: none;
   text-shadow: none;
+}
+
+a.button {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.actions a.button,
+.actions button {
+  display: block;
+  text-align: center;
+  width: 100%;
+}
+
+.actions form {
+  margin-top: 0.4rem;
 }
 
 button:disabled {
