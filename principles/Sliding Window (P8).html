@@ -1,0 +1,423 @@
+<title>Sliding Window (P8)</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: the same reading column (~46rem) as the P5 and P6 pages in this series. Widgets sit in the column as framed panels.
+   Edge colors match P5: left edge = teal, right edge = amber. Blue = the window and the record. Green tint = a good stretch. Red = a repeat. */
+:root{
+  --bg:#f6f7f4; --panel:#ffffff; --ink:#1d2321; --muted:#5d6762; --line:#d9ddd6; --gone:#e6e8e3;
+  --left:#0f7f78; --right:#b8640c; --hit:#2f6fd0; --good:#d3ebe3; --win:#e2ebfa; --bad:#c23a2b;
+  --display:"Young Serif", Georgia, serif;
+  --body:"Atkinson Hyperlegible", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141917; --panel:#1c2220; --ink:#e7ebe8; --muted:#9aa49f; --line:#323a37; --gone:#262d2a;
+  --left:#3cc4b9; --right:#f0a24a; --hit:#7aa9ff; --good:#1f3d35; --win:#1d2a40; --bad:#ff7a6b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141917; --panel:#1c2220; --ink:#e7ebe8; --muted:#9aa49f; --line:#323a37; --gone:#262d2a;
+  --left:#3cc4b9; --right:#f0a24a; --hit:#7aa9ff; --good:#1f3d35; --win:#1d2a40; --bad:#ff7a6b; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;
+  padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px));padding-block:32px 64px}
+main{max-width:46rem;margin:0 auto;display:flex;flex-direction:column;gap:1.1rem}
+h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.4rem,7vw,3.6rem)}
+h2{font-size:1.8rem;margin-top:2.2rem;padding-top:1.4rem;border-top:1px solid var(--line)}
+h3{font-size:1.3rem;margin-top:1.3rem}
+p{margin:0}
+.eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lede{font-size:1.15rem;color:var(--muted)}
+.L{color:var(--left);font-weight:700}.R{color:var(--right);font-weight:700}
+code{font-family:var(--mono);font-size:.88em;background:var(--gone);padding:.05em .3em;border-radius:3px}
+pre{font-family:var(--mono);font-size:.85rem;line-height:1.5;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px;overflow-x:auto;margin:0}
+pre code{background:none;padding:0;font-size:inherit}
+.cm{color:var(--muted)}
+.widget{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.widget svg{width:100%;height:auto;display:block}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button{font:600 .9rem var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 14px;cursor:pointer}
+button:hover{border-color:var(--muted)}
+input[type=text]{font:400 .9rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 10px;min-width:0;flex:1 1 8rem}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--hit);outline-offset:2px}
+.status{font-size:.97rem;min-height:3.2em;border-left:3px solid var(--line);padding:2px 0 2px 12px}
+.err{color:var(--bad);font-size:.88rem}
+.caption{font-size:.9rem;color:var(--muted)}
+.facts{font-family:var(--mono);font-size:.85rem;display:flex;flex-wrap:wrap;gap:6px 18px;font-variant-numeric:tabular-nums}
+.facts b{font-weight:600}
+.meters{display:grid;grid-template-columns:auto 1fr auto;gap:6px 10px;align-items:center;font-family:var(--mono);font-size:.85rem;font-variant-numeric:tabular-nums}
+.meters .bar{height:10px;background:var(--gone);border-radius:5px;overflow:hidden}
+.meters .bar i{display:block;height:100%;border-radius:5px;transition:width .25s}
+table{border-collapse:collapse;font-size:.92rem;font-variant-numeric:tabular-nums;width:100%}
+.tw{overflow-x:auto}
+th,td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:400}
+.rule{border-left:3px solid var(--hit);padding:4px 0 4px 14px;font-size:1.08rem}
+details{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+summary{cursor:pointer;font-weight:700}
+details[open] summary{margin-bottom:8px}
+input[type=range]{width:100%;accent-color:var(--hit)}
+.napkin{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:10px}
+.napkin div{border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-variant-numeric:tabular-nums}
+.napkin b{display:block;font-family:var(--mono);font-size:1.15rem}
+.napkin span{font-size:.85rem;color:var(--muted)}
+ul{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<main>
+<header style="display:flex;flex-direction:column;gap:.6rem">
+  <span class="eyebrow">Principled Algos · Principle 8 of 18</span>
+  <h1>Sliding Window</h1>
+  <p class="lede">Grow the right edge. Shrink the left edge. Never start again from the beginning.</p>
+  <p class="caption">P2 is "running totals" and P5 is "two pointers that move toward each other". Card numbers refer to DRILLS.md.</p>
+</header>
+
+<h2>As if to a child</h2>
+<p>You have a long row of colored beads. You want the longest run of beads, side by side, with no color two times. Hold a card with a slot over the row, so that you see only the beads in the slot.</p>
+<p>Start at the left end. Make the slot wider on the <span class="R">right side</span>, one bead at a time. If the new color is already in the slot, push the <span class="L">left side</span> to the right until the old bead of that color goes out. Remember the biggest count of beads. The slot only moves to the right. At the end, the biggest count is the answer.</p>
+
+<h2>The extended explanation</h2>
+
+<h3>Start from what is true</h3>
+<p>A <b>stretch</b> is a group of items side by side in a list, with no gaps: a <i>substring</i> in text, a <i>subarray</i> in numbers. Start with three facts.</p>
+<ul>
+  <li><b>Fact 1. A start and an end set each stretch.</b> With <i>n</i> items there are <i>n</i> × (<i>n</i> + 1) ÷ 2 stretches: 36 for 8 letters. The slow way tests each one.</li>
+  <li><b>Fact 2. Neighbor stretches share almost everything.</b> Keep <b>notes</b>: a small summary of the contents, for example a count of each letter. When an item comes in or goes out, change the notes for that item only.</li>
+  <li><b>Fact 3. For many rules, a bad stretch makes every bigger stretch bad.</b> "abca" has a repeated letter, so every stretch that contains "abca" has that repeat too. Read backwards: every part of a good stretch is good. Programmers call this rule <i>monotone</i>.</li>
+</ul>
+<p>Now join the facts. The <b>window</b> is the stretch from position <code>l</code> to position <code>r</code>, both included. Each step grows it (<code>r</code> moves right) or shrinks it (<code>l</code> moves right).</p>
+<ul>
+  <li><b>Why <code>l</code> never moves back.</b> When the window is bad, Fact 3 says that every stretch from <code>l</code> to <code>r</code> or further is bad. The stretches from <code>l</code> that end before <code>r</code> are parts of the last good window, so they are not longer. So <code>l</code> is finished.</li>
+  <li><b>Why <code>r</code> never moves back.</b> After <code>l</code> moves, you skip the stretches from the new <code>l</code> that end before <code>r</code>. They are also parts of the last good window, so they are shorter than a stretch you already recorded.</li>
+</ul>
+<p>So each edge moves at most <i>n</i> times: 2<i>n</i> cheap steps in total.</p>
+
+<h3>See the window walk along the stairs</h3>
+<p>The grid shows all 36 stretches of <code>abcabcbb</code>. The row is the start and the column is the end. (A stretch cannot end before it starts, so the lower-left half is empty.) Green squares are good, and grey squares with × have a repeat. Find the line between them. Fact 3 makes each row grey after its first ×. Its backward form makes the line go down like stairs. A grow moves the window one square right, sometimes onto grey. Then shrinks move it down to green again.</p>
+
+<div class="widget" id="w1">
+  <svg id="str1" viewBox="0 0 600 96" role="img" aria-label="The word, with the window shown as a band"></svg>
+  <div class="facts" id="facts1"></div>
+  <svg id="grid1" viewBox="0 0 438 432" style="max-width:30rem;margin:0 auto" role="img" aria-label="Grid of all stretches: row is the start, column is the end"></svg>
+  <div class="status" id="s1" aria-live="polite"></div>
+  <div class="controls">
+    <button id="b1step" type="button">Next step</button>
+    <button id="b1play" type="button">Play</button>
+    <button id="b1reset" type="button">Reset</button>
+  </div>
+  <div class="controls">
+    <label for="word1" class="caption">Try your own word (up to 12 characters):</label>
+    <input type="text" id="word1" value="abcabcbb" autocomplete="off" spellcheck="false">
+    <button id="b1use" type="button">Use this word</button>
+  </div>
+  <span class="err" id="e1"></span>
+  <p class="caption">One click is one grow or one shrink. Teal: <code>l</code>. Amber: <code>r</code>. The outline marks the window now (red when bad). Blue dots: its path.</p>
+</div>
+
+<h3>The sentence that keeps the code correct</h3>
+<p class="rule">When the shrink loop ends, the window is the longest good stretch that ends at <code>r</code>, and the notes describe exactly the items inside it.</p>
+<p>This sentence is the <b>invariant</b>: a statement that is true at the same point of every loop turn. The first half makes the answer correct: each end gets its longest good stretch, and the longest of those is the longest of all. The second half makes the code fast. If your loop builds the notes again from nothing, you have lost the window.</p>
+
+<h3>Worked example 1: Longest Substring Without Repeating Characters (LeetCode 3)</h3>
+<p><b>Problem.</b> Return the length of the longest stretch of a string in which no character appears two times. For <code>"abcabcbb"</code> the answer is 3 (<code>"abc"</code>). The notes count each character in the window.</p>
+<pre><code>def lengthOfLongestSubstring(s):
+    count = {}                       <span class="cm"># notes: each character's count in s[l..r]</span>
+    l = 0
+    best = 0
+    for r, c in enumerate(s):
+        count[c] = count.get(c, 0) + 1   <span class="cm"># grow: s[r] comes in</span>
+        while count[c] &gt; 1:          <span class="cm"># bad: c is in the window two times</span>
+            count[s[l]] -= 1         <span class="cm"># shrink: s[l] goes out, then l moves</span>
+            l += 1
+        best = max(best, r - l + 1)  <span class="cm"># good again: record</span>
+    return best</code></pre>
+<p>Each <b>Next step</b> click above is one loop turn: a grow is a <code>for</code> turn, a shrink is a <code>while</code> turn. The <code>while</code> loop moves <code>l</code> at most <i>n</i> times <i>in total</i>, so this loop inside a loop is not <i>n</i> × <i>n</i> work.</p>
+
+<h3>Napkin math: how much faster?</h3>
+<p>Assume 10<sup>9</sup> simple steps each second. The worst slow way builds a new set for every stretch. The better slow way, a double loop, keeps one set for each start.</p>
+<div class="widget">
+  <label for="nslider" class="caption">Text length <i>n</i> = <b id="nval"></b></label>
+  <input type="range" id="nslider" min="1" max="7" step="1" value="5">
+  <div class="napkin">
+    <div><b id="t3"></b><span id="t3s"></span></div>
+    <div><b id="t2"></b><span id="t2s"></span></div>
+    <div><b id="t1"></b><span id="t1s"></span></div>
+  </div>
+</div>
+<p>By hand, for <i>n</i> = 100,000: <i>n</i><sup>3</sup> ÷ 6 ≈ 1.7 × 10<sup>14</sup> checks is about 46 hours. <i>n</i><sup>2</sup> ÷ 2 = 5 × 10<sup>9</sup> steps is 5 seconds. 2<i>n</i> = 2 × 10<sup>5</sup> steps is 0.2 milliseconds.</p>
+<p><b>Claim 1:</b> "the window is <i>n</i> times faster than the double loop." Check: (<i>n</i><sup>2</sup> ÷ 2) ÷ 2<i>n</i> = <i>n</i> ÷ 4 = 25,000, not 100,000. <b>Verdict: exaggerated by about 4 times.</b></p>
+<p><b>Claim 2:</b> "for problem 3, the window is 25,000 times faster." Richard Hamming, a mathematician known for quick checks, would ask if the numbers fit the real problem. LeetCode 3 allows about 95 different characters, so the double loop can stop each start after 95 steps: 9.5 million steps, about 50 times the window. <b>Verdict: exaggerated by about 500 times.</b> The big win comes when good stretches can be long.</p>
+
+<h3>Longest or shortest: the inner loop flips</h3>
+<div class="tw"><table>
+<tr><th>You want</th><th>Shrink the left edge …</th><th>Record the answer …</th></tr>
+<tr><td>the <b>longest</b> good window</td><td>while the window is <b>bad</b></td><td>after the shrink loop</td></tr>
+<tr><td>the <b>shortest</b> good window</td><td>while the window is <b>good</b></td><td>inside the shrink loop, before each removal</td></tr>
+</table></div>
+<p>Why can the shortest case move <code>l</code>? When the window is good, every later window that starts at <code>l</code> is longer. So <code>l</code> is finished: record, then move <code>l</code>.</p>
+
+<h3>Worked example 2: Minimum Window Substring (LeetCode 76)</h3>
+<p><b>Problem.</b> Return the shortest stretch of <code>s</code> that contains every character of <code>t</code>, with repeats, or <code>""</code> if there is none. For <code>s = "ADOBECODEBANC"</code> and <code>t = "ABC"</code>, the answer is <code>"BANC"</code>.</p>
+<p><b>Test the mirror of Fact 3.</b> For a shortest problem, a good window must stay good when it grows. Here it does: added letters cannot remove a letter of <code>t</code>.</p>
+<p><b>A fast test.</b> Keep one number, <code>have</code>: how many different letters of <code>t</code> have enough copies in the window. <code>need</code> is how many different letters <code>t</code> has. The window is good when <code>have == need</code>. <code>have</code> changes only when a letter's count crosses its target.</p>
+
+<div class="widget" id="w2">
+  <svg id="str2" viewBox="0 0 600 110" role="img" aria-label="The string s, with the window and the best window so far"></svg>
+  <div class="meters" id="meters2"></div>
+  <div class="facts" id="facts2"></div>
+  <div class="status" id="s2" aria-live="polite"></div>
+  <div class="controls">
+    <button id="b2step" type="button">Next step</button>
+    <button id="b2play" type="button">Play</button>
+    <button id="b2reset" type="button">Reset</button>
+  </div>
+  <div class="controls">
+    <label for="s2in" class="caption">s</label>
+    <input type="text" id="s2in" value="ADOBECODEBANC" autocomplete="off" spellcheck="false">
+    <label for="t2in" class="caption">t</label>
+    <input type="text" id="t2in" value="ABC" autocomplete="off" spellcheck="false" style="flex:0 1 6rem">
+    <button id="b2use" type="button">Use these</button>
+  </div>
+  <span class="err" id="e2"></span>
+  <p class="caption">Each bar is one letter of t, and a blue bar has enough copies. The dashed line marks the shortest good window so far.</p>
+</div>
+
+<pre><code>def minWindow(s, t):
+    if not t or len(s) &lt; len(t):
+        return ""
+    required = {}
+    for c in t:
+        required[c] = required.get(c, 0) + 1
+    need = len(required)                  <span class="cm"># different letters to satisfy</span>
+    window = {}
+    have = 0
+    best_l, best_len = 0, float("inf")
+    l = 0
+    for r, c in enumerate(s):
+        window[c] = window.get(c, 0) + 1
+        if c in required and window[c] == required[c]:
+            have += 1                     <span class="cm"># c just got enough copies</span>
+        while have == need:               <span class="cm"># good: record, then shrink</span>
+            if r - l + 1 &lt; best_len:
+                best_l, best_len = l, r - l + 1
+            window[s[l]] -= 1
+            if s[l] in required and window[s[l]] &lt; required[s[l]]:
+                have -= 1                 <span class="cm"># s[l] just fell below its target</span>
+            l += 1
+    return s[best_l : best_l + best_len] if best_len != float("inf") else ""</code></pre>
+<p>The invariant here: when the shrink loop ends, the window is bad, and every good window that ends at <code>r</code> was recorded.</p>
+
+<h3>Worked example 3: Longest Repeating Character Replacement (LeetCode 424)</h3>
+<p><b>Problem.</b> You can change at most <code>k</code> letters. Return the longest stretch that you can make into one letter. For <code>"AABABBA"</code> and <code>k = 1</code>, the answer is 4 (<code>"AABA"</code>).</p>
+<p><b>Find the rule.</b> Keep the most common letter (count <code>top</code>) and change the others: <code>length − top</code> changes. The window is good when <code>length − top ≤ k</code>.</p>
+<p><b>Test Fact 3.</b> When the window grows, <code>length</code> goes up by 1 and <code>top</code> by 0 or 1. So <code>length − top</code> never goes down, and a bad window stays bad.</p>
+<pre><code>def characterReplacement(s, k):
+    count = {}                            <span class="cm"># notes: letter counts in s[l..r]</span>
+    l = 0
+    best = 0
+    for r, c in enumerate(s):
+        count[c] = count.get(c, 0) + 1
+        while (r - l + 1) - max(count.values()) &gt; k:   <span class="cm"># length − top &gt; k: bad</span>
+            count[s[l]] -= 1
+            l += 1
+        best = max(best, r - l + 1)
+    return best</code></pre>
+<p>Trace: the window grows to "AABA" (4 − 3 = 1 change, good, best 4). Adding B gives "AABAB" (5 − 3 = 2, bad). A goes out: "ABAB" (4 − 2 = 2, still bad). A goes out: "BAB" (good). <code>max(count.values())</code> only reads the notes (26 letters at most), so the total is about 26 × 2<i>n</i> steps.</p>
+
+<h3>When the window gives a wrong answer</h3>
+<p>Fact 3 is not always true. Find the longest stretch with a sum of at most 4 in <code>[5, −4, 3]</code>.</p>
+<div class="tw"><table>
+<tr><th>r</th><th>Add</th><th>Window after</th><th>Sum</th><th>Note</th></tr>
+<tr><td>0</td><td>5</td><td>[ ]</td><td>0</td><td>5 is too big, so 5 went out.</td></tr>
+<tr><td>1</td><td>−4</td><td>[−4]</td><td>−4</td><td>Good, length 1.</td></tr>
+<tr><td>2</td><td>3</td><td>[−4, 3]</td><td>−1</td><td>Good, length 2.</td></tr>
+</table></div>
+<p>The window answers 2. But the full list has a sum of 4 and a length of 3. A negative number made a bad stretch good when it grew, so Fact 3 was false. For sums with negative numbers, use running totals (P2). Card 28 shows "sum exactly <i>k</i>".</p>
+
+<h3>How to recognize it</h3>
+<ul>
+  <li><b>Substring</b>, <b>subarray</b>, <b>contiguous</b> or <b>window</b>, with "longest" or "shortest".</li>
+  <li>A rule about the contents: no repeats, at most <i>k</i> different values, every letter of <code>t</code>, a sum limit with positive numbers.</li>
+  <li>The rule passes Fact 3 (longest) or its mirror (shortest).</li>
+  <li>A fixed size <i>k</i>, the simplest case: each step adds one item and removes one (exercise 2).</li>
+  <li><b>Not two pointers (P5).</b> There, only the two end items are important. In a window, every item between the edges is important.</li>
+</ul>
+
+<h3>Common mistakes</h3>
+<ul>
+  <li><b>Moving <code>l</code> without changing the notes.</b> Remove <code>s[l]</code> from the notes first, then do <code>l += 1</code>.</li>
+  <li><b>The wrong shrink test.</b> Longest: shrink while bad. Shortest: shrink while good.</li>
+  <li><b>No good window.</b> If <code>best_len</code> is still infinity, return <code>""</code>. Do not slice with it.</li>
+</ul>
+
+<h3>Try it yourself</h3>
+<p>Do each one before you open the answer.</p>
+<details><summary>1. Type "pwwkew" into the first grid. Say each step before you click.</summary>
+<p>p, pw. Add w: bad. Remove p, then w. Then wk, wke. Add w: bad. Remove w: kew. Answer: 3.</p>
+</details>
+<details><summary>2. Largest sum of 3 side-by-side numbers in [2, 1, 5, 1, 3, 2]</summary>
+<p>Add the new number and subtract the one that leaves: 8, then 7, 9, 6. Answer: 9, from [5, 1, 3].</p>
+</details>
+<details><summary>3. Shortest stretch with a sum of at least 7 in [2, 3, 1, 2, 4, 3]</summary>
+<p>All numbers are positive, so the mirror of Fact 3 is true. [2, 3, 1, 2] = 8: record 4, remove 2. Add 4: record 4, remove 3, record 3, remove 1. Add 3: record 3, remove 2, record 2 ([4, 3]), remove 4. Answer: 2.</p>
+</details>
+<details><summary>4. Longest stretch with at most 2 different characters in "eceba"</summary>
+<p>Notes: a count for each character. Delete a key when its count falls to 0, so <code>len(count)</code> is the number of different characters. e, ec, ece (3). Add b: three different, bad. Remove e (count 1): still bad. Remove c (count 0, delete): "eb". Add a: bad. Remove e: "ba". Answer: 3.</p>
+</details>
+
+<h2>In the real world</h2>
+<p><b>A story from 1981.</b> TCP, the part of the internet that delivers data in order, uses a sliding window. Inside it are the bytes that were sent but not yet confirmed. New bytes go in on the right until the window is full. Confirmed bytes leave on the left.</p>
+<p>The first rules allowed 65,535 bytes at most. A round trip across the United States takes about 70 milliseconds, and the sender can send one window for each round trip: 65,535 ÷ 0.07 ≈ 936,000 bytes, or about 7.5 megabits, each second. In 1992, RFC 1323 added "window scaling", which lets the window grow to about 1 gigabyte. Claim: "without scaling, one connection across the US cannot go faster than about 7.5 megabits each second." <b>Verdict: approximately accurate</b>, because real round trips are about 60 to 80 milliseconds.</p>
+<p>Rate limits ("100 requests in any 60 seconds") and moving averages (heart rate for the last 30 seconds) use the same shape.</p>
+</main>
+
+<script>
+(function(){
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NS='http://www.w3.org/2000/svg';
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e};
+const txt=(p,x,y,s,a={})=>{const t=el('text',Object.assign({x,y,'text-anchor':'middle','font-family':'JetBrains Mono, monospace','font-size':14,fill:'var(--ink)'},a),p);t.textContent=s;return t};
+const $=id=>document.getElementById(id);
+const q=c=>'"'+c+'"';
+
+/* Draw a string as tiles. The window is s[l..r], both included (empty when r < l). */
+function drawTiles(svg,s,l,r,opt={}){
+  svg.innerHTML='';
+  const n=s.length, w=Math.min(56,560/n), x0=300-n*w/2, y=28, h=40;
+  if(r>=l) el('rect',{x:x0+l*w-3,y:y-4,width:(r-l+1)*w+6,height:h+8,rx:8,fill:'var(--win)',stroke:opt.bad?'var(--bad)':'var(--hit)','stroke-width':2},svg);
+  for(let i=0;i<n;i++){
+    const inside=i>=l&&i<=r, flag=inside&&opt.flag===s[i];
+    el('rect',{x:x0+i*w+3,y,width:w-6,height:h,rx:5,fill:inside?'var(--panel)':'var(--gone)',stroke:flag?'var(--bad)':'var(--line)','stroke-width':flag?3:1},svg);
+    txt(svg,x0+i*w+w/2,y+26,s[i],{'font-size':Math.min(18,w*.45),fill:inside?'var(--ink)':'var(--muted)'});
+  }
+  if(l<n) txt(svg,x0+l*w+w/2,y-10,'l ▼',{fill:'var(--left)','font-weight':600,'font-size':13});
+  if(r>=0) txt(svg,x0+r*w+w/2,y+h+20,'▲ r',{fill:'var(--right)','font-weight':600,'font-size':13});
+  if(opt.best){const [bl,bL]=opt.best;
+    el('line',{x1:x0+bl*w+4,x2:x0+(bl+bL)*w-4,y1:y+h+34,y2:y+h+34,stroke:'var(--hit)','stroke-width':3,'stroke-dasharray':'6 4'},svg);}
+}
+
+/* ---------- Widget 1: longest stretch with no repeat, and the grid of all stretches ---------- */
+let S1='abcabcbb', l1,r1,cnt1,dup1,moves1,best1,bestL1,path1,done1,timer1=null;
+const grid=$('grid1'), s1=$('s1');
+function reset1(){l1=0;r1=-1;cnt1={};dup1=null;moves1=0;best1=0;bestL1=0;path1=[];done1=false;stop1();
+  draw1('The window is empty. Press Next step to grow it.');}
+function good(i,j){return new Set(S1.slice(i,j+1)).size===j-i+1}
+function draw1(msg){
+  drawTiles($('str1'),S1,l1,r1,{bad:!!dup1,flag:dup1});
+  const n=S1.length, c=Math.min(44,340/n), gx=78, gy=46;
+  grid.setAttribute('viewBox',`0 0 ${gx+n*c+8} ${gy+n*c+34}`);
+  grid.innerHTML='';
+  txt(grid,gx+n*c/2,14,'end position (r) →',{fill:'var(--muted)','font-size':11});
+  txt(grid,4,gy-8,'start (l) ↓',{fill:'var(--muted)','font-size':11,'text-anchor':'start'});
+  const fs=Math.min(13,c*.38);
+  for(let j=0;j<n;j++) txt(grid,gx+j*c+c/2,gy-8,S1[j],{fill:j===r1?'var(--right)':'var(--muted)','font-weight':j===r1?600:400,'font-size':fs});
+  for(let i=0;i<n;i++) txt(grid,gx-8,gy+i*c+c/2+4,S1[i],{fill:i===l1?'var(--left)':'var(--muted)','font-weight':i===l1?600:400,'text-anchor':'end','font-size':fs});
+  let goodN=0;
+  for(let i=0;i<n;i++)for(let j=i;j<n;j++){
+    const g=good(i,j); if(g) goodN++;
+    el('rect',{x:gx+j*c+1.5,y:gy+i*c+1.5,width:c-3,height:c-3,rx:3,fill:g?'var(--good)':'var(--gone)',stroke:'var(--line)'},grid);
+    if(!g) txt(grid,gx+j*c+c/2,gy+i*c+c/2+4,'×',{fill:'var(--muted)','font-size':fs});
+  }
+  path1.forEach(([i,j])=>el('circle',{cx:gx+j*c+c/2,cy:gy+i*c+c/2,r:Math.max(2.5,c*.12),fill:'var(--hit)'},grid));
+  if(r1>=l1) el('rect',{x:gx+r1*c+1,y:gy+l1*c+1,width:c-2,height:c-2,rx:3,fill:'none',stroke:dup1?'var(--bad)':'var(--hit)','stroke-width':3},grid);
+  txt(grid,gx+n*c/2,gy+n*c+22,`${n*(n+1)/2} stretches · ${goodN} good · window moves so far: ${moves1}`,{fill:'var(--muted)','font-size':11});
+  const notes=Object.keys(cnt1).filter(k=>cnt1[k]>0).map(k=>`${k}:${cnt1[k]}`).join('  ');
+  $('facts1').innerHTML=`<span>notes (counts): <b>${notes||'empty'}</b></span><span>best length: <b>${best1}</b>${best1?` (${q(S1.substr(bestL1,best1))})`:''}</span>`;
+  s1.textContent=msg;
+}
+function record1(){const len=r1-l1+1; if(len>best1){best1=len;bestL1=l1;return ' New best.'} return ''}
+function step1(){
+  const n=S1.length;
+  if(done1){s1.textContent=`Done. The answer is ${best1}. Press Reset to start again.`;return}
+  if(dup1){
+    const out=S1[l1]; cnt1[out]--; l1++; moves1++; path1.push([l1,r1]);
+    if(cnt1[dup1]>1){draw1(`Shrink: ${q(out)} goes out on the left. ${q(dup1)} is still in the window two times, so the window is still bad.`);return}
+    dup1=null;
+    draw1(`Shrink: ${q(out)} goes out on the left. The window ${q(S1.slice(l1,r1+1))} is good again, length ${r1-l1+1}.`+record1());
+    return;
+  }
+  if(r1===n-1){done1=true;draw1(`r is at the end. The window made ${moves1} moves, never more than 2 × ${n} = ${2*n}. The slow way tests all ${n*(n+1)/2} stretches. Answer: ${best1} (${q(S1.substr(bestL1,best1))}).`);stop1();return}
+  r1++; moves1++; const c=S1[r1]; cnt1[c]=(cnt1[c]||0)+1; path1.push([l1,r1]);
+  if(cnt1[c]>1){dup1=c;draw1(`Grow: ${q(c)} comes in on the right. Now ${q(c)} is in the window two times, so the window is bad. Shrink next.`);return}
+  draw1(`Grow: ${q(c)} comes in on the right. It was not in the window, so ${q(S1.slice(l1,r1+1))} is good, length ${r1-l1+1}.`+record1());
+}
+function stop1(){clearInterval(timer1);timer1=null;$('b1play').textContent='Play'}
+$('b1step').onclick=()=>{stop1();step1()};
+$('b1reset').onclick=reset1;
+$('b1play').onclick=()=>{ if(timer1){stop1();return} if(done1) reset1(); $('b1play').textContent='Pause'; step1(); timer1=setInterval(()=>{step1(); if(done1) stop1();}, reduce?500:1100); };
+$('b1use').onclick=()=>{const v=$('word1').value.trim(); if(!v){$('e1').textContent='Type at least one character.';return}
+  if(v.length>12){$('e1').textContent=`That word has ${v.length} characters. Use 12 or fewer, so that the grid stays readable.`;return}
+  $('e1').textContent=''; S1=v; reset1();};
+$('word1').addEventListener('keydown',e=>{if(e.key==='Enter')$('b1use').click()});
+reset1();
+
+/* ---------- Widget 2: Minimum Window Substring with have / need ---------- */
+let S2='ADOBECODEBANC', T2='ABC', req,need,win,have,l2,r2,bestL2,bestLen2,done2,timer2=null;
+function reset2(){req={};for(const c of T2)req[c]=(req[c]||0)+1;need=Object.keys(req).length;win={};have=0;l2=0;r2=-1;bestL2=0;bestLen2=Infinity;done2=false;stop2();
+  draw2(`The window is empty. have = 0, need = ${need}. Press Next step.`);}
+function draw2(msg){
+  drawTiles($('str2'),S2,l2,r2,{best: bestLen2<Infinity?[bestL2,bestLen2]:null});
+  const m=$('meters2'); m.innerHTML='';
+  for(const c of Object.keys(req)){
+    const k=win[c]||0, full=k>=req[c];
+    m.insertAdjacentHTML('beforeend',`<span>${c}</span><span class="bar"><i style="width:${Math.min(100,k/req[c]*100)}%;background:${full?'var(--hit)':'var(--muted)'}"></i></span><span>${k} of ${req[c]}${full?' ✓':''}</span>`);
+  }
+  $('facts2').innerHTML=`<span>have / need: <b>${have} / ${need}</b> → ${have===need?'<b>good</b>':'not good yet'}</span><span>shortest so far: <b>${bestLen2<Infinity?q(S2.substr(bestL2,bestLen2)):'none'}</b></span>`;
+  $('s2').textContent=msg;
+}
+function step2(){
+  if(done2){$('s2').textContent='Done. Press Reset or change s and t.';return}
+  if(have===need){
+    const cur=S2.slice(l2,r2+1); let m=`The window ${q(cur)} is good (have = need). `;
+    if(r2-l2+1<bestLen2){bestL2=l2;bestLen2=r2-l2+1;m+=`It is the shortest so far, so record it. `} else m+=`It is not shorter than the record. `;
+    const out=S2[l2]; win[out]--; l2++;
+    m+=`Then shrink: ${q(out)} goes out.`;
+    if(out in req && win[out]<req[out]){have--;m+=` ${out} now has too few copies, so have falls to ${have}.`} else m+=` have does not change, so test again.`;
+    draw2(m); return;
+  }
+  if(r2===S2.length-1){done2=true;draw2(bestLen2<Infinity?`r is at the end and the window is not good. Answer: ${q(S2.substr(bestL2,bestLen2))}.`:'r is at the end and no window was ever good. Answer: "".');stop2();return}
+  r2++; const c=S2[r2]; win[c]=(win[c]||0)+1;
+  let m=`Grow: ${q(c)} comes in on the right.`;
+  if(c in req){ if(win[c]===req[c]){have++;m+=` ${c} now has enough copies, so have rises to ${have}.`} else if(win[c]>req[c]) m+=` ${c} already had enough, so have does not change.`; else m+=` ${c} still needs more copies.`}
+  else m+=` It is not in t, so have does not change.`;
+  if(have===need) m+=' The window is good.';
+  draw2(m);
+}
+function stop2(){clearInterval(timer2);timer2=null;$('b2play').textContent='Play'}
+$('b2step').onclick=()=>{stop2();step2()};
+$('b2reset').onclick=reset2;
+$('b2play').onclick=()=>{ if(timer2){stop2();return} if(done2) reset2(); $('b2play').textContent='Pause'; step2(); timer2=setInterval(()=>{step2(); if(done2) stop2();}, reduce?500:1100); };
+$('b2use').onclick=()=>{const a=$('s2in').value.trim(), b=$('t2in').value.trim();
+  if(!a||!b){$('e2').textContent='Type at least one character in s and in t.';return}
+  if(a.length>16||b.length>6){$('e2').textContent='Use at most 16 characters for s and 6 for t, so that the tiles stay readable.';return}
+  $('e2').textContent=''; S2=a; T2=b; reset2();};
+['s2in','t2in'].forEach(id=>$(id).addEventListener('keydown',e=>{if(e.key==='Enter')$('b2use').click()}));
+reset2();
+
+/* ---------- Napkin slider ---------- */
+const SUP='⁰¹²³⁴⁵⁶⁷⁸⁹';
+const sup=e=>String(e).split('').map(d=>SUP[d]).join('');
+function sci(x){const e=Math.floor(Math.log10(x)+1e-9), m=Math.round(x/10**e*10)/10; return e<5?Math.round(x).toLocaleString('en-US'):(m===1?'':m+' × ')+'10'+sup(e)}
+const nice=v=>Number(v.toPrecision(2)).toLocaleString('en-US');
+function fmtT(s){
+  if(s<1e-6) return nice(s*1e9)+' nanoseconds';
+  if(s<1e-3) return nice(s*1e6)+' microseconds';
+  if(s<1) return nice(s*1e3)+' milliseconds';
+  if(s<120) return nice(s)+' seconds';
+  if(s<7200) return nice(s/60)+' minutes';
+  if(s<172800) return nice(s/3600)+' hours';
+  if(s<6.3e7) return nice(s/86400)+' days';
+  return nice(s/3.15e7)+' years';
+}
+function napkin(){
+  const e=+$('nslider').value, N=10**e, a=N**3/6, b=N*N/2, c=2*N;
+  $('nval').textContent=N.toLocaleString('en-US');
+  $('t3').textContent=fmtT(a/1e9); $('t3s').textContent=`worst slow way: about n³ ÷ 6 = ${sci(a)} checks`;
+  $('t2').textContent=fmtT(b/1e9); $('t2s').textContent=`double loop: about n² ÷ 2 = ${sci(b)} steps`;
+  $('t1').textContent=fmtT(c/1e9); $('t1s').textContent=`sliding window: at most 2n = ${sci(c)} moves`;
+}
+$('nslider').oninput=napkin; napkin();
+})();
+</script>

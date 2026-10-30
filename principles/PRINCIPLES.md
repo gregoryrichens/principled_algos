@@ -1832,7 +1832,7 @@ def minWindow(s, t):
           best = max(best, r - l + 1)
       return best
   ```
-  `top` is never lowered when the window shrinks. That is deliberate: an out-of-date `top` can only make the window look *less* valid than it is, so it never produces a wrong answer, and the answer only grows when a genuinely higher count appears.
+  `top` is never lowered when the window shrinks. That is deliberate: an out-of-date `top` can be too high, so it can only make the window look *more* valid than it is. That is still safe: the window never gets shorter, and it gets longer only when a genuinely higher count appears inside it, so the recorded answer is never wrong.
 - **Permutation in String (567).** *Does `s2` contain some rearrangement of `s1` as a consecutive stretch?* Slide a window of exactly `len(s1)` across `s2`, keeping letter counts, and compare them with `s1`'s counts. (Letter counts as a signature are P1.)
 - **Sliding Window Maximum (239).** *Return the largest value in every window of size `k`.* The window slides as usual; the maximum is tracked with a monotonic deque (P6). Card 34.
 - **Best Time to Buy and Sell Stock (121)** is sometimes listed here, but it is really the running minimum of P2.
