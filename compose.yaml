@@ -1,0 +1,5 @@
+# Lets you run docker compose from the repo root. The app lives in practice_tracker_app/.
+name: practice-tracker
+
+include:
+  - practice_tracker_app/compose.yaml

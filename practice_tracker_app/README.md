@@ -72,7 +72,7 @@ git clone https://github.com/YOUR-USERNAME/principled_algos.git
 cd principled_algos/practice_tracker_app
 ```
 
-All the commands from here on are run from inside the `practice_tracker_app` folder.
+All the commands from here on are run from inside the `practice_tracker_app` folder. The `docker compose` commands also work from the top folder of the repository, which has a small `compose.yaml` that points here. Files like `.env` always live in `practice_tracker_app`.
 
 ### 2. Set your time zone
 
@@ -165,7 +165,7 @@ Old failures are scheduled like new ones. A failure from three weeks ago that yo
 
 ## Everyday commands
 
-Run these from the `practice_tracker_app` folder.
+Run these from the `practice_tracker_app` folder or from the top folder of the repository.
 
 | To… | Run |
 |---|---|
