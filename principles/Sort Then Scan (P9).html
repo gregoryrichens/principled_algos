@@ -1,0 +1,472 @@
+<title>Sort Then Scan (P9)</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: the same reading column (~46rem) as the P5, P6 and P8 pages in this series. Widgets sit in the column as framed panels.
+   Colors: amber = the item now and the sweep line. Blue = the open block and meetings in progress. Teal = finished. Grey = done or closed. Red = a wrong or lost result. */
+:root{
+  --bg:#f6f7f4; --panel:#ffffff; --ink:#1d2321; --muted:#5d6762; --line:#d9ddd6; --gone:#e6e8e3;
+  --left:#0f7f78; --right:#b8640c; --hit:#2f6fd0; --good:#d3ebe3; --win:#e2ebfa; --bad:#c23a2b;
+  --display:"Young Serif", Georgia, serif;
+  --body:"Atkinson Hyperlegible", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141917; --panel:#1c2220; --ink:#e7ebe8; --muted:#9aa49f; --line:#323a37; --gone:#262d2a;
+  --left:#3cc4b9; --right:#f0a24a; --hit:#7aa9ff; --good:#1f3d35; --win:#1d2a40; --bad:#ff7a6b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141917; --panel:#1c2220; --ink:#e7ebe8; --muted:#9aa49f; --line:#323a37; --gone:#262d2a;
+  --left:#3cc4b9; --right:#f0a24a; --hit:#7aa9ff; --good:#1f3d35; --win:#1d2a40; --bad:#ff7a6b; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;
+  padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px));padding-block:32px 64px}
+main{max-width:46rem;margin:0 auto;display:flex;flex-direction:column;gap:1.1rem}
+h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.4rem,7vw,3.6rem)}
+h2{font-size:1.8rem;margin-top:2.2rem;padding-top:1.4rem;border-top:1px solid var(--line)}
+h3{font-size:1.3rem;margin-top:1.3rem}
+p{margin:0}
+.eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lede{font-size:1.15rem;color:var(--muted)}
+.A{color:var(--right);font-weight:700}.B{color:var(--hit);font-weight:700}.T{color:var(--left);font-weight:700}
+code{font-family:var(--mono);font-size:.88em;background:var(--gone);padding:.05em .3em;border-radius:3px}
+pre{font-family:var(--mono);font-size:.85rem;line-height:1.5;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px;overflow-x:auto;margin:0}
+pre code{background:none;padding:0;font-size:inherit}
+.cm{color:var(--muted)}
+.widget{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.widget svg{width:100%;height:auto;display:block}
+.widget svg .row{transition:transform .7s ease}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button{font:600 .9rem var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 14px;cursor:pointer}
+button:hover{border-color:var(--muted)}
+input[type=text],select{font:400 .9rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 10px;min-width:0}
+input[type=text]{flex:1 1 10rem}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--hit);outline-offset:2px}
+.status{font-size:.97rem;min-height:3.2em;border-left:3px solid var(--line);padding:2px 0 2px 12px}
+.status.wrong{border-left-color:var(--bad)}
+.err{color:var(--bad);font-size:.88rem}
+.caption{font-size:.9rem;color:var(--muted)}
+.facts{font-family:var(--mono);font-size:.85rem;display:flex;flex-wrap:wrap;gap:6px 18px;font-variant-numeric:tabular-nums}
+.facts b{font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:6px;font-family:var(--mono);font-size:.8rem;font-variant-numeric:tabular-nums}
+.chips span{border:1px solid var(--line);border-radius:5px;padding:2px 7px}
+.chips .past{color:var(--muted);background:var(--gone)}
+.chips .now{border:2px solid var(--right);padding:1px 6px;font-weight:600}
+table{border-collapse:collapse;font-size:.92rem;font-variant-numeric:tabular-nums;width:100%}
+.tw{overflow-x:auto}
+th,td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:400}
+.rule{border-left:3px solid var(--hit);padding:4px 0 4px 14px;font-size:1.08rem}
+details{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+summary{cursor:pointer;font-weight:700}
+details[open] summary{margin-bottom:8px}
+input[type=range]{width:100%;accent-color:var(--hit)}
+.napkin{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:10px}
+.napkin div{border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-variant-numeric:tabular-nums}
+.napkin b{display:block;font-family:var(--mono);font-size:1.15rem}
+.napkin span{font-size:.85rem;color:var(--muted)}
+ul{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<main>
+<header style="display:flex;flex-direction:column;gap:.6rem">
+  <span class="eyebrow">Principled Algos · Principle 9 of 18</span>
+  <h1>Sort Then Scan</h1>
+  <p class="lede">Put the items in order. Then each item only has to look at its neighbor.</p>
+  <p class="caption">P1 is "hash it", P5 is "two pointers" and P7 is "greedy". Card 14 in DRILLS.md drills this page.</p>
+</header>
+
+<h2>As if to a child</h2>
+<p>Your class wants to know if two kids have the same birthday. One way: each kid asks every other kid. With 30 kids, that is 435 questions.</p>
+<p>A better way: the kids stand in a line in calendar order, January 1 at the front and December 31 at the back. Now two kids with the same birthday must stand side by side. Each kid asks only the kid in front: 29 questions. To make the line is also work, but it is much less work than 435 questions.</p>
+
+<h2>The extended explanation</h2>
+
+<h3>Start from what is true</h3>
+<ul>
+  <li><b>Fact 1. There are many pairs.</b> With <i>n</i> items there are <i>n</i> × (<i>n</i> − 1) ÷ 2 pairs: 435 for 30 kids, about 50 million for 10,000 items.</li>
+  <li><b>Fact 2. After a sort, equal items stand side by side.</b> If <code>a[i] = a[j]</code> in a sorted list, any <code>a[k]</code> between them has <code>a[i] ≤ a[k] ≤ a[j]</code>, so it is the same number too.</li>
+  <li><b>Fact 3. A sort costs about <i>n</i> × log<sub>2</sub> <i>n</i> comparisons.</b> log<sub>2</sub> <i>n</i> is how many times you can cut <i>n</i> in half before you get to 1: about 13 for 10,000. Merge sort (John von Neumann, 1945) cuts the list in half again and again, then joins the parts back in order. Each of the log<sub>2</sub> <i>n</i> levels of joins puts all <i>n</i> items in place with about one comparison each.</li>
+</ul>
+<p>Join the facts: sort once, then compare each item only with its neighbor. For 10,000 items that is about 133,000 + 10,000 ≈ 143,000 steps, not 50 million. Here is Fact 2 as code, for <b>Contains Duplicate (LeetCode 217)</b>:</p>
+<pre><code>def containsDuplicate(nums):
+    nums = sorted(nums)
+    for i in range(1, len(nums)):
+        if nums[i] == nums[i - 1]:      <span class="cm"># a copy can only be the item just before</span>
+            return True
+    return False</code></pre>
+
+<h3>Intervals: the same idea on a number line</h3>
+<p>An <b>interval</b> is a pair <code>[start, end]</code>, like a meeting from 2 to 6. Two intervals overlap when they share a point. On this page, intervals that touch, like <code>[1, 3]</code> and <code>[3, 5]</code>, overlap.</p>
+<p>Sort the intervals by start. That gives <b>Fact 4: every later interval starts at or after the current one.</b> Go through the list once, and keep the <span class="B">open block</span>: the merged interval that you build now. For each new interval, ask: does it start at or before the end of the open block?</p>
+<ul>
+  <li><b>Yes.</b> By Fact 4, it also starts at or after the block start. So it starts inside the block and overlaps it. Make the end of the block the larger of the two ends.</li>
+  <li><b>No.</b> It starts after the block ends. By Fact 4, all later intervals start later still, so none can reach back. The block is <span class="T">finished</span>, and the new interval opens a new block.</li>
+</ul>
+<p>Both answers use Fact 4. Without the sort, a "yes" can be false, and a closed block can still get an overlap later.</p>
+
+<div class="widget" id="w1">
+  <svg id="svg1" viewBox="0 0 600 300" role="img" aria-label="Intervals as bars on a number line, with the merged blocks below"></svg>
+  <div class="facts" id="facts1"></div>
+  <div class="status" id="s1" aria-live="polite"></div>
+  <div class="controls">
+    <button id="b1sort" type="button">Sort by start</button>
+    <button id="b1step" type="button">Next step</button>
+    <button id="b1play" type="button">Play</button>
+    <button id="b1reset" type="button">Reset</button>
+    <button id="b1raw" type="button">Scan without sorting</button>
+  </div>
+  <div class="controls">
+    <label for="iv1" class="caption">Your intervals:</label>
+    <input type="text" id="iv1" value="8-10, 1-3, 15-18, 2-6, 9-12, 5-7" autocomplete="off" spellcheck="false">
+    <button id="b1use" type="button">Use these</button>
+    <button id="b1rand" type="button">Random</button>
+  </div>
+  <span class="err" id="e1"></span>
+  <p class="caption">Bars are intervals in list order. <span class="A">Amber</span>: the interval now. Grey: done. <span class="B">Blue</span>: the open block. <span class="T">Teal</span>: finished blocks (grey in the unsorted run, where the code cannot know). Dashed line: the start of the interval now; by Fact 4, every bar below starts on it or to its right.</p>
+</div>
+<p>Now press <b>Scan without sorting</b>. The code says that <code>[1, 3]</code> overlaps <code>[8, 10]</code>, which is false, so <code>[1, 3]</code> is lost.</p>
+
+<h3>The sentence that keeps the code correct</h3>
+<p class="rule">Each earlier interval is covered by a block in <code>merged</code>. The blocks are in order and do not overlap. Only the last block can still grow.</p>
+<p>This is the <b>invariant</b>: a statement that is true at the start of each loop turn. Fact 4 keeps it true, because a new interval can only touch the last block. When the loop ends, every interval is covered by blocks that do not overlap. That is the answer.</p>
+
+<h3>Worked example 1: Merge Intervals (LeetCode 56)</h3>
+<p><b>Problem.</b> Merge all overlapping intervals. With the widget data: <code>[[8, 10], [1, 3], [15, 18], [2, 6], [9, 12], [5, 7]]</code> → <code>[[1, 7], [8, 12], [15, 18]]</code>.</p>
+<pre><code>def merge(intervals):
+    intervals.sort()                       <span class="cm"># by start</span>
+    merged = []
+    for start, end in intervals:
+        if merged and start &lt;= merged[-1][1]:
+            merged[-1][1] = max(merged[-1][1], end)   <span class="cm"># overlaps the open block: extend it</span>
+        else:
+            merged.append([start, end])    <span class="cm"># starts after the block ends: a new block</span>
+    return merged</code></pre>
+<p><b>Why <code>max</code>?</b> A new interval can be fully inside the block (<code>[1, 10]</code>, then <code>[2, 5]</code>). Without <code>max</code>, the block shrinks to <code>[1, 5]</code>.</p>
+
+<h3>Worked example 2: Meeting Rooms II (LeetCode 253)</h3>
+<p><b>Problem.</b> Return the fewest rooms that hold all the meetings, with no two at the same time in one room. A room freed at time <i>t</i> can hold a meeting that starts at <i>t</i>.</p>
+<p><b>The idea.</b> You need as many rooms as the largest number of meetings in progress at one time. That many is enough: when a meeting starts, the count with it is at most the largest count, so a room is free. Change each meeting into two <b>events</b>: +1 at its start and −1 at its end. Sort the events by time, go through them, and keep a count. This is a <b>sweep line</b>: a vertical line moves from left to right and counts the meetings that it crosses.</p>
+<p><b>Ties.</b> At time 10 below, A ends and B starts. If the end comes first, A's room is free before B needs it. Python sorts <code>(10, -1)</code> before <code>(10, 1)</code>, so the sort does this with no extra code. Set "start first" to see the wrong count.</p>
+
+<div class="widget" id="w2">
+  <svg id="svg2" viewBox="0 0 600 260" role="img" aria-label="Meetings on a timeline, a sweep line, and a chart of meetings in progress"></svg>
+  <div class="chips" id="chips2" aria-label="The sorted events"></div>
+  <div class="facts" id="facts2"></div>
+  <div class="status" id="s2" aria-live="polite"></div>
+  <div class="controls">
+    <button id="b2step" type="button">Next step</button>
+    <button id="b2play" type="button">Play</button>
+    <button id="b2reset" type="button">Reset</button>
+    <label for="tie2" class="caption">At equal times:</label>
+    <select id="tie2"><option value="end">end first (correct)</option><option value="start">start first</option></select>
+  </div>
+  <div class="controls">
+    <label for="m2" class="caption">Your meetings:</label>
+    <input type="text" id="m2" value="0-10, 10-20, 5-15, 20-25" autocomplete="off" spellcheck="false">
+    <button id="b2use" type="button">Use these</button>
+  </div>
+  <span class="err" id="e2"></span>
+  <p class="caption">Chips: the sorted events as (time, change) and meeting. <span class="B">Blue</span> bars: in progress. Grey: ended. <span class="A">Amber</span>: the sweep line. The chart shows the count after each event, and its dashed line is the largest count (red when it is wrong).</p>
+</div>
+
+<pre><code>def minMeetingRooms(intervals):
+    events = []
+    for start, end in intervals:
+        events.append((start, 1))          <span class="cm"># a meeting starts</span>
+        events.append((end, -1))           <span class="cm"># a meeting ends</span>
+    events.sort()                          <span class="cm"># at equal times, -1 comes before +1</span>
+    in_progress = most = 0
+    for _, change in events:
+        in_progress += change
+        most = max(most, in_progress)
+    return most</code></pre>
+
+<h3>Worked example 3: the same sort, a different question (LeetCode 435)</h3>
+<p><b>Problem.</b> Return the fewest intervals to remove so that the rest do not overlap. Here, touching is permitted. <code>[[1, 2], [2, 3], [3, 4], [1, 3]]</code> → 1.</p>
+<p><b>The trap.</b> It looks like Merge Intervals, but it tells you to <i>choose</i> intervals, not to <i>join</i> them. A merge makes <code>[1, 2]</code> and <code>[1, 3]</code> into one block, and then you cannot say which one to remove.</p>
+<p><b>The rule.</b> Sort by start. Keep <code>prev_end</code>, the end of the last interval that you keep. The kept intervals are in order and do not overlap, so <code>prev_end</code> is the largest kept end. A new interval that starts at or after it is clear of all of them. On an overlap, remove one interval and keep the one with the smaller end.</p>
+<p><b>Why is that safe?</b> Take a best answer that keeps the interval with the larger end, and put the one with the smaller end in its place. By Fact 4, each later interval that was clear of the larger end is also clear of the smaller end. So the answer stays as good. P7 proves greedy choices with this kind of swap.</p>
+<div class="tw"><table>
+<tr><th>Interval (sorted)</th><th>prev_end before</th><th>Overlap? (start &lt; prev_end)</th><th>Action</th><th>Removed</th></tr>
+<tr><td>[1, 2]</td><td>−∞</td><td>no</td><td>keep; prev_end = 2</td><td>0</td></tr>
+<tr><td>[1, 3]</td><td>2</td><td>1 &lt; 2, yes</td><td>remove one; prev_end = min(2, 3) = 2</td><td>1</td></tr>
+<tr><td>[2, 3]</td><td>2</td><td>2 &lt; 2, no</td><td>keep; prev_end = 3</td><td>1</td></tr>
+<tr><td>[3, 4]</td><td>3</td><td>3 &lt; 3, no</td><td>keep; prev_end = 4</td><td>1</td></tr>
+</table></div>
+<pre><code>def eraseOverlapIntervals(intervals):
+    intervals.sort()
+    removed, prev_end = 0, float("-inf")
+    for start, end in intervals:
+        if start &gt;= prev_end:
+            prev_end = end                 <span class="cm"># no overlap: keep it</span>
+        else:
+            removed += 1                   <span class="cm"># overlap: remove the one that ends later</span>
+            prev_end = min(prev_end, end)
+    return removed</code></pre>
+
+<h3>Napkin math: how much faster?</h3>
+<p>The slider assumes 10<sup>9</sup> simple steps each second (fast compiled code). Python is about 100 times slower (see Claim 2).</p>
+<div class="widget">
+  <label for="nslider" class="caption">Number of items <i>n</i> = <b id="nval"></b></label>
+  <input type="range" id="nslider" min="1" max="7" step="1" value="4">
+  <div class="napkin">
+    <div><b id="t3"></b><span id="t3s"></span></div>
+    <div><b id="t2"></b><span id="t2s"></span></div>
+    <div><b id="t1"></b><span id="t1s"></span></div>
+  </div>
+</div>
+<p><b>Claim 1</b>, from the P9 notes in PRINCIPLES.md: a sort is "only slightly more than one pass." For <i>n</i> = 100,000, sort and pass are about 1.7 + 0.1 million steps, 18 times one pass. But in Python 3, on the machine that built this page, the sort of 100,000 numbers took 18 milliseconds and one Python pass 7.5: only 2.4 times more. Python sorts in fast C code but runs the pass one slow step at a time. <b>Verdict: exaggerated by step count, approximately accurate by clock time in Python.</b></p>
+<p><b>Claim 2</b>, a common rule: "for 10,000 items, every pair is too slow in Python." On the same machine, Python did about 9 million pair checks each second: 50 million ÷ 9 million ≈ 5.5 seconds. Sort and one pass took 9 milliseconds, about 600 times faster. <b>Verdict: approximately accurate.</b></p>
+
+<h3>Which key to sort by</h3>
+<div class="tw"><table>
+<tr><th>The question</th><th>Sort by</th><th>Then keep</th></tr>
+<tr><td>Merge, or find free time</td><td>start</td><td>the open block</td></tr>
+<tr><td>Fewest to remove, most to keep</td><td>start; on an overlap keep the smaller end</td><td>end of the last kept interval</td></tr>
+<tr><td>Most at one time, number of rooms</td><td>event time, ends first on ties</td><td>count in progress</td></tr>
+<tr><td>Repeats, or skip duplicates</td><td>value</td><td>the item before</td></tr>
+</table></div>
+
+<h3>How to recognize it</h3>
+<ul>
+  <li><code>[start, end]</code> pairs with "merge", "overlap", "rooms" or "free time".</li>
+  <li>"Are two items equal, too close, or in conflict?"</li>
+  <li>A one-time choice (greedy, P7) that is safe only in one order: by end, by size, by position.</li>
+  <li><b>Not a hash (P1)</b> when you need "close to" or "overlaps". A hash finds only equal values.</li>
+</ul>
+
+<h3>Common mistakes</h3>
+<ul>
+  <li><b>A merge when the question says choose.</b> "Fewest to remove" and "most to keep" ask for a choice.</li>
+  <li><b>The wrong tie order in a sweep line.</b> Decide if an end and a start at one time overlap, and sort the events to match.</li>
+  <li><b>No <code>max</code> when you extend a block.</b></li>
+  <li><b>A change to a tuple.</b> <code>merged[-1][1] = ...</code> needs a list, so append <code>[start, end]</code>.</li>
+</ul>
+
+<h3>Try it yourself</h3>
+<p>Do each one before you open the answer.</p>
+<details><summary>1. Merge [[1, 4], [4, 5]]</summary>
+<p>Touching counts as overlap: 4 ≤ 4. Answer: [[1, 5]].</p>
+</details>
+<details><summary>2. Merge [[1, 10], [2, 5], [6, 7]]</summary>
+<p><code>max</code> keeps the end at 10. Answer: [[1, 10]].</p>
+</details>
+<details><summary>3. Meeting Rooms (252): can one person go to all of [[0, 30], [5, 10], [15, 20]]?</summary>
+<p>Sort by start. Each meeting must start at or after the end of the one before it. 5 &lt; 30, so no.</p>
+</details>
+<details><summary>4. Rooms needed for [[1, 5], [5, 9], [2, 6]]</summary>
+<p>Events: (1, +1), (2, +1), (5, −1), (5, +1), (6, −1), (9, −1). Counts: 1, 2, 1, 2, 1, 0. Answer: 2. Put these numbers in the second widget and set "start first": it says 3.</p>
+</details>
+<details><summary>5. Fewest removals for [[1, 2], [1, 2], [1, 2]]</summary>
+<p>Keep the first. The second and third overlap it (1 &lt; 2), so remove both. Answer: 2.</p>
+</details>
+
+<h2>In the real world</h2>
+<p><b>A Unix tool from the 1970s.</b> Unix, made at Bell Labs, has a small tool called <code>uniq</code>. It removes a repeated line only when the copies are next to each other, and its manual tells you to sort the input first. So <code>sort names.txt | uniq</code> is Fact 2 as one command.</p>
+<p><b>Databases.</b> To match the rows of two tables by a key, a database can use a <b>sort-merge join</b>: sort both tables by the key, then go down both at the same time, with one pointer in each (P5). For 1 million rows in each table, every pair is 10<sup>12</sup> comparisons. Two sorts are 2 × (10<sup>6</sup> × 20) = 4 × 10<sup>7</sup>, plus 2 × 10<sup>6</sup> for the walk: about 4.2 × 10<sup>7</sup>. Claim: "a sort-merge join can be thousands of times faster than every pair." 10<sup>12</sup> ÷ (4.2 × 10<sup>7</sup>) ≈ 24,000. <b>Verdict: approximately accurate</b> for big tables with no index.</p>
+<p><b>Calendars.</b> "Find a time when all 8 people are free" is Merge Intervals. Put all their busy times in one list, sort by start, and merge. The free times are the gaps between the blocks, and the time before the first block and after the last, inside the workday.</p>
+</main>
+
+<script>
+(function(){
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NS='http://www.w3.org/2000/svg';
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e};
+const txt=(p,x,y,s,a={})=>{const t=el('text',Object.assign({x,y,'text-anchor':'middle','font-family':'JetBrains Mono, monospace','font-size':15,fill:'var(--ink)'},a),p);t.textContent=s;return t};
+const $=id=>document.getElementById(id);
+const fmtIv=([s,e])=>`[${s}, ${e}]`;
+const fmtList=l=>'['+l.map(fmtIv).join(', ')+']';
+function trueMerge(arr){const a=arr.map(x=>[x[0],x[1]]).sort((p,q)=>p[0]-q[0]||p[1]-q[1]);const out=[];
+  for(const [s,e] of a){ if(out.length&&s<=out[out.length-1][1]) out[out.length-1][1]=Math.max(out[out.length-1][1],e); else out.push([s,e]); } return out;}
+function parsePairs(v){const nums=(v.match(/\d+/g)||[]).map(Number); if(nums.length%2) return null; const out=[]; for(let i=0;i<nums.length;i+=2) out.push([nums[i],nums[i+1]]); return out;}
+
+/* ---------- Widget 1: merge intervals, sorted or not ---------- */
+const svg1=$('svg1'), W=600, padL=96, padR=16, top1=12, rowH=32;
+let items=[], order, mode, step, merged, comps, lost, done1, timer1=null, rowsG, overG, lo1, hi1, axisY, blocksY, correctY;
+const x1=v=>padL+(v-lo1)/(hi1-lo1)*(W-padL-padR);
+function build1(arr){
+  items=arr.map((p,i)=>({id:i,s:p[0],e:p[1]}));
+  lo1=Math.max(0,Math.min(...items.map(x=>x.s))-1); hi1=Math.max(...items.map(x=>x.e))+1;
+  const n=items.length; axisY=top1+n*rowH+6; blocksY=axisY+34; correctY=blocksY+34;
+  svg1.setAttribute('viewBox',`0 0 ${W} ${correctY+28}`);
+  svg1.innerHTML=''; overG=el('g',{},svg1); rowsG=el('g',{},svg1);
+  items.forEach(it=>{
+    const g=el('g',{class:'row'},rowsG); it.g=g;
+    it.label=txt(g,padL-10,rowH/2+4,fmtIv([it.s,it.e]),{'text-anchor':'end'});
+    it.bar=el('rect',{x:x1(it.s),y:7,width:Math.max(4,x1(it.e)-x1(it.s)),height:rowH-14,rx:4},g);
+  });
+  reset1();
+}
+function layout1(){items.forEach(it=>{it.g.style.transform=`translate(0px, ${top1+order.indexOf(it.id)*rowH}px)`})}
+function reset1(){stop1(); order=items.map(x=>x.id); mode=null; step=0; merged=[]; comps=0; lost=new Set(); done1=false; layout1();
+  draw1('The list is in its first order. Press Sort by start, then Next step.');}
+function draw1(msg,wrong){
+  overG.innerHTML='';
+  const n=items.length, cur=step>0?order[step-1]:null;
+  // axis
+  el('line',{x1:padL,x2:W-padR,y1:axisY,y2:axisY,stroke:'var(--muted)'},overG);
+  const span=hi1-lo1, tick=span<=12?1:span<=24?2:5;
+  for(let v=Math.ceil(lo1/tick)*tick; v<=hi1; v+=tick){el('line',{x1:x1(v),x2:x1(v),y1:axisY,y2:axisY+5,stroke:'var(--muted)'},overG); txt(overG,x1(v),axisY+18,String(v),{fill:'var(--muted)','font-size':13});}
+  // dashed line at the start of the interval now (sorted scan only)
+  if(mode==='sorted'&&cur!==null&&!done1){const it=items[cur], pos=order.indexOf(cur);
+    el('line',{x1:x1(it.s),x2:x1(it.s),y1:top1+pos*rowH+2,y2:axisY,stroke:'var(--right)','stroke-width':1.5,'stroke-dasharray':'5 4'},overG);}
+  // rows
+  items.forEach(it=>{const pos=order.indexOf(it.id); let fill='var(--panel)',stroke='var(--ink)',sw=1,lab='var(--ink)';
+    if(mode&&pos<step-1){fill='var(--gone)';stroke='var(--line)';lab='var(--muted)'}
+    if(it.id===cur&&!done1){fill='var(--right)';stroke='var(--right)';sw=2.5}
+    if(done1){fill='var(--gone)';stroke='var(--line)';lab='var(--muted)'}
+    if(lost.has(it.id)){stroke='var(--bad)';sw=2.5;lab='var(--bad)'}
+    it.bar.setAttribute('fill',fill); it.bar.setAttribute('fill-opacity',it.id===cur&&!done1?.35:1);
+    it.bar.setAttribute('stroke',stroke); it.bar.setAttribute('stroke-width',sw); it.label.setAttribute('fill',lab);
+    it.label.textContent=fmtIv([it.s,it.e])+(lost.has(it.id)?' ✗':'');
+  });
+  // blocks
+  txt(overG,padL-10,blocksY+13,'blocks',{'text-anchor':'end',fill:'var(--muted)','font-size':13});
+  merged.forEach((b,i)=>{const open=i===merged.length-1&&!done1, closed=mode==='raw'&&!open;
+    el('rect',{x:x1(b.s),y:blocksY,width:Math.max(4,x1(b.e)-x1(b.s)),height:18,rx:4,
+      fill:open?'var(--win)':closed?'var(--gone)':'var(--left)','fill-opacity':open||closed?1:.3,
+      stroke:open?'var(--hit)':closed?'var(--muted)':'var(--left)','stroke-width':open?2.5:1.5},overG);});
+  if(done1&&mode==='raw'){
+    txt(overG,padL-10,correctY+13,'correct',{'text-anchor':'end',fill:'var(--muted)','font-size':13});
+    trueMerge(items.map(x=>[x.s,x.e])).forEach(([s,e])=>el('rect',{x:x1(s),y:correctY,width:Math.max(4,x1(e)-x1(s)),height:18,rx:4,fill:'var(--good)',stroke:'var(--left)','stroke-width':1.5},overG));
+  }
+  $('facts1').innerHTML=`<span>blocks: <b>${merged.length?merged.map(b=>fmtIv([b.s,b.e])).join(' '):'none yet'}</b></span><span>comparisons: <b>${comps}</b></span><span>every pair: <b>${n*(n-1)/2}</b></span>`;
+  $('s1').textContent=msg; $('s1').classList.toggle('wrong',!!wrong);
+}
+function sort1(){ if(mode==='raw'||step>0) reset1();
+  order=items.slice().sort((a,b)=>a.s-b.s||a.e-b.e).map(x=>x.id); mode='sorted'; layout1();
+  draw1('Sorted by start. Now each bar starts on or to the right of the bar above it. Press Next step.');}
+function step1(){
+  if(done1){$('s1').textContent='Done. Press Reset to start again.';return}
+  if(mode===null){draw1('Press Sort by start first. Or press Scan without sorting to see what goes wrong.');return}
+  const it=items[order[step]]; let msg, wrong=false;
+  if(!merged.length){merged.push({s:it.s,e:it.e}); msg=`${fmtIv([it.s,it.e])} is the first interval. It opens the first block.`}
+  else{ comps++; const b=merged[merged.length-1];
+    if(it.s<=b.e){const old=b.e; b.e=Math.max(b.e,it.e); const bad=it.s<b.s;
+      msg=`${fmtIv([it.s,it.e])} starts at ${it.s}, and ${it.s} ≤ ${old}, the end of the open block. `+(bad
+        ?`The code treats this as an overlap, and the block ${b.e!==old?'becomes':'stays'} ${fmtIv([b.s,b.e])}. But ${it.s} is before the block start ${b.s}, so `+(it.e<b.s
+          ?`${fmtIv([it.s,it.e])} is not inside the block at all. The whole interval is lost.`
+          :`the part from ${it.s} to ${b.s} is lost.`)
+        :`It overlaps, so the block becomes ${fmtIv([b.s,b.e])}.`+(it.e<old?` (${it.e} < ${old}, so max keeps the end at ${old}.)`:''));
+      if(bad){lost.add(it.id); wrong=true}
+    } else {
+      const last=step===items.length-1;
+      msg=`${fmtIv([it.s,it.e])} starts at ${it.s}, and ${it.s} > ${b.e}, the end of the open block. `+(mode==='sorted'
+        ?(last?`It is the last interval. Block ${fmtIv([b.s,b.e])} is finished, and the last block opens.`
+              :`Every bar below starts at ${it.s} or later, so none can reach back. Block ${fmtIv([b.s,b.e])} is finished, and a new block opens.`)
+        :`A new block opens. Without the sort, a bar below can still start before ${b.e}, so the code cannot know that the old block is finished.`);
+      merged.push({s:it.s,e:it.e});
+    }
+  }
+  step++;
+  if(step===items.length){ done1=true; stop1(); const n=items.length, got=merged.map(b=>[b.s,b.e]), ok=trueMerge(items.map(x=>[x.s,x.e]));
+    const same=JSON.stringify(got)===JSON.stringify(ok), sc=Math.round(n*Math.log2(n)), pairs=n*(n-1)/2;
+    if(mode==='sorted') msg+=` Done: ${comps} comparisons in the scan, plus about ${sc} in the sort (n × log₂ n). Every pair is ${pairs}. `+(sc+comps<pairs?'The sort saves work. ':`At ${n} items there is no saving. At 10,000 items it is about 143,000 against 50 million. `)+`Answer: ${fmtList(got)}.`;
+    else if(same) msg+=` Done. This time the answer ${fmtList(got)} is correct by luck: the first order did not break the rule. Press Random and try again.`;
+    else {wrong=true; msg+=` Done, but ${fmtList(got)} is wrong. The correct answer is ${fmtList(ok)}.`}
+  }
+  draw1(msg,wrong);
+}
+function stop1(){clearInterval(timer1);timer1=null;$('b1play').textContent='Play'}
+$('b1sort').onclick=sort1;
+$('b1step').onclick=()=>{stop1();step1()};
+$('b1reset').onclick=reset1;
+$('b1raw').onclick=()=>{reset1(); mode='raw'; draw1('Same code, first order. Press Next step or Play.');};
+$('b1play').onclick=()=>{ if(timer1){stop1();return}
+  if(done1){const m=mode; reset1(); mode=m; if(m==='sorted') sort1();}
+  if(mode===null) sort1();
+  $('b1play').textContent='Pause'; step1(); timer1=setInterval(()=>{step1(); if(done1) stop1();}, reduce?600:1300); };
+$('b1use').onclick=()=>{const p=parsePairs($('iv1').value);
+  if(!p||p.length<2||p.length>8){$('e1').textContent='Type 2 to 8 intervals as start-end pairs, for example 1-3, 2-6.';return}
+  if(p.some(([s,e])=>s>e||e>40)){$('e1').textContent='Each start must be at or before its end, and every number must be 40 or less.';return}
+  $('e1').textContent=''; build1(p);};
+$('iv1').addEventListener('keydown',e=>{if(e.key==='Enter')$('b1use').click()});
+$('b1rand').onclick=()=>{const p=[]; for(let i=0;i<6;i++){const s=Math.floor(Math.random()*20); p.push([s,s+1+Math.floor(Math.random()*5)])}
+  $('iv1').value=p.map(([s,e])=>`${s}-${e}`).join(', '); $('e1').textContent=''; build1(p);};
+build1([[8,10],[1,3],[15,18],[2,6],[9,12],[5,7]]);
+
+/* ---------- Widget 2: Meeting Rooms II as a sweep line ---------- */
+const svg2=$('svg2'), NAMES='ABCDEF', pL2=104, pR2=20, top2=12, rowH2=26, chartH=90;
+let M2=[[0,10],[10,20],[5,15],[20,25]], ev, k2, cnt, best2, pts, trueRooms, done2, timer2=null, lo2, hi2;
+const x2=t=>pL2+(t-lo2)/(hi2-lo2)*(W-pL2-pR2);
+function events(order){const e=[]; M2.forEach((m,i)=>{e.push({t:m[0],d:1,id:i});e.push({t:m[1],d:-1,id:i})});
+  return e.sort((a,b)=>a.t-b.t||(order==='end'?a.d-b.d:b.d-a.d));}
+function reset2(){stop2(); ev=events($('tie2').value); k2=0; cnt=0; best2=0; pts=[]; done2=false;
+  let c=0,m=0; for(const e of events('end')){c+=e.d;m=Math.max(m,c)} trueRooms=m;
+  lo2=Math.min(...M2.map(m=>m[0])); hi2=Math.max(...M2.map(m=>m[1])); if(hi2===lo2) hi2++;
+  draw2('No events yet. Press Next step.');}
+function draw2(msg,wrong){
+  svg2.innerHTML='';
+  const n=M2.length, axisY2=top2+n*rowH2+6, cTop=axisY2+34, cBot=cTop+chartH, maxC=n;
+  svg2.setAttribute('viewBox',`0 0 ${W} ${cBot+26}`);
+  const yc=c=>cBot-c/maxC*chartH;
+  const seen=ev.slice(0,k2), started=new Set(seen.filter(e=>e.d>0).map(e=>e.id)), ended=new Set(seen.filter(e=>e.d<0).map(e=>e.id));
+  M2.forEach(([s,e],i)=>{const y=top2+i*rowH2, on=started.has(i)&&!ended.has(i), gone=ended.has(i);
+    txt(svg2,pL2-10,y+rowH2/2+4,`${NAMES[i]} ${s}–${e}`,{'text-anchor':'end',fill:gone?'var(--muted)':'var(--ink)'});
+    el('rect',{x:x2(s),y:y+5,width:Math.max(4,x2(e)-x2(s)),height:rowH2-10,rx:4,fill:on?'var(--hit)':gone?'var(--gone)':'var(--panel)','fill-opacity':on?.35:1,stroke:on?'var(--hit)':gone?'var(--line)':'var(--ink)','stroke-width':on?2:1},svg2);});
+  el('line',{x1:pL2,x2:W-pR2,y1:axisY2,y2:axisY2,stroke:'var(--muted)'},svg2);
+  const times=[...new Set(M2.flat())].sort((a,b)=>a-b);
+  times.forEach(t=>{el('line',{x1:x2(t),x2:x2(t),y1:axisY2,y2:axisY2+5,stroke:'var(--muted)'},svg2); txt(svg2,x2(t),axisY2+18,String(t),{fill:'var(--muted)','font-size':13});});
+  // chart of meetings in progress
+  txt(svg2,pL2-10,cTop-8,'in progress',{'text-anchor':'end',fill:'var(--muted)','font-size':13});
+  for(let c=0;c<=maxC;c++){el('line',{x1:pL2,x2:W-pR2,y1:yc(c),y2:yc(c),stroke:'var(--line)'},svg2); txt(svg2,pL2-10,yc(c)+4,String(c),{'text-anchor':'end',fill:'var(--muted)','font-size':13});}
+  if(pts.length){let d=`M${x2(lo2)},${yc(0)}`, prev=0; for(const p of pts){d+=` L${x2(p.t)},${yc(prev)} L${x2(p.t)},${yc(p.c)}`; prev=p.c}
+    el('path',{d,fill:'none',stroke:'var(--hit)','stroke-width':2.5,'stroke-linejoin':'round'},svg2);
+    el('line',{x1:pL2,x2:W-pR2,y1:yc(best2),y2:yc(best2),stroke:best2>trueRooms?'var(--bad)':'var(--left)','stroke-width':1.5,'stroke-dasharray':'6 4'},svg2);
+    txt(svg2,W-pR2,yc(best2)-5,`most: ${best2}`,{'text-anchor':'end',fill:best2>trueRooms?'var(--bad)':'var(--left)','font-size':13,'font-weight':600});
+    const t=ev[k2-1].t; el('line',{x1:x2(t),x2:x2(t),y1:top2,y2:cBot,stroke:'var(--right)','stroke-width':2},svg2);
+    txt(svg2,x2(t),cBot+18,`t = ${t}`,{fill:'var(--right)','font-size':13,'font-weight':600});}
+  $('chips2').innerHTML=ev.map((e,i)=>`<span class="${i<k2-1?'past':i===k2-1?'now':''}">(${e.t}, ${e.d>0?'+1':'−1'}) ${NAMES[e.id]}</span>`).join('');
+  $('facts2').innerHTML=`<span>in progress: <b>${cnt}</b></span><span>most so far: <b>${best2}</b></span><span>events done: <b>${k2} of ${ev.length}</b></span>`;
+  $('s2').textContent=msg; $('s2').classList.toggle('wrong',!!wrong);
+}
+function step2(){
+  if(done2){$('s2').textContent='Done. Press Reset, or change the tie order.';return}
+  const e=ev[k2]; cnt+=e.d; k2++; pts.push({t:e.t,c:cnt}); best2=Math.max(best2,cnt);
+  let msg=`Time ${e.t}: meeting ${NAMES[e.id]} ${e.d>0?'starts (+1)':'ends (−1)'}. In progress: ${cnt}. Most so far: ${best2}.`, wrong=false;
+  const lateEnd=ev.slice(k2).find(x=>x.t===e.t&&x.d<0);
+  if(e.d>0&&lateEnd){wrong=true; msg+=` This count is too high: meeting ${NAMES[lateEnd.id]} also ends at ${e.t}, but its −1 comes later in this order.`}
+  if(k2===ev.length){done2=true; stop2();
+    if(best2===trueRooms) msg+=` All ${ev.length} events done. Answer: ${best2} room${best2>1?'s':''}.`;
+    else {wrong=true; msg+=` All events done, but ${best2} is wrong. The correct answer is ${trueRooms}: at a tie, the start was counted before the end.`}}
+  draw2(msg,wrong);
+}
+function stop2(){clearInterval(timer2);timer2=null;$('b2play').textContent='Play'}
+$('b2step').onclick=()=>{stop2();step2()};
+$('b2reset').onclick=reset2;
+$('tie2').onchange=reset2;
+$('b2play').onclick=()=>{ if(timer2){stop2();return} if(done2) reset2(); $('b2play').textContent='Pause'; step2(); timer2=setInterval(()=>{step2(); if(done2) stop2();}, reduce?600:1200); };
+$('b2use').onclick=()=>{const p=parsePairs($('m2').value);
+  if(!p||p.length<1||p.length>6){$('e2').textContent='Type 1 to 6 meetings as start-end pairs, for example 0-10, 5-15.';return}
+  if(p.some(([s,e])=>s>=e||e>99)){$('e2').textContent='Each meeting must start before it ends, and every number must be 99 or less.';return}
+  $('e2').textContent=''; M2=p; reset2();};
+$('m2').addEventListener('keydown',e=>{if(e.key==='Enter')$('b2use').click()});
+reset2();
+
+/* ---------- Napkin slider ---------- */
+const SUP='⁰¹²³⁴⁵⁶⁷⁸⁹';
+const sup=e=>String(e).split('').map(d=>SUP[d]).join('');
+function sci(x){const e=Math.floor(Math.log10(x)+1e-9), m=Math.round(x/10**e*10)/10; return e<5?Math.round(x).toLocaleString('en-US'):(m===1?'':m+' × ')+'10'+sup(e)}
+const nice=v=>Number(v.toPrecision(2)).toLocaleString('en-US');
+function fmtT(s){
+  if(s<1e-6) return nice(s*1e9)+' nanoseconds';
+  if(s<1e-3) return nice(s*1e6)+' microseconds';
+  if(s<1) return nice(s*1e3)+' milliseconds';
+  if(s<120) return nice(s)+' seconds';
+  if(s<7200) return nice(s/60)+' minutes';
+  if(s<172800) return nice(s/3600)+' hours';
+  return nice(s/86400)+' days';
+}
+function napkin(){
+  const e=+$('nslider').value, N=10**e, a=N*(N-1)/2, b=N*Math.log2(N)+N, c=N;
+  $('nval').textContent=N.toLocaleString('en-US');
+  $('t3').textContent=fmtT(a/1e9); $('t3s').textContent=`every pair: n × (n − 1) ÷ 2 = ${sci(a)} checks`;
+  $('t2').textContent=fmtT(b/1e9); $('t2s').textContent=`sort, then one pass: about n × log₂ n + n = ${sci(b)} steps`;
+  $('t1').textContent=fmtT(c/1e9); $('t1s').textContent=`one pass alone (input already sorted): n = ${sci(c)} steps`;
+}
+$('nslider').oninput=napkin; napkin();
+})();
+</script>
