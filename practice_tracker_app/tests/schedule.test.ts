@@ -100,14 +100,14 @@ describe("review schedule", () => {
     ]);
   });
 
-  it("case 5: a new failure on 10-04 restarts the cycle from 10-04", () => {
+  it("case 5: a failed Day 3 review on 10-04 does not restart; Day 7 stays on 10-08", () => {
     const attempts = [a(1, "2026-10-01", "bug"), a(2, "2026-10-02", "clean"), a(3, "2026-10-04", "bug")];
     expect(stateOf(attempts)).toMatchObject({
       status: "in_cycle",
-      anchorDate: "2026-10-04",
-      anchorAttemptId: 3,
-      nextStep: 0,
-      nextDue: "2026-10-05",
+      anchorDate: "2026-10-01",
+      anchorAttemptId: 1,
+      nextStep: 2,
+      nextDue: "2026-10-08",
     });
   });
 
@@ -184,14 +184,14 @@ describe("review schedule", () => {
     expect(dueReviews(attempts, "2026-12-31")).toEqual([]);
   });
 
-  it("case 13: a second failure on 10-02 replaces the anchor", () => {
+  it("case 13: a failed Day 1 review on 10-02 does not restart; Day 3 is next", () => {
     const attempts = [a(1, "2026-10-01", "bug"), a(2, "2026-10-02", "bug")];
     expect(stateOf(attempts)).toMatchObject({
       status: "in_cycle",
-      anchorDate: "2026-10-02",
-      anchorAttemptId: 2,
-      nextStep: 0,
-      nextDue: "2026-10-03",
+      anchorDate: "2026-10-01",
+      anchorAttemptId: 1,
+      nextStep: 1,
+      nextDue: "2026-10-04",
     });
   });
 
@@ -243,9 +243,9 @@ describe("review schedule", () => {
     expect(due.map((d) => d.problem)).toEqual([5, 10, 20]);
   });
 
-  it("case 19: with two failures on 10-01, the later id is the anchor", () => {
+  it("case 19: a second failure on the same day 10-01 is early and ignored", () => {
     const attempts = [a(1, "2026-10-01", "bug"), a(2, "2026-10-01", "bug")];
-    expect(stateOf(attempts)).toMatchObject({ status: "in_cycle", anchorAttemptId: 2 });
+    expect(stateOf(attempts)).toMatchObject({ status: "in_cycle", anchorAttemptId: 1, nextStep: 0 });
   });
 
   it("case 20: a failure on 10-24 is due on 10-25 with 0 days overdue (clocks change that night)", () => {
@@ -305,5 +305,29 @@ describe("review schedule", () => {
       nextStep: 0,
       nextDue: "2026-11-15",
     });
+  });
+
+  it("case 27: failing Day 1, Day 3 and Day 7 in turn restarts only at Day 7", () => {
+    const base = [a(1, "2026-10-01", "bug"), a(2, "2026-10-02", "bug"), a(3, "2026-10-04", "bug")];
+    expect(stateOf(base)).toMatchObject({ anchorAttemptId: 1, nextStep: 2, nextDue: "2026-10-08" });
+    const attempts = [...base, a(4, "2026-10-08", "bug")];
+    expect(stateOf(attempts)).toMatchObject({
+      status: "in_cycle",
+      anchorDate: "2026-10-08",
+      anchorAttemptId: 4,
+      nextStep: 0,
+      nextDue: "2026-10-09",
+    });
+  });
+
+  it("case 28: a late failure after Day 7 is due restarts the cycle", () => {
+    const attempts = [a(1, "2026-10-01", "bug"), a(2, "2026-10-12", "bug")];
+    expect(stateOf(attempts)).toMatchObject({ anchorAttemptId: 2, nextStep: 0, nextDue: "2026-10-13" });
+  });
+
+  it("case 29: a failed Day 1 review is not queued again", () => {
+    const attempts = [a(1, "2026-10-01", "bug"), a(2, "2026-10-02", "bug")];
+    expect(dueReviews(attempts, "2026-10-03")).toEqual([]);
+    expect(dueReviews(attempts, "2026-10-04")[0]).toMatchObject({ stepLabel: "Day 3", anchorAttemptId: 1 });
   });
 });

@@ -3,7 +3,7 @@
 `SCHEDULE.md` asks you to log every problem you attempt, and to do the ones you got wrong again a few days later. Keeping that log in a spreadsheet means you have to work out each morning which problems are due. This small app does that for you.
 
 - **You log each attempt:** the date, the problem, which principle you chose, how it went, and one line about why.
-- **Each day it tells you what to redo.** Any problem you failed comes back 1, 3 and 7 days later until you get it right on the 7th day. A problem you solve cleanly comes back once more, 14 days later.
+- **Each day it tells you what to redo.** Any problem you failed comes back 1, 3 and 7 days later. A problem you solve cleanly comes back once more, 14 days later.
 
 It runs on your own computer. Your log is stored in a PostgreSQL database that also runs on your computer, so nothing goes to the cloud and nothing costs money.
 
@@ -23,7 +23,7 @@ Every attempt gets one of five **outcomes**:
 | `wrong-principle` | You reached for the wrong idea | **fail** |
 | `read-solution` | You had to read the hint or solution | **fail** |
 
-**The rule:** when you fail a problem, it comes back for review **1 day, 3 days and 7 days later**. If you fail any of those reviews, the cycle starts again from that day. If you pass the 7-day review, it comes back once more for a **Day 14** check, 14 days after that pass. A problem you solve `clean` on the first try also comes back 14 days later (a first-try `slow` doesn't). Pass the Day 14 check and the problem is **retired** and leaves your list. Fail it and the 1, 3 and 7 day cycle starts again.
+**The rule:** when you fail a problem, it comes back for review **1 day, 3 days and 7 days later**. Failing the Day 1 or Day 3 review doesn't restart anything: the schedule carries on. Only failing the **Day 7** review starts the cycle again from that day. If you pass the 7-day review, it comes back once more for a **Day 14** check, 14 days after that pass. A problem you solve `clean` on the first try also comes back 14 days later (a first-try `slow` doesn't). Pass the Day 14 check and the problem is **retired** and leaves your list. Fail it and the 1, 3 and 7 day cycle starts again.
 
 An example. You fail #435 on Monday the 5th (Day 14 here is two weeks after the Day 7 pass):
 
@@ -31,11 +31,9 @@ An example. You fail #435 on Monday the 5th (Day 14 here is two weeks after the 
 |---|---|
 | Mon 5 | You log `wrong-principle`. #435 is now due on the 6th, 8th and 12th. |
 | Tue 6 | It's on your list as **Day 1**. You solve it: `clean`. |
-| Thu 8 | It's on your list as **Day 3**. You fail again: `bug`. The cycle restarts, so it's now due on the 9th, 11th and 15th. |
-| Fri 9 | **Day 1**: `clean`. |
-| Sun 11 | **Day 3**: `clean`. |
-| Thu 15 | **Day 7**: `clean`. It's now due once more on the 29th. |
-| Thu 29 | **Day 14**: `clean`. #435 is retired. |
+| Thu 8 | It's on your list as **Day 3**. You fail again: `bug`. Nothing restarts: Day 7 is still due on the 12th. |
+| Mon 12 | **Day 7**: `clean`. It's now due once more on the 26th. |
+| Mon 26 | **Day 14**: `clean`. #435 is retired. |
 
 Three more things to know:
 

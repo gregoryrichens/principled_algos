@@ -77,15 +77,17 @@ export function problemStates(attempts: Iterable<Attempt>): Map<number, ProblemS
     };
 
     for (const attempt of group) {
-      if (FAILS.has(attempt.outcome)) {
-        start(FAIL_CYCLE, attempt);
-      } else if (state.status === "in_cycle" && state.anchorDate !== null && state.cycle !== null && state.nextStep !== null) {
+      const fail = FAILS.has(attempt.outcome);
+      if (state.status === "in_cycle" && state.anchorDate !== null && state.cycle !== null && state.nextStep !== null) {
         const anchor = state.anchorDate;
         const cycle = state.cycle;
         const k = cycle.offsets.filter((o) => addDays(anchor, o) <= attempt.attemptedOn).length;
-        if (k <= state.nextStep) continue; // early pass
-        if (k < cycle.offsets.length) {
-          state.nextStep = k;
+        if (fail && (cycle === CLEAN_CYCLE || k === cycle.offsets.length)) {
+          start(FAIL_CYCLE, attempt); // failing the last review (Day 7, or Day 14) starts over
+        } else if (k <= state.nextStep) {
+          continue; // early attempt
+        } else if (k < cycle.offsets.length) {
+          state.nextStep = k; // a pass or a failed Day 1/Day 3 review: the schedule carries on
         } else if (cycle === FAIL_CYCLE) {
           start(CLEAN_CYCLE, attempt); // finished the failure ladder: confirm 14 days later
         } else {
@@ -95,6 +97,8 @@ export function problemStates(attempts: Iterable<Attempt>): Map<number, ProblemS
           state.cycle = null;
           state.nextStep = null;
         }
+      } else if (fail) {
+        start(FAIL_CYCLE, attempt);
       } else if (attempt.outcome === "clean") {
         start(CLEAN_CYCLE, attempt);
       }
