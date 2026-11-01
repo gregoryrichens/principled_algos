@@ -243,7 +243,91 @@ for i in range(len(temperatures)):
             stack.append(int(t))
     return stack[0]</code></pre>
 
-<h3>Worked example 3: Largest Rectangle in Histogram (LeetCode 84)</h3>
+<h3>Worked example 3: Remove K Digits (LeetCode 402)</h3>
+<p><b>Problem.</b> <code>num</code> is a string of digits that spells a whole number, and <code>k</code> is how many digits you must delete. Delete exactly <code>k</code> digits so that the number left over is as small as possible. Return it as a string. It must have no leading zeros, and if nothing is left, return <code>"0"</code>.</p>
+<pre><code>num = "1432219", k = 3
+answer: "1219"        <span class="cm"># delete 4, 3 and one of the 2s</span>
+
+num = "10200", k = 1
+answer: "200"         <span class="cm"># delete the 1; "0200" becomes "200" once the leading zero is dropped</span>
+
+num = "10", k = 2
+answer: "0"           <span class="cm"># everything is deleted</span></code></pre>
+<p>Trying every way to choose which digits to delete is far too slow. Think about what makes a number small instead: the <b>leftmost digits matter most</b>. Walk from left to right. If a digit is bigger than the digit right after it, deleting the bigger one makes the number smaller, because the smaller digit slides into its place. For example, in <code>"1432219"</code> the 4 is followed by a 3, and <code>"132219"</code> is smaller than <code>"1432219"</code>.</p>
+<p>That is a pile of unfinished decisions again. Keep a stack of the digits you are keeping so far. For each new digit <code>d</code>: while you still have deletions left (<code>k &gt; 0</code>) and the top of the stack is <b>bigger</b> than <code>d</code>, pop it (that is one deletion). Then push <code>d</code>. Two cleanups at the end: if deletions are left over (the digits only ever went up, like <code>"12345"</code>), delete from the end, because the biggest digits sit there. Then strip leading zeros, and return <code>"0"</code> if nothing is left.</p>
+<p>Trace for <code>"1432219"</code> with <code>k = 3</code>:</p>
+<div class="tw"><table>
+<tr><th>Digit</th><th>What happens</th><th><code>k</code> left</th><th>Stack (bottom to top)</th></tr>
+<tr><td><code>1</code></td><td>push 1</td><td>3</td><td>[1]</td></tr>
+<tr><td><code>4</code></td><td>1 is not bigger than 4, push</td><td>3</td><td>[1, 4]</td></tr>
+<tr><td><code>3</code></td><td>4 is bigger than 3: pop 4, push 3</td><td>2</td><td>[1, 3]</td></tr>
+<tr><td><code>2</code></td><td>3 is bigger than 2: pop 3, push 2</td><td>1</td><td>[1, 2]</td></tr>
+<tr><td><code>2</code></td><td>2 is not bigger than 2, push</td><td>1</td><td>[1, 2, 2]</td></tr>
+<tr><td><code>1</code></td><td>2 is bigger than 1: pop 2, push 1</td><td>0</td><td>[1, 2, 1]</td></tr>
+<tr><td><code>9</code></td><td>no deletions left, push</td><td>0</td><td>[1, 2, 1, 9]</td></tr>
+</table></div>
+<p>The stack spells <code>1219</code>. Equal digits stay (the test is strictly “bigger”), because deleting one of two equal digits changes nothing at that spot.</p>
+<pre><code>def removeKdigits(num, k):
+    stack = []                                  <span class="cm"># digits we are keeping, left to right</span>
+    for d in num:
+        while k &gt; 0 and stack and stack[-1] &gt; d:
+            stack.pop()                         <span class="cm"># a bigger digit just before a smaller one: delete it</span>
+            k -= 1
+        stack.append(d)
+    if k &gt; 0:                                   <span class="cm"># digits only rose, so the biggest are at the end</span>
+        stack = stack[:-k]
+    return "".join(stack).lstrip("0") or "0"    <span class="cm"># drop leading zeros; "0" if nothing is left</span></code></pre>
+<p>For <code>"10200"</code> with <code>k = 1</code>: the 0 is smaller than the 1 before it, so the 1 is popped (<code>k</code> becomes 0). The rest are pushed, giving <code>"0200"</code>, and <code>lstrip("0")</code> leaves <code>"200"</code>.</p>
+<h3>How to recognize it</h3>
+<ul>
+<li>“For each item, find the next (or previous) item that is larger (or smaller).”</li>
+<li>“How long until …”, “how far back until …”.</li>
+<li>“Largest rectangle” in bars (a Hard, for later).</li>
+<li>Pairs inside pairs: brackets, HTML tags, expressions.</li>
+</ul>
+
+<h3>Common mistakes</h3>
+<ul>
+<li><b><code>&lt;</code> or <code>&lt;=</code> in the pop condition.</b> This decides equal values. In Daily Temperatures, an equal day is not warmer, so pop only on <code>&lt;</code>.</li>
+<li><b>The items left at the end.</b> They never found an answer. Some problems want 0 for them; others want a default such as −1. Decide before you code.</li>
+</ul>
+
+<h3>Try it yourself</h3>
+<details><summary>1. Next larger value: [2, 1, 2, 4, 3]</summary><div>
+<p>For each item, give the next larger value, or −1 if there is none.</p>
+<p><b>Answer:</b> <code>[4, 2, 4, -1, -1]</code>. Use the Daily Temperatures code, but record the value, not the distance.</p>
+</div></details>
+<details><summary>2. Stock span (LeetCode 901): prices [100, 80, 60, 70, 60, 75, 85]</summary><div>
+<p>The span of a day is the number of days in a row, back from today, with a price at or below today’s price. Give each span.</p>
+<p><b>Answer:</b> <code>[1, 1, 1, 2, 1, 4, 6]</code>. This is “previous larger”: the span is today’s position minus the position of the previous higher price. If there is none, the span is today’s position + 1.</p>
+<pre><code>def spans(prices):
+    stack, out = [], []                   <span class="cm"># positions; prices go down, bottom to top</span>
+    for i, p in enumerate(prices):        <span class="cm"># enumerate gives (position, value)</span>
+        while stack and prices[stack[-1]] &lt;= p:
+            stack.pop()                   <span class="cm"># hidden by today: never an answer again</span>
+        out.append(i - stack[-1] if stack else i + 1)
+        stack.append(i)
+    return out</code></pre>
+</div></details>
+<details><summary>3. Which are valid: "{[]}(", "(]", ")("?</summary><div>
+<p><b>Answer:</b> none of them. <code>"{[]}("</code> leaves <code>(</code> on the stack. <code>"(]"</code> has the wrong type on the top. <code>")("</code> closes before anything opens.</p>
+</div></details>
+<details><summary>4. Next smaller value: [4, 5, 2, 10, 8]</summary><div>
+<p>For each item, give the next smaller value, or −1 if there is none.</p>
+<p><b>Answer:</b> <code>[2, 2, -1, 8, -1]</code>. Use the same code as problem 1, but pop while the top is <em>larger</em> than the new item.</p>
+</div></details>
+
+<h2>In the real world</h2>
+<p><b>Every program you run uses a stack.</b> When function A calls function B, the computer must remember where to go back to in A. B can call C, and C can call D. The return points come back in the opposite order: last in, first out. In February 1946, Alan Turing put this into his design for the ACE computer. He called the two operations BURY and UNBURY. Today the name is the <b>call stack</b>. Python stops at 1,000 nested calls by default.</p>
+<p><b>Calculators and compilers.</b> In 1955, Friedrich Bauer and Klaus Samelson used a stack to change formulas into machine steps. They called it the <i>Kellerprinzip</i>, the “cellar principle”. Python still does this. It changes <code>a + b * c</code> into the Reverse Polish steps below, and runs them on a stack, as <code>evalRPN</code> does.</p>
+<pre><code>LOAD_NAME  a       <span class="cm"># push a</span>
+LOAD_NAME  b       <span class="cm"># push b</span>
+LOAD_NAME  c       <span class="cm"># push c</span>
+BINARY_OP  *       <span class="cm"># pop c and b, push b * c</span>
+BINARY_OP  +       <span class="cm"># pop b * c and a, push the sum</span></code></pre>
+<p><b>Why it is valuable.</b> A stack changes a search inside a search into one pass. Each item costs one push and one pop, and the memory is at most one slot for each item.</p>
+<details class="later"><summary>Later, after Phase 2: Largest Rectangle in Histogram (LeetCode 84, a Hard)</summary><div>
+<h3>Largest Rectangle in Histogram (LeetCode 84)</h3>
 <p><code>heights[i]</code> is the height of a bar 1 unit wide. Find the area of the largest rectangle that fits inside the bars.</p>
 <pre><code>heights = [2, 1, 5, 6, 2, 3]
 answer: 10        <span class="cm"># bars of height 5 and 6 hold a rectangle 5 high and 2 wide</span></code></pre>
@@ -280,54 +364,7 @@ answer: 10        <span class="cm"># bars of height 5 and 6 hold a rectangle 5 h
         best = max(best, height * (len(heights) - s))
     return best</code></pre>
 <p>Bars still on the stack at the end reach to the right end.</p>
-
-<h3>How to recognize it</h3>
-<ul>
-<li>“For each item, find the next (or previous) item that is larger (or smaller).”</li>
-<li>“How long until …”, “how far back until …”.</li>
-<li>“Largest rectangle” in bars.</li>
-<li>Pairs inside pairs: brackets, HTML tags, expressions.</li>
-</ul>
-
-<h3>Common mistakes</h3>
-<ul>
-<li><b><code>&lt;</code> or <code>&lt;=</code> in the pop condition.</b> This decides equal values. In Daily Temperatures, an equal day is not warmer, so pop only on <code>&lt;</code>.</li>
-<li><b>The items left at the end.</b> They never found an answer. Some problems want 0 for them. Some want “to the end”.</li>
-</ul>
-
-<h3>Try it yourself</h3>
-<details><summary>1. Next larger value: [2, 1, 2, 4, 3]</summary><div>
-<p>For each item, give the next larger value, or −1 if there is none.</p>
-<p><b>Answer:</b> <code>[4, 2, 4, -1, -1]</code>. Use the Daily Temperatures code, but record the value, not the distance.</p>
 </div></details>
-<details><summary>2. Stock span (LeetCode 901): prices [100, 80, 60, 70, 60, 75, 85]</summary><div>
-<p>The span of a day is the number of days in a row, back from today, with a price at or below today’s price. Give each span.</p>
-<p><b>Answer:</b> <code>[1, 1, 1, 2, 1, 4, 6]</code>. This is “previous larger”: the span is today’s position minus the position of the previous higher price. If there is none, the span is today’s position + 1.</p>
-<pre><code>def spans(prices):
-    stack, out = [], []                   <span class="cm"># positions; prices go down, bottom to top</span>
-    for i, p in enumerate(prices):        <span class="cm"># enumerate gives (position, value)</span>
-        while stack and prices[stack[-1]] &lt;= p:
-            stack.pop()                   <span class="cm"># hidden by today: never an answer again</span>
-        out.append(i - stack[-1] if stack else i + 1)
-        stack.append(i)
-    return out</code></pre>
-</div></details>
-<details><summary>3. Which are valid: "{[]}(", "(]", ")("?</summary><div>
-<p><b>Answer:</b> none of them. <code>"{[]}("</code> leaves <code>(</code> on the stack. <code>"(]"</code> has the wrong type on the top. <code>")("</code> closes before anything opens.</p>
-</div></details>
-<details><summary>4. Largest rectangle in [3, 1, 3, 2, 2]</summary><div>
-<p><b>Answer:</b> 6. Height 2 over bars 2, 3 and 4, so 3 bars wide. Type the heights into the histogram above and check each step.</p>
-</div></details>
-
-<h2>In the real world</h2>
-<p><b>Every program you run uses a stack.</b> When function A calls function B, the computer must remember where to go back to in A. B can call C, and C can call D. The return points come back in the opposite order: last in, first out. In February 1946, Alan Turing put this into his design for the ACE computer. He called the two operations BURY and UNBURY. Today the name is the <b>call stack</b>. Python stops at 1,000 nested calls by default.</p>
-<p><b>Calculators and compilers.</b> In 1955, Friedrich Bauer and Klaus Samelson used a stack to change formulas into machine steps. They called it the <i>Kellerprinzip</i>, the “cellar principle”. Python still does this. It changes <code>a + b * c</code> into the Reverse Polish steps below, and runs them on a stack, as <code>evalRPN</code> does.</p>
-<pre><code>LOAD_NAME  a       <span class="cm"># push a</span>
-LOAD_NAME  b       <span class="cm"># push b</span>
-LOAD_NAME  c       <span class="cm"># push c</span>
-BINARY_OP  *       <span class="cm"># pop c and b, push b * c</span>
-BINARY_OP  +       <span class="cm"># pop b * c and a, push the sum</span></code></pre>
-<p><b>Why it is valuable.</b> A stack changes a search inside a search into one pass. Each item costs one push and one pop, and the memory is at most one slot for each item.</p>
 </main>
 
 <script>

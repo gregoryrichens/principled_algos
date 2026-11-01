@@ -47,12 +47,14 @@ Daily format (75–90 min): read the principle section(s) · do the drill cards 
 | 1 | Intro + six questions; P1 Hash; P2 Running aggregates | Cards 1, 2, 3 | 1 Two Sum (E); 49 Group Anagrams (M); 128 Longest Consecutive Sequence (M); 238 Product of Array Except Self (M); 121 Best Time to Buy And Sell Stock (E) |
 | 2 | P3 Dynamic programming | Cards 4, 5, 6, 7 | 322 Coin Change (M); 198 House Robber (M); 518 Coin Change II (M); 1143 Longest Common Subsequence (M); 91 Decode Ways (M) |
 | 3 | P4 Binary search; P5 Two pointers | Cards 8, 9, 10 | 875 Koko Eating Bananas (M); 153 Find Minimum In Rotated Sorted Array (M); 704 Binary Search (E); 167 Two Sum II Input Array Is Sorted (M); 11 Container With Most Water (M); 15 3Sum (M) |
-| 4 | P6 Stack; P7 Greedy | Cards 11, 12 | 739 Daily Temperatures (M); 84 Largest Rectangle In Histogram (H); 20 Valid Parentheses (E); 55 Jump Game (M); 435 Non Overlapping Intervals (M); 134 Gas Station (M); 53 Maximum Subarray (M) |
-| 5 | P8 Sliding window; P9 Sort then scan; P10 Heap | Cards 13, 14, 15 | 3 Longest Substring Without Repeating Characters (M); 76 Minimum Window Substring (H); 56 Merge Intervals (M); 253 Meeting Rooms II (M, Premium); 215 Kth Largest Element In An Array (M); 295 Find Median From Data Stream (H) |
-| 6 | P11 Tree recursion; P12 Backtracking | Cards 16, 17, 18, 19 | 543 Diameter of Binary Tree (E); 98 Validate Binary Search Tree (M); 102 Binary Tree Level Order Traversal (M); 78 Subsets (M); 39 Combination Sum (M); 51 N Queens (H) |
+| 4 | P6 Stack; P7 Greedy | Cards 11, 12 | 739 Daily Temperatures (M); 20 Valid Parentheses (E); 55 Jump Game (M); 435 Non Overlapping Intervals (M); 134 Gas Station (M); 53 Maximum Subarray (M) |
+| 5 | P8 Sliding window; P9 Sort then scan; P10 Heap | Cards 13, 14, 15 | 3 Longest Substring Without Repeating Characters (M); 56 Merge Intervals (M); 253 Meeting Rooms II (M, Premium); 215 Kth Largest Element In An Array (M) |
+| 6 | P11 Tree recursion; P12 Backtracking | Cards 16, 17, 18, 19 | 543 Diameter of Binary Tree (E); 98 Validate Binary Search Tree (M); 102 Binary Tree Level Order Traversal (M); 78 Subsets (M); 39 Combination Sum (M) |
 | 7 | P13, P14, P15 Graphs; P16, P17 Mechanics; P18 Reformulate; the memorize table | Cards 20–27 | 200 Number of Islands (M); 994 Rotting Oranges (M); 210 Course Schedule II (M); 684 Redundant Connection (M); 743 Network Delay Time (M); 206 Reverse Linked List (E); 136 Single Number (E) |
 
 Cards 28–36 (added after review) enter the Phase 2 drill cycle on Day 8; do 28, 29, 30 on Day 8, 31–33 on Day 9, 34–36 on Day 10 in addition to the daily cycle.
+
+The Hard problems that used to sit inside Cards 2, 7, 11, 13, 15 and 16 are the **Later drills A–F** at the end of `DRILLS.md`, and the Hard worked examples are in "Later: the Hard worked examples" at the end of the principle sections of `PRINCIPLES.md`. Do each one on the Phase 2 or Phase 3 day that reaches its problem: A with Day 13 (42), B1 and B2 with Day 18 (115, 10), C with Day 19 (84), D with Day 8 (76), E1 with Day 23 (23), F with Day 20 (124), E2 whenever 295 comes up in the random draw.
 
 Day 7 is heavy. If it spills into Day 8, let it. Do not start Phase 2 until every card has been written clean at least once.
 
@@ -124,9 +126,11 @@ Not scheduled above but in the interleave pool and should surface:
 - 211 Design Add And Search Words Data Structure (M)
 - 212 Word Search II (H)
 - 973 K Closest Points to Origin (M)
+- 295 Find Median From Data Stream (H)
 - 40 Combination Sum II (M)
 - 131 Palindrome Partitioning (M)
 - 17 Letter Combinations of a Phone Number (M)
+- 51 N Queens (H)
 - 695 Max Area of Island (M)
 - 269 Alien Dictionary (H, Premium)
 - 332 Reconstruct Itinerary (H)
@@ -205,7 +209,7 @@ How to read each column:
 
 - **Drills, first day** — write these the day you read the principle, until each one is clean. These are the cards whose whole subject is this principle; nothing in them depends on a principle you have not read yet.
 - **Drills, follow-up** — cards that combine this principle with a second one. They are held back because writing them requires the *other* principle too, so they only make sense once both are in. Cards 28–36 are all of this kind and enter on Days 8–10. A card appears in two rows when it combines two principles; it is first-day in neither if it needs both.
-- **Problems, first day** — solve these on the day, *after* reading the principle. This is fluency practice, not recognition: you already know which move to use, and the point is writing it clean inside the time box.
+- **Problems, first day** — solve these on the day, *after* reading the principle. This is fluency practice, not recognition: you already know which move to use, and the point is writing it clean inside the time box. No Hard problem is ever a first-day problem: Hards (4, 10, 23, 25, 42, 51, 76, 84, 115, 124, 127, 212, 239, 269, 295, 297, 312, 329, 332, 778, 1851) wait for Phase 2 or Phase 3.
 - **Problems, follow-up** — the rest of the principle's problems, saved deliberately so that you meet them *cold*, without knowing the category. Doing these on the first day would waste them, because the whole skill Phase 2 trains is choosing the principle from the statement alone.
 
 Only problems where this principle is the *primary* move are listed. Every problem appears in exactly one row, so the four problem columns together account for all 150. Names and difficulties are in the coverage index at the end of `PRINCIPLES.md`; only ids are given here to keep the table readable.
@@ -217,13 +221,13 @@ Only problems where this principle is the *primary* move are listed. Every probl
 | **P3. Dynamic programming:** solve each smaller question once and write the answer down | 4, 5, 6, 7 | 32 | 91, 198, 322, 518, 1143 | 10, 62, 70, 72, 97, 115, 139, 213, 300, 309, 312, 329, 338, 416, 494, 746 |
 | **P4. Binary search:** one question rules out half of what is left | 8, 9 | 31, 32 | 153, 704, 875 | 4, 33, 74, 981 |
 | **P5. Two pointers:** start at both ends, and let one comparison rule out a whole side | 10 | — | 11, 15, 167 | 5, 54, 125, 647 |
-| **P6. Stack:** keep the unfinished items in a pile, and settle them from the top | 11 | 34 | 20, 84, 739 | 150, 155, 239, 853 |
+| **P6. Stack:** keep the unfinished items in a pile, and settle them from the top | 11 | 34 | 20, 739 | 84, 150, 155, 239, 853 |
 | **P7. Greedy:** make the choice you can prove is never worse, and never look back | 12 | 3 → see note | 53, 55, 134, 435 | 45, 621, 678, 763, 846, 1899 |
-| **P8. Sliding window:** grow the right edge, shrink the left edge, never start over | 13 | 34 | 3, 76 | 424, 567 |
+| **P8. Sliding window:** grow the right edge, shrink the left edge, never start over | 13 | 34 | 3 | 76, 424, 567 |
 | **P9. Sort first:** then each item only needs to be compared with its neighbor | 14 | — | 56, 253 | 57, 252, 1851 |
-| **P10. Heap:** when you keep needing the smallest (or largest) of a changing collection | 15 | 31 | 215, 295 | 23, 355, 703, 973, 1046 |
+| **P10. Heap:** when you keep needing the smallest (or largest) of a changing collection | 15 | 31 | 215 | 23, 295, 355, 703, 973, 1046 |
 | **P11. Tree recursion:** decide what each node reports up, and what it passes down | 16, 17, 18 | 30 | 98, 102, 543 | 100, 104, 105, 110, 124, 199, 226, 230, 235, 297, 572, 1448 |
-| **P12. Backtracking:** build answers one choice at a time, undo, and try the next choice | 19 | — | 39, 51, 78 | 17, 22, 40, 46, 79, 90, 131, 212 |
+| **P12. Backtracking:** build answers one choice at a time, undo, and try the next choice | 19 | — | 39, 78 | 17, 22, 40, 46, 51, 79, 90, 131, 212 |
 | **P13. Graph search:** spot the "things" and "connections", then visit each thing once | 20, 21 | 18, 30 | 200, 994 | 127, 130, 133, 286, 332, 417, 695 |
 | **P14. Dependencies and groups:** order what must come first, merge what belongs together | 22, 23 | 29 | 210, 684 | 207, 261, 269, 323 |
 | **P15. Weighted paths:** always extend the cheapest route found so far | 24 | 36 | 743 | 778, 787, 1584 |
@@ -238,7 +242,7 @@ Only problems where this principle is the *primary* move are listed. Every probl
 Three things worth noticing, because they tell you where to spend your time:
 
 - **P3, P11, P12, P16 and P17 cover 69 of the 150 problems** — nearly half. If your log shows repeated trouble in any one of them, that is the single highest-value re-drill.
-- **The follow-up columns hold 108 of the 150 problems**, against 42 on the first days. That ratio is the design: Phase 1 is a week of vocabulary, and the remaining four weeks are almost entirely cold recognition.
+- **The follow-up columns hold 112 of the 150 problems**, against 38 on the first days. That ratio is the design: Phase 1 is a week of vocabulary, and the remaining four weeks are almost entirely cold recognition.
 - **P18 Reformulate has one problem, no card, and an empty first day.** That is not because it is rare; it is because it is almost never the *whole* solution. It appears as a *secondary* principle in 19 problems (1, 4, 55, 74, 127, 130, 202, 213, 269, 286, 287, 312, 417, 494, 621, 678, 853, 875, 2013). You practise it inside those, by asking "what else could this be?" during question 1 of the ritual, not by drilling it alone.
 
 Note on 5 and 647 (Longest Palindromic Substring, Palindromic Substrings): they sit in the P5 row, not the P3 row, because centre expansion — pointers walking outward from each possible centre, in O(1) extra space — is the solution to write. They also have a well-known interval-DP form, so P3's cards are worth having fresh when you meet them. Similarly 338 (Counting Bits) sits in the P3 row rather than P17, and 202 (Happy Number) in the P16 row rather than P17: in both cases the row follows the primary move from the coverage index, not the LeetCode category.

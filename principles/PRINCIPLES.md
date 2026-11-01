@@ -421,69 +421,54 @@ def maxProfit(prices):
     return best
 ```
 
-### Worked example 2: Trapping Rain Water (LeetCode 42)
+### Worked example 2: Maximum Sum Circular Subarray (LeetCode 918)
 
-**Problem.** A list of non-negative numbers gives the heights of a row of bars, each one unit wide. After rain, water collects between the bars. Return the total amount of water trapped.
-
-```
-height = [3, 0, 2, 0, 4]
-answer: 7
-```
-
-**The insight.** Water above a bar rises to the height of the *shorter* of the two tallest walls around it: the tallest bar on its left (including itself) and the tallest on its right (including itself). So:
+**Problem.** `nums` holds whole numbers, some of them negative. Treat the list as a **circle**: the last number sits next to the first. Return the largest sum of a run of side-by-side numbers (at least one number, none used twice). The run is allowed to wrap around the end of the list.
 
 ```
-water at i = min(tallest on the left, tallest on the right) - height[i]
+nums = [5, -3, 5]
+answer: 10           the run 5, 5: start at the last number and wrap around to the first
+
+nums = [-3, -2, -3]
+answer: -2           every number is negative, so the best run is the single number -2
 ```
 
-**The slow way** scans left and right from every bar to find those two walls: O(n²). But "tallest to the left" is a running maximum, and "tallest to the right" is a running maximum from the other end. Compute both lists once:
+The slow way tries every starting spot and every length around the circle: O(n²) runs. The fix is the same as before: carry a summary forward.
 
-| Position | Height | Tallest on the left | Tallest on the right | Water = min(left, right) − height |
-|---|---|---|---|---|
-| 0 | 3 | 3 | 4 | 3 − 3 = 0 |
-| 1 | 0 | 3 | 4 | 3 − 0 = 3 |
-| 2 | 2 | 3 | 4 | 3 − 2 = 1 |
-| 3 | 0 | 3 | 4 | 3 − 0 = 3 |
-| 4 | 4 | 4 | 4 | 4 − 4 = 0 |
+A run that does **not** wrap is an ordinary run, and Maximum Subarray (P7, Card 3) already finds the best one by carrying "the best sum of a run ending here". A run that **does** wrap is different. Whatever it leaves out is one ordinary run in the middle of the list. So a wrapping run equals **the total of the whole list minus one ordinary run in the middle**, and it is largest when the run you cut out is the **smallest** one.
 
-Total: 7.
+So the answer is the larger of two numbers:
+
+- the best ordinary run, and
+- the total minus the worst (smallest-sum) ordinary run.
+
+Find both in one pass by carrying these numbers: `hi` and `lo` (the largest and smallest sum of a run ending at the current number), plus `best` and `worst` (the largest and smallest value `hi` and `lo` have reached so far), and keep the running `total`. For a new number `x`, the run ending at `x` is either `x` alone or `x` added to the earlier run: `hi = max(x, hi + x)` and `lo = min(x, lo + x)`.
+
+Trace for `[5, -3, 5]`:
+
+| `x` | `hi` | `lo` | `best` | `worst` | `total` |
+|---|---|---|---|---|---|
+| 5 | 5 | 5 | 5 | 5 | 5 |
+| -3 | 2 | -3 | 5 | -3 | 2 |
+| 5 | 7 | 2 | 7 | -3 | 7 |
+
+The best ordinary run is 7 (the whole list: 5 − 3 + 5). The worst ordinary run is −3 (the middle number alone). Cutting it out of the total gives 7 − (−3) = 10: the two 5s joined around the circle. The larger of 7 and 10 is **10**.
+
+There is one trap. If **every** number is negative, the "worst run" is the whole list, so total minus worst is 0. That means "take nothing", which is not allowed. When `best` is negative, no run can beat the best single number, so return `best` as it is.
 
 ```python
-def trap(height):
-    n = len(height)
-    if n == 0:
-        return 0
-    left_max = [0] * n                   # left_max[i] = tallest bar in height[0..i]
-    left_max[0] = height[0]
-    for i in range(1, n):
-        left_max[i] = max(left_max[i - 1], height[i])
-    right_max = [0] * n                  # right_max[i] = tallest bar in height[i..n-1]
-    right_max[-1] = height[-1]
-    for i in range(n - 2, -1, -1):
-        right_max[i] = max(right_max[i + 1], height[i])
-    return sum(min(left_max[i], right_max[i]) - height[i] for i in range(n))
+def maxSubarraySumCircular(nums):
+    hi = lo = best = worst = total = nums[0]   # sums of runs ending at the current number, and their records
+    for x in nums[1:]:
+        hi = max(x, hi + x)                     # start fresh at x, or extend the earlier run
+        lo = min(x, lo + x)
+        best = max(best, hi)                    # the best ordinary run
+        worst = min(worst, lo)                  # the worst ordinary run
+        total += x
+    if best < 0:                                # all numbers are negative: total - worst would mean "take nothing"
+        return best
+    return max(best, total - worst)             # an ordinary run, or the wrap-around run
 ```
-
-**Doing it with no extra lists.** Put a pointer at each end and keep the two running maximums as plain variables. Whichever side has the *smaller* running maximum can be settled right now: its water level is that smaller maximum, because the other side is already known to have a wall at least that tall. Settle it, move that pointer inward, repeat.
-
-```python
-def trap(height):
-    l, r = 0, len(height) - 1
-    left_max = right_max = 0
-    water = 0
-    while l <= r:
-        if left_max <= right_max:        # the left side's level is decided
-            left_max = max(left_max, height[l])
-            water += left_max - height[l]
-            l += 1
-        else:                            # the right side's level is decided
-            right_max = max(right_max, height[r])
-            water += right_max - height[r]
-            r -= 1
-    return water
-```
-
-This version mixes two principles: the running maximums are P2, and moving the pointers inward is P5.
 
 ### Worked example 3: counting subarrays with a given sum (running totals plus a dictionary)
 
@@ -524,7 +509,7 @@ Each of these carries a running summary forward:
 - **Maximum Subarray (53).** *Find the contiguous stretch with the largest sum.* Carry "the best sum of a stretch ending here". Covered in P7 and Card 3.
 - **Maximum Product Subarray (152).** *Same, but for products.* Carry both the largest *and* the smallest product ending here, because multiplying by a negative number swaps them.
 - **Partition Labels (763).** *Cut a string into as many pieces as possible so that each letter appears in only one piece.* Precompute the last position of every letter, then extend the current piece's end as you walk. Covered in P7.
-- **Trapping Rain Water (42)** and **Product of Array Except Self (238)**, above.
+- **Product of Array Except Self (238)**, above. **Trapping Rain Water (42)**, a Hard, is worked in "Later: the Hard worked examples".
 - **Best Time to Buy and Sell Stock (121)**, above.
 
 **Beyond the list:** range-sum queries (precompute running totals once, then any range sum is one subtraction), running totals over a grid for rectangle sums, and "longest stretch with equal numbers of 0s and 1s" (Contiguous Array 525, Card 28).
@@ -842,7 +827,7 @@ def lengthOfLIS(nums):
 
 That is O(n²). A faster O(n log n) version uses binary search (P4) and is on Card 32.
 
-**Choosing the last step instead of the first (Burst Balloons, 312).** Covered in P18. When choosing the *first* action changes what the later choices look like, try choosing the *last* action instead.
+**Choosing the last step instead of the first (Burst Balloons, 312).** A Hard, worked in "Later: the Hard worked examples" (P18). When choosing the *first* action changes what the later choices look like, try choosing the *last* action instead.
 
 ### Where else it shows up
 
@@ -1240,7 +1225,7 @@ def longestPalindrome(s):
 ### Where else it shows up
 
 - **Valid Palindrome (125).** *Ignoring case and anything that is not a letter or digit, does the string read the same both ways?* One pointer at each end; skip non-alphanumeric characters; compare and move inward.
-- **Trapping Rain Water (42).** The pointer version in P2.
+- **Trapping Rain Water (42).** The pointer version, a Hard, is worked in "Later: the Hard worked examples".
 - **Merge Two Sorted Lists (21).** *Merge two sorted linked lists into one sorted list.* One pointer on each list; take the smaller head each time. See P16.
 - **Reorder List (143).** *Rearrange `1→2→3→4→5` into `1→5→2→4→3`.* Split, reverse the second half, then walk both halves together. See P16.
 - **Spiral Matrix (54).** *Return a grid's elements in clockwise spiral order.* Keep four boundaries (top, bottom, left, right) and move each inward after walking its edge.
@@ -1335,7 +1320,7 @@ Because the temperatures never increase going up the stack, the top is always th
 
 - "For every element, find the next (or previous) element that is larger (or smaller)."
 - "How long until ...", "how far back until ...".
-- "Largest rectangle", "how many cars form groups".
+- "Largest rectangle" (a Hard, for later), "how many cars form groups".
 - Matching or nesting: brackets, tags, undo operations, expressions.
 
 ### The other kind of stack problem: matching and nesting
@@ -1360,44 +1345,53 @@ def isValid(s):
 
 **Evaluate Reverse Polish Notation (150)** works the same way. *Evaluate an expression written with operators after their operands, like `["2", "1", "+", "3", "*"]` meaning (2 + 1) × 3 = 9.* Numbers are pushed; an operator pops the two most recent numbers and pushes the result.
 
-### Worked example 2: Largest Rectangle in Histogram (LeetCode 84)
+### Worked example 2: Remove K Digits (LeetCode 402)
 
-**Problem.** `heights[i]` is the height of a bar of width 1. Return the area of the largest rectangle that fits inside the bars.
+**Problem.** `num` is a string of digits that spells a whole number, and `k` is how many digits you must delete. Delete exactly `k` digits so that the number left over is as small as possible. Return it as a string. It must have no leading zeros, and if nothing is left, return `"0"`.
 
 ```
-heights = [2, 1, 5, 6, 2, 3]
-answer: 10          the bars of height 5 and 6 together hold a 5 × 2 rectangle
+num = "1432219", k = 3
+answer: "1219"        delete 4, 3 and one of the 2s
+
+num = "10200", k = 1
+answer: "200"         delete the 1; "0200" becomes "200" once the leading zero is dropped
+
+num = "10", k = 2
+answer: "0"           everything is deleted
 ```
 
-**The idea.** A rectangle that uses a bar's full height can stretch left and right until it hits a *shorter* bar. So every bar needs to know where the nearest shorter bar is on each side. Keep a stack of bars whose right edge is not known yet, in increasing height order. When a shorter bar arrives, it is the right edge for every taller bar on the stack: pop them and compute their areas. The new bar can also stretch back left as far as the leftmost bar it popped.
+Trying every way to choose which digits to delete is far too slow. Think about what makes a number small instead: the **leftmost digits matter most**. Walk from left to right. If a digit is bigger than the digit right after it, deleting the bigger one makes the number smaller, because the smaller digit slides into its place. For example, in `"1432219"` the 4 is followed by a 3, and `"132219"` is smaller than `"1432219"`.
 
-The stack holds `(start position, height)`:
+That is a pile of unfinished decisions again. Keep a stack of the digits you are keeping so far. For each new digit `d`: while you still have deletions left (`k > 0`) and the top of the stack is **bigger** than `d`, pop it (that is one deletion). Then push `d`. Two cleanups at the end: if deletions are left over (the digits only ever went up, like `"12345"`), delete from the end, because the biggest digits sit there. Then strip leading zeros, and return `"0"` if nothing is left.
 
-| Position | Height | Popped (area = height × (position − start)) | Stack after |
+Trace for `"1432219"` with `k = 3`:
+
+| Digit | What happens | `k` left | Stack (bottom → top) |
 |---|---|---|---|
-| 0 | 2 | | (0, 2) |
-| 1 | 1 | (0, 2): 2 × 1 = 2 | (0, 1) *(starts at 0, where the popped bar started)* |
-| 2 | 5 | | (0, 1), (2, 5) |
-| 3 | 6 | | (0, 1), (2, 5), (3, 6) |
-| 4 | 2 | (3, 6): 6 × 1 = 6; (2, 5): 5 × 2 = **10** | (0, 1), (2, 2) |
-| 5 | 3 | | (0, 1), (2, 2), (5, 3) |
-| end (6) | | (5, 3): 3 × 1 = 3; (2, 2): 2 × 4 = 8; (0, 1): 1 × 6 = 6 | |
+| `1` | push 1 | 3 | [1] |
+| `4` | 1 is not bigger than 4, push | 3 | [1, 4] |
+| `3` | 4 is bigger than 3: pop 4, push 3 | 2 | [1, 3] |
+| `2` | 3 is bigger than 2: pop 3, push 2 | 1 | [1, 2] |
+| `2` | 2 is not bigger than 2, push | 1 | [1, 2, 2] |
+| `1` | 2 is bigger than 1: pop 2, push 1 | 0 | [1, 2, 1] |
+| `9` | no deletions left, push | 0 | [1, 2, 1, 9] |
+
+The stack spells `1219`. Equal digits stay (the test is strictly "bigger"), because deleting one of two equal digits changes nothing at that spot.
 
 ```python
-def largestRectangleArea(heights):
-    best = 0
-    stack = []                                       # (start, height), heights increasing
-    for i, h in enumerate(heights):
-        start = i
-        while stack and stack[-1][1] > h:
-            s, height = stack.pop()                  # i is the first shorter bar to its right
-            best = max(best, height * (i - s))
-            start = s                                # the new bar can stretch back to here
-        stack.append((start, h))
-    for s, height in stack:                          # never met a shorter bar: stretch to the end
-        best = max(best, height * (len(heights) - s))
-    return best
+def removeKdigits(num, k):
+    stack = []                                  # digits we are keeping, left to right
+    for d in num:
+        while k > 0 and stack and stack[-1] > d:
+            stack.pop()                         # a bigger digit just before a smaller one: delete it
+            k -= 1
+        stack.append(d)
+    if k > 0:                                   # digits only rose, so the biggest are at the end
+        stack = stack[:-k]
+    return "".join(stack).lstrip("0") or "0"    # drop leading zeros; "0" if nothing is left
 ```
+
+For `"10200"` with `k = 1`: the 0 is smaller than the 1 before it, so the 1 is popped (`k` becomes 0). The rest are pushed, giving `"0200"`, and `lstrip("0")` leaves `"200"`.
 
 ### Where else it shows up
 
@@ -1766,53 +1760,51 @@ The set is never rebuilt, only edited at the edges. If you ever find yourself bu
 
 For "shortest", you shrink while you still can, because every step makes a shorter valid window.
 
-### Worked example 2: Minimum Window Substring (LeetCode 76)
+### Worked example 2: the shortest window (Minimum Size Subarray Sum, LeetCode 209)
 
-**Problem.** Given strings `s` and `t`, return the shortest stretch of `s` that contains every character of `t` (including repeats). Return `""` if there is none.
+**Problem.** `nums` holds positive whole numbers and `target` is a positive whole number. Return the length of the shortest run of side-by-side numbers whose sum is at least `target`. If no run reaches `target`, return 0.
 
 ```
-s = "ADOBECODEBANC"    t = "ABC"
-answer: "BANC"
+target = 7, nums = [2, 3, 1, 2, 4, 3]
+answer: 2            the run [4, 3] adds up to 7
+
+target = 4, nums = [1, 4, 4]
+answer: 1            the single number 4
+
+target = 11, nums = [1, 1, 1, 1, 1, 1, 1, 1]
+answer: 0            all eight numbers add up to only 8
 ```
 
-**Checking validity quickly.** Comparing two dictionaries at every step would be slow. Instead, count how many *distinct* characters of `t` currently have enough copies in the window (`have`), and compare it with how many distinct characters `t` needs (`need`). Update `have` only when a character's count crosses its requirement.
+The slow way adds up every run from every starting spot: O(n²). A window does better, and it works here because **all the numbers are positive**: adding a number to the window can only raise the sum, and removing one can only lower it. The rule "sum is at least `target`" is one-directional, as a window needs.
 
-Here are the key moments (`need` = 3: one A, one B, one C):
+The earlier example looked for the *longest* window, so it shrank while the window was invalid and recorded after the shrink. This one wants the *shortest*, so it flips both: grow the right edge, then **shrink while the window is valid** (sum at least `target`), and **record inside the shrink loop**. Each time the window is valid it is a candidate. Then try dropping the left number, and see whether a shorter window is still valid.
 
-| `r` | Char | `have` after adding | Window valid? | Shrinking | Shortest so far |
-|---|---|---|---|---|---|
-| 0–4 | A D O B E | 2 (A, B) | no | | |
-| 5 | C | 3 | yes: "ADOBEC" | record 6; drop A → `have` = 2 | "ADOBEC" |
-| 6–9 | O D E B | 2 | no | | |
-| 10 | A | 3 | yes: "DOBECODEBA" | drop D, O, B (a second B is still inside), E, C → `have` = 2 | "ADOBEC" |
-| 11 | N | 2 | no | | |
-| 12 | C | 3 | yes: "ODEBANC" | drop O, D, E, recording "EBANC" and "BANC"; drop B → `have` = 2 | **"BANC"** |
+Trace for `target = 7`, `nums = [2, 3, 1, 2, 4, 3]`:
+
+| Add (right edge) | Sum after adding | Valid windows found while shrinking | Best length |
+|---|---|---|---|
+| 2 | 2 | none | none yet |
+| 3 | 5 | none | none yet |
+| 1 | 6 | none | none yet |
+| 2 | 8 | `[2, 3, 1, 2]` (length 4), drop 2, sum is 6, stop | 4 |
+| 4 | 10 | `[3, 1, 2, 4]` (4), drop 3, sum 7: `[1, 2, 4]` (3), drop 1, sum 6, stop | 3 |
+| 3 | 9 | `[2, 4, 3]` (3), drop 2, sum 7: `[4, 3]` (2), drop 4, sum 3, stop | **2** |
 
 ```python
-def minWindow(s, t):
-    if not t or len(s) < len(t):
-        return ""
-    required = {}
-    for c in t:
-        required[c] = required.get(c, 0) + 1
-    need = len(required)                         # distinct characters still to satisfy
-    window = {}
-    have = 0
-    best_l, best_len = 0, float("inf")
+def minSubArrayLen(target, nums):
     l = 0
-    for r, c in enumerate(s):
-        window[c] = window.get(c, 0) + 1
-        if c in required and window[c] == required[c]:
-            have += 1                            # c just reached its required count
-        while have == need:                      # valid: record it, then try to shrink
-            if r - l + 1 < best_len:
-                best_l, best_len = l, r - l + 1
-            window[s[l]] -= 1
-            if s[l] in required and window[s[l]] < required[s[l]]:
-                have -= 1                        # s[l] just dropped below its requirement
+    window_sum = 0
+    best = float("inf")                         # "no valid window yet"
+    for r, x in enumerate(nums):
+        window_sum += x                         # the right edge takes in a number
+        while window_sum >= target:             # still valid: record it, then try a shorter one
+            best = min(best, r - l + 1)
+            window_sum -= nums[l]               # the left edge lets one go
             l += 1
-    return s[best_l : best_l + best_len] if best_len != float("inf") else ""
+    return 0 if best == float("inf") else best  # nothing ever reached target
 ```
+
+Each number enters the window once and leaves at most once, so the scan is O(n).
 
 ### Where else it shows up
 
@@ -1946,35 +1938,51 @@ def minMeetingRooms(intervals):
 
 This technique is called a **sweep line**: imagine a vertical line moving left to right across the timeline, and keep a count of what it is currently crossing.
 
-### Worked example 3: answering queries in sorted order (Minimum Interval to Include Each Query, LeetCode 1851)
+### Worked example 3: two sorted lists at once (Interval List Intersections, LeetCode 986)
 
-**Problem.** Given intervals and a list of query points, for each query return the length of the *shortest* interval that contains it (`end − start + 1`), or −1 if none does.
+**Problem.** `first` and `second` are two lists of intervals. An interval `[a, b]` is **closed**: it includes both of its ends. Inside each list the intervals do not overlap and are sorted by start. Return every place where an interval from `first` overlaps an interval from `second`, as a list of intervals (the shared part), in sorted order.
 
 ```
-intervals = [[1, 4], [2, 4], [3, 6], [4, 4]]    queries = [2, 3, 4, 5]
-answer: [3, 3, 1, 4]
+first  = [[0, 2], [5, 10], [13, 23], [24, 25]]
+second = [[1, 5], [8, 12], [15, 24], [25, 26]]
+answer: [[1, 2], [5, 5], [8, 10], [15, 23], [24, 24], [25, 25]]
 ```
 
-**The idea.** Sort the intervals by start, and handle the queries from smallest to largest. As the query point moves right, add every interval that has now started to a heap (P10) ordered by length. Throw away, from the top of the heap, any interval that has already ended. The top of the heap is then the shortest interval containing the query.
+For example, `[0, 2]` and `[1, 5]` share the stretch from 1 to 2. And `[5, 10]` and `[1, 5]` share only the single point 5, which counts because the ends are included.
+
+The slow way compares every interval in `first` with every interval in `second`: O(n × m). Both lists are already sorted, so you can do much better with the idea from this principle: compare neighbors in one pass. Keep one finger `i` on `first` and one finger `j` on `second`.
+
+For the two intervals under your fingers, the shared part (if any) starts at the **later** of the two starts and ends at the **earlier** of the two ends: `[max(starts), min(ends)]`. It exists exactly when that start is no later than that end.
+
+Then move a finger. The interval that **ends first** cannot overlap anything else: everything after it in the other list starts even later. So it is finished, and its finger moves on. The other interval ends later and might still overlap the next interval in the first list, so it stays.
+
+| `i` | `j` | `first[i]` | `second[j]` | Shared part | Move |
+|---|---|---|---|---|---|
+| 0 | 0 | `[0, 2]` | `[1, 5]` | `[1, 2]` | `first` ends first (2 < 5): `i` moves |
+| 1 | 0 | `[5, 10]` | `[1, 5]` | `[5, 5]` | `second` ends first (5 < 10): `j` moves |
+| 1 | 1 | `[5, 10]` | `[8, 12]` | `[8, 10]` | `first` ends first: `i` moves |
+| 2 | 1 | `[13, 23]` | `[8, 12]` | none (13 > 12) | `second` ends first: `j` moves |
+| 2 | 2 | `[13, 23]` | `[15, 24]` | `[15, 23]` | `first` ends first: `i` moves |
+| 3 | 2 | `[24, 25]` | `[15, 24]` | `[24, 24]` | `second` ends first: `j` moves |
+| 3 | 3 | `[24, 25]` | `[25, 26]` | `[25, 25]` | `first` ends first: `i` moves, past the end, so stop |
 
 ```python
-import heapq
-
-def minInterval(intervals, queries):
-    intervals.sort()
-    active = []                                  # heap of (length, end) for intervals that have started
-    answer = {}
-    i = 0
-    for q in sorted(queries):
-        while i < len(intervals) and intervals[i][0] <= q:
-            start, end = intervals[i]
-            heapq.heappush(active, (end - start + 1, end))
+def intervalIntersection(first, second):
+    i, j = 0, 0
+    out = []
+    while i < len(first) and j < len(second):
+        lo = max(first[i][0], second[j][0])        # the later start
+        hi = min(first[i][1], second[j][1])        # the earlier end
+        if lo <= hi:                               # they really overlap (touching at one point counts)
+            out.append([lo, hi])
+        if first[i][1] < second[j][1]:             # whichever ends first is finished
             i += 1
-        while active and active[0][1] < q:       # the shortest one has already ended
-            heapq.heappop(active)
-        answer[q] = active[0][0] if active else -1
-    return [answer[q] for q in queries]          # report in the original order
+        else:
+            j += 1
+    return out
 ```
+
+If either list is empty the loop never runs, and the answer is `[]`. Each step moves one finger forward, so the whole scan is O(n + m).
 
 ### Where else it shows up
 
@@ -2125,47 +2133,61 @@ def lastStoneWeight(stones):
     return -heap[0] if heap else 0
 ```
 
-### Worked example 3: Find Median from Data Stream (LeetCode 295)
+### Worked example 3: keep only the best k, with a tie-break (Top K Frequent Words, LeetCode 692)
 
-**Problem.** Build a class with `addNum(num)` and `findMedian()`. The median is the middle value of all numbers added so far, or the average of the two middle values if there is an even count.
+**Problem.** `words` is a list of words and `k` is a whole number. Return the `k` words that appear most often, ordered from most frequent to least frequent. If two words appear equally often, the one that comes first alphabetically goes first.
 
-**The idea.** Split the numbers into a smaller half and a larger half. Keep the smaller half in a max-heap (so its largest is at the front) and the larger half in a min-heap (so its smallest is at the front). Keep the halves the same size, or let one have one extra. Then the median is always at the front of one or both heaps.
+```
+words = ["i", "love", "leetcode", "i", "love", "coding"],  k = 2
+answer: ["i", "love"]          both appear twice; "i" comes before "love" alphabetically
 
-Adding 5, 15, 1, 3:
+words = ["the", "day", "is", "sunny", "the", "the", "the", "sunny", "is", "is"],  k = 4
+answer: ["the", "is", "sunny", "day"]      appearing 4, 3, 2 and 1 times
+```
 
-| Add | Goes to | Rebalance? | Smaller half | Larger half | Median |
-|---|---|---|---|---|---|
-| 5 | smaller | | 5 | | 5 |
-| 15 | smaller (larger half is empty) | smaller has 2 more: move 15 | 5 | 15 | (5 + 15) / 2 = 10 |
-| 1 | smaller (1 < 15) | | 1 5 | 15 | 5 |
-| 3 | smaller (3 < 15) | smaller has 2 more: move 5 | 1 3 | 5 15 | (3 + 5) / 2 = 4 |
+First count how often each word appears (a dictionary, P1). Sorting all the distinct words by "count, then alphabet" works but orders words you will never return. Instead keep only the best `k` in a heap and know **which kept word is the worst**, so you can throw it out when a better one arrives.
+
+Be careful about what "worst" means, because the tie-break lives here. A word is worse if it appears **fewer** times. If two words appear equally often, the one that comes **later** in the alphabet is worse, because the alphabetical-first word wins the tie. So among the kept words, the one to throw out is: lowest count, and among equal counts, the alphabetically last.
+
+Python's heap always hands back the smallest item, where "smaller" means whatever `<` says. For numbers we could negate to flip the order, but you cannot negate a word. So write a tiny class and define `<` to mean "ranks worse". The heap then keeps the worst kept word on top.
+
+Trace for `["b", "a", "c", "c", "a", "b", "d"]` with `k = 2`. The counts are b: 2, a: 2, c: 2, d: 1.
+
+| Next word | Count | Thrown out | Kept words |
+|---|---|---|---|
+| `b` | 2 | none | b |
+| `a` | 2 | none | a, b |
+| `c` | 2 | `c` (tied on count with a and b, but alphabetically last, so worst) | a, b |
+| `d` | 1 | `d` (fewest appearances) | a, b |
+
+The heap gives back the *worst* kept word first, so the answer comes out in reverse order. Reverse it at the end: `["a", "b"]`.
 
 ```python
 import heapq
+from collections import Counter
 
-class MedianFinder:
-    def __init__(self):
-        self.small = []                          # max-heap (negated): the smaller half
-        self.large = []                          # min-heap: the larger half
+class Entry:
+    def __init__(self, count, word):
+        self.count, self.word = count, word
+    def __lt__(self, other):                    # "self ranks worse than other"
+        if self.count != other.count:
+            return self.count < other.count     # fewer appearances is worse
+        return self.word > other.word           # equal counts: the alphabetically later word is worse
 
-    def addNum(self, num):
-        if self.large and num > self.large[0]:
-            heapq.heappush(self.large, num)
-        else:
-            heapq.heappush(self.small, -num)
-        # keep the sizes within one of each other
-        if len(self.small) > len(self.large) + 1:
-            heapq.heappush(self.large, -heapq.heappop(self.small))
-        if len(self.large) > len(self.small) + 1:
-            heapq.heappush(self.small, -heapq.heappop(self.large))
-
-    def findMedian(self):
-        if len(self.small) > len(self.large):
-            return -self.small[0]
-        if len(self.large) > len(self.small):
-            return self.large[0]
-        return (-self.small[0] + self.large[0]) / 2
+def topKFrequent(words, k):
+    counts = Counter(words)                     # word -> how many times it appears
+    heap = []                                   # the k best entries so far; the worst is on top
+    for word, c in counts.items():
+        heapq.heappush(heap, Entry(c, word))
+        if len(heap) > k:
+            heapq.heappop(heap)                 # throw out the worst of the kept words
+    result = []
+    while heap:
+        result.append(heapq.heappop(heap).word) # worst comes out first...
+    return result[::-1]                         # ...so reverse for best first
 ```
+
+The heap never holds more than `k` entries, so counting plus the heap work costs O(n + m log k), where `m` is the number of distinct words.
 
 ### Worked example 4: Kth Largest Element in an Array (LeetCode 215), three ways
 
@@ -2219,7 +2241,7 @@ def kth_largest_quickselect(nums, k):            # O(n) on average
 - **Task Scheduler (621).** *Same-letter tasks need `n` idle slots between them; minimize the total time.* A max-heap of remaining counts plus a queue of tasks cooling down (or the formula in P7).
 - **Design Twitter (355).** *Return the 10 most recent tweets from a user and everyone they follow.* Each person's tweets are already in time order, so this is a merge of sorted lists, stopped after 10.
 - **Top K Frequent Elements (347).** Count with a dictionary (P1), then keep the `k` most frequent in a heap, or use the bucket list from P1.
-- **Minimum Interval to Include Each Query (1851)** and **Meeting Rooms II (253).** Heaps of active intervals, P9.
+- **Minimum Interval to Include Each Query (1851)** and **Meeting Rooms II (253).** Heaps of active intervals. 253 is worked in P9; 1851 (a Hard) is in "Later: the Hard worked examples".
 - **Network Delay Time (743), Swim in Rising Water (778), Min Cost to Connect All Points (1584).** A heap of "the cheapest place to go next", P15.
 
 **Beyond the list:** reorganize a string so no two neighbors match, ugly numbers, sliding window median, the skyline problem, minimum cost to hire `k` workers.
@@ -2382,26 +2404,50 @@ def isValidBST(root):
     return valid(root, float("-inf"), float("inf"))
 ```
 
-### Worked example 3: when the best path can have negative values (Binary Tree Maximum Path Sum, LeetCode 124)
+### Worked example 3: returning two numbers (House Robber III, LeetCode 337)
 
-**Problem.** Node values may be negative. A path is any chain of connected nodes (at least one). Return the largest sum of values along any path.
+**Problem.** The houses form a binary tree. Each node holds the money in one house. Robbing two houses that are directly linked (a parent and its child) sets off the alarm. Return the most money you can take.
 
-It is the diameter skeleton with values instead of edge counts, plus one change: if a child's best downward sum is negative, don't use it (treat it as 0).
+```
+        3
+       / \
+      2   3
+       \   \
+        3   1
+answer: 7           rob 3 (the root) + 3 + 1
+```
+
+You would like each house to answer "what is the most I can take from the tree below me?" But that answer is not enough for the parent. The parent also needs to know **whether this house was robbed**, because that decides whether the parent is allowed to rob itself. So each call reports **two** numbers up:
+
+- `rob_me`: the best total if this house is robbed. Then both children must be skipped: `node.val + skip_left + skip_right`.
+- `skip_me`: the best total if this house is skipped. Now each child is free to be robbed or not, whichever is better: `max(rob_l, skip_l) + max(rob_r, skip_r)`.
+
+The answer at the root is the larger of its two numbers. Working from the bottom up for the tree above (a missing child reports `(0, 0)`):
+
+| House | `rob_me` | `skip_me` |
+|---|---|---|
+| leaf `3` (under the left `2`) | 3 | 0 |
+| leaf `1` | 1 | 0 |
+| left `2` | 2 + 0 + 0 = 2 | max(0, 0) + max(3, 0) = 3 |
+| right `3` | 3 + 0 + 0 = 3 | max(0, 0) + max(1, 0) = 1 |
+| root `3` | 3 + 3 + 1 = **7** | max(2, 3) + max(3, 1) = 6 |
+
+For the root, robbing it means skipping both children. Their `skip_me` values are 3 (left `2`) and 1 (right `3`), so `rob_me` is 3 + 3 + 1 = 7.
 
 ```python
-def maxPathSum(root):
-    best = root.val                              # not 0: an all-negative tree must return its largest node
-    def gain(node):                              # best sum of a path going down from node
-        nonlocal best
+def rob(root):
+    def go(node):                                   # returns (best if I rob this house, best if I skip it)
         if not node:
-            return 0
-        left = max(gain(node.left), 0)           # a negative branch is better left out
-        right = max(gain(node.right), 0)
-        best = max(best, node.val + left + right)
-        return node.val + max(left, right)       # the parent can only extend one side
-    gain(root)
-    return best
+            return 0, 0
+        rob_l, skip_l = go(node.left)
+        rob_r, skip_r = go(node.right)
+        rob_me = node.val + skip_l + skip_r         # robbing me means both children must be skipped
+        skip_me = max(rob_l, skip_l) + max(rob_r, skip_r)   # skipping me frees the children to do their best
+        return rob_me, skip_me
+    return max(go(root))
 ```
+
+This is the same move as before: decide what each node reports upward before you write the code. Here the report is a pair instead of a single number.
 
 ### Worked example 4: level by level (Binary Tree Level Order Traversal, LeetCode 102)
 
@@ -2596,34 +2642,55 @@ def subsetsWithDup(nums):
 
 The check is `i > start`, not `i > 0`: skipping is only about repeats *at the same level*. Using the second `2` *after* the first (to build `[2, 2]`) is still allowed.
 
-### Worked example 2: placing pieces with conflict checks (N-Queens, LeetCode 51)
+### Worked example 2: choosing only larger numbers (Combinations, LeetCode 77)
 
-**Problem.** Place `n` queens on an `n × n` chessboard so that no two share a row, column or diagonal. Return every such board.
+**Problem.** `n` and `k` are whole numbers. Return every way to choose `k` different numbers from `1, 2, ..., n`. The order inside a choice does not matter, so `[1, 2]` and `[2, 1]` are the same choice and must appear only once.
 
-**The decisions.** Put exactly one queen in each row, one row per level of recursion. For the current row, try each column.
+```
+n = 4, k = 2
+answer: [[1,2], [1,3], [1,4], [2,3], [2,4], [3,4]]
 
-**Fast conflict checks.** Keep three sets: the columns in use, and the two diagonal directions in use. Every square on the same "↘" diagonal has the same `row − col`, and every square on the same "↙" diagonal has the same `row + col`. So a square is safe exactly when its column, `row − col` and `row + col` are all unused.
+n = 1, k = 1
+answer: [[1]]
+```
+
+Build each choice one number at a time. If you let every position pick any unused number, you build `[1, 2]` and `[2, 1]` as two different lists, and every choice shows up many times. To prevent that, build each choice in **increasing order**: the next number must be larger than the one just picked. Then each set can only be built one way. The code does this with a `start` value. After picking `x`, the next level may only pick from `x + 1` upward.
+
+The **conflict check** is therefore built into the loop range: `for x in range(start, n + 1)`. No `used` list is needed, because you only ever look forward.
+
+The steps for `n = 4`, `k = 2`:
+
+| Step | `path` | What happens |
+|---|---|---|
+| 1 | `[1]` | choose 1 |
+| 2 | `[1, 2]` | choose 2: the path has `k` numbers, so save a copy |
+| 3 | `[1]` | undo 2 |
+| 4 | `[1, 3]` | choose 3: full, so save a copy |
+| 5 | `[1]` | undo 3 |
+| 6 | `[1, 4]` | choose 4: full, so save a copy |
+| 7 | `[1]`, then `[]` | undo 4. Nothing larger is left, so undo 1. |
+| 8 | `[2]` | choose 2. The same steps follow, saving `[2, 3]` and `[2, 4]`. |
+| 9 | `[3]`, `[3, 4]` | choose 3, then 4: save `[3, 4]`, then undo both |
+| 10 | `[4]`, then `[]` | choose 4. Nothing is larger, so no choice can follow: a dead end. Undo it, and the search is over. |
+
+That saved six lists, which is right: choosing 2 numbers out of 4 can be done in 6 ways.
 
 ```python
-def solveNQueens(n):
-    result = []
-    board = [["."] * n for _ in range(n)]
-    cols, diag1, diag2 = set(), set(), set()     # diag1: row - col, diag2: row + col
-    def place(row):
-        if row == n:
-            result.append(["".join(r) for r in board])
+def combine(n, k):
+    res, path = [], []
+    def go(start):
+        if len(path) == k:
+            res.append(path[:])                     # a copy: path keeps changing
             return
-        for col in range(n):
-            if col in cols or row - col in diag1 or row + col in diag2:
-                continue                         # attacked: skip this square
-            cols.add(col); diag1.add(row - col); diag2.add(row + col)
-            board[row][col] = "Q"
-            place(row + 1)
-            cols.remove(col); diag1.remove(row - col); diag2.remove(row + col)   # undo
-            board[row][col] = "."
-    place(0)
-    return result
+        for x in range(start, n + 1):               # only numbers larger than the last pick
+            path.append(x)                          # choose
+            go(x + 1)                               # explore: the next pick starts after x
+            path.pop()                              # undo
+    go(1)
+    return res
 ```
+
+Two points matter. The `path[:]` makes a copy, because `path` keeps changing after you save it. And `go(x + 1)`, not `go(start + 1)`: the next level starts after the number you just picked, not after where this level began.
 
 ### Four shapes the decisions take
 
@@ -3207,30 +3274,53 @@ def findCheapestPrice(n, flights, src, dst, k):
     return price[dst] if price[dst] != INF else -1
 ```
 
-### Worked example 3: minimizing the worst step (Swim in Rising Water, LeetCode 778)
+### Worked example 3: the cost is the biggest step (Path With Minimum Effort, LeetCode 1631)
 
-**Problem.** `grid[r][c]` is the height of each square in an `n × n` grid. At time `t` the water level is `t`, and you can swim between neighboring squares if both are at most `t`. Starting at the top-left, return the earliest time you can reach the bottom-right.
+**Problem.** `heights` is a grid of heights. You start at the top-left cell and must reach the bottom-right cell, moving up, down, left or right. The *effort* of a route is the **largest** height difference between two cells next to each other on the route. Return the smallest effort of any route.
 
-**The idea.** A route's "cost" is the highest square on it, not the sum. Use the same loop as Network Delay Time, but combine with `max` instead of `+`. The "settle the cheapest" argument still works, because a route's highest point can only stay the same or go up as it gets longer.
-
-```python
-import heapq
-
-def swimInWater(grid):
-    n = len(grid)
-    heap = [(grid[0][0], 0, 0)]                  # (highest square on the route, row, col)
-    seen = {(0, 0)}
-    while heap:
-        t, r, c = heapq.heappop(heap)
-        if (r, c) == (n - 1, n - 1):
-            return t
-        for nr, nc in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):
-            if 0 <= nr < n and 0 <= nc < n and (nr, nc) not in seen:
-                seen.add((nr, nc))
-                heapq.heappush(heap, (max(t, grid[nr][nc]), nr, nc))
+```
+heights = [[1, 2, 2],
+           [3, 8, 2],
+           [5, 3, 5]]
+answer: 2        the route 1 → 3 → 5 → 3 → 5 has steps 2, 2, 2, 2
 ```
 
-(Marking squares when they are pushed, rather than when popped, is safe here because a square's cost only depends on the square itself and on `t`, and `t` never decreases from one pop to the next. In ordinary Dijkstra, mark on pop.)
+This is "always extend the cheapest route found so far" with one change: the cost of a route is **not the sum** of its steps, it is the **largest** step. The same rule still works. Keep a heap of routes ordered by cost. Take the cheapest route out; the first time it reaches the goal, no cheaper route can exist. When you move to a neighbor, the new cost is `max(cost so far, this step)` instead of `cost so far + this step`.
+
+The cheapest routes taken out of the heap, for the grid above:
+
+| Cell reached | Effort | Why |
+|---|---|---|
+| (0, 0) height 1 | 0 | start |
+| (0, 1) height 2 | 1 | step of 1 |
+| (0, 2) height 2 | 1 | step of 0, so the effort stays 1 |
+| (1, 2) height 2 | 1 | step of 0 |
+| (1, 0) height 3 | 2 | step of 2 from the start |
+| (2, 0) height 5 | 2 | step of 2 from (1, 0) |
+| (2, 1) height 3 | 2 | step of 2 from (2, 0) |
+| (2, 2) height 5, the goal | **2** | step of 2 from (2, 1) |
+
+```python
+def minimumEffortPath(heights):
+    rows, cols = len(heights), len(heights[0])
+    best = {(0, 0): 0}                              # the smallest known effort to reach each cell
+    h = [(0, 0, 0)]                                 # (effort so far, row, col)
+    while h:
+        effort, r, c = heapq.heappop(h)
+        if (r, c) == (rows - 1, cols - 1):
+            return effort                           # the cheapest route reaches the goal first
+        if effort > best[(r, c)]:
+            continue                                # an older, worse entry
+        for nr, nc in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):
+            if 0 <= nr < rows and 0 <= nc < cols:
+                step = abs(heights[nr][nc] - heights[r][c])
+                new = max(effort, step)             # a route's cost is its biggest step, not the total
+                if new < best.get((nr, nc), float("inf")):
+                    best[(nr, nc)] = new
+                    heapq.heappush(h, (new, nr, nc))
+```
+
+A worse offer to the goal (effort 3, from the cell above it) was put in the heap earlier. It is never used, because the effort-2 route reaches the goal first. The check `effort > best[...]` skips heap entries that a cheaper route has made obsolete.
 
 ### Worked example 4: connecting everything cheaply (Min Cost to Connect All Points, LeetCode 1584)
 
@@ -3790,7 +3880,7 @@ Each row is a problem stated in one line, the new way to see it, and the princip
 | **Surrounded Regions (130):** capture regions not connected to the border | which regions *are* connected to the border? (search from the border) | P13 |
 | **Walls and Gates (286):** each room's distance to the nearest gate | one search spreading from all gates at once | P13 |
 | **Jump Game (55):** can I reach the end? | which positions can reach the end? (scan backward) | P7 |
-| **Burst Balloons (312):** best order to burst balloons for coins | which balloon is burst *last* in each range? (below) | P3 |
+| **Burst Balloons (312):** best order to burst balloons for coins | which balloon is burst *last* in each range? (a Hard: see "Later: the Hard worked examples") | P3 |
 | **Target Sum (494):** count `±` patterns that hit a target | count subsets summing to `(total + target) / 2` | P3 |
 | **Two Sum (1):** find a pair adding to `t` | for each `a`, look up `t − a` | P1 |
 | **House Robber II (213):** no two neighbors, houses in a circle | the better of two straight rows (without the first house, without the last) | P3 |
@@ -3812,41 +3902,58 @@ Each row is a problem stated in one line, the new way to see it, and the princip
 | **Alien Dictionary (269):** the alphabet behind a sorted word list | "letter before letter" facts from each neighboring pair of words | P14 |
 | **Trapping Rain Water (42):** water above each bar | `min(tallest on the left, tallest on the right) − height` | P2 |
 
-### Worked example 2: choose the last step, not the first (Burst Balloons, LeetCode 312)
+### Worked example 2: remove from both ends (Minimum Operations to Reduce X to Zero, LeetCode 1658)
 
-**Problem.** Balloons in a row have numbers on them. Bursting balloon `i` earns `left × nums[i] × right` coins, where `left` and `right` are the numbers on its current neighbors (a missing neighbor counts as 1). After bursting, its neighbors become adjacent. Return the most coins you can collect by bursting all of them.
-
-```
-nums = [3, 1, 5, 8]
-answer: 167
-```
-
-**Why the obvious approach fails.** Choosing which balloon to burst *first* in a range doesn't split the problem: after it bursts, the balloons on its left and right become neighbors, so the two sides still affect each other.
-
-**The reformulation.** Instead ask: which balloon in the range `(left, right)` is burst **last**? When it is burst, everything else in the range is already gone, so its neighbors are exactly the range's two boundaries, `nums[left]` and `nums[right]`. And the balloons to its left and to its right were burst in two completely separate sub-ranges that never touched. So:
+**Problem.** `nums` holds positive whole numbers, and `x` is a whole number. In one operation you remove either the leftmost or the rightmost number of `nums`, and subtract its value from `x`. Return the fewest operations that make `x` exactly 0, or `-1` if that is impossible.
 
 ```
-best(left, right) = max over the last balloon k between them of
-    nums[left] × nums[k] × nums[right] + best(left, k) + best(k, right)
+nums = [1, 1, 4, 2, 3],  x = 5
+answer: 2            remove 3 and then 2 from the right end: 5 - 3 - 2 = 0
+
+nums = [5, 6, 7, 8, 9],  x = 4
+answer: -1           no combination of end numbers adds up to 4
+
+nums = [3, 2, 20, 1, 1, 3],  x = 10
+answer: 5            remove 3 and 2 on the left, and 3, 1, 1 on the right
 ```
 
-This is a DP over ranges (P3). Pad the list with a 1 at each end so the boundaries always exist.
+Trying every order of "left or right" is an exponential search. Do not invent something clever for the ends. **Describe the problem differently until it becomes one you know.**
+
+Look at what stays. If you remove some numbers from the left end and some from the right end, the numbers **left behind** form one unbroken stretch in the middle. The removed numbers add up to `x`, so the numbers left behind add up to `total − x`, where `total` is the sum of the whole list. And removing the *fewest* numbers means keeping the *most*.
+
+So the problem becomes: **find the longest stretch whose sum is exactly `total − x`.** The answer is the list length minus that stretch's length. That is a window problem (P8), and it works because all the numbers are positive: adding a number raises the sum, removing one lowers it. Grow the right edge. While the sum is too big, shrink the left edge. When the sum equals the target, record the length.
+
+For `nums = [1, 1, 4, 2, 3]` and `x = 5`: `total` is 11, so the target sum for the stretch we keep is 6.
+
+| Right edge adds | Window after shrinking | Window sum | Longest kept stretch |
+|---|---|---|---|
+| 1 | `[1]` | 1 | none yet |
+| 1 | `[1, 1]` | 2 | none yet |
+| 4 | `[1, 1, 4]` | 6, equals the target | 3 |
+| 2 | `[4, 2]` (the sum hit 8 and then 7, so two 1s were dropped) | 6, equals the target | 3 |
+| 3 | `[2, 3]` (the sum hit 9, so the 4 was dropped) | 5 | 3 |
+
+The longest stretch kept has length 3, so the fewest operations are 5 − 3 = **2**.
 
 ```python
-def maxCoins(nums):
-    nums = [1] + nums + [1]
-    n = len(nums)
-    best = {}                                    # best[(l, r)] = coins from bursting everything strictly between l and r
-    for width in range(2, n):                    # solve narrow ranges before wide ones
-        for l in range(n - width):
-            r = l + width
-            for k in range(l + 1, r):            # k is the last balloon burst in (l, r)
-                coins = nums[l] * nums[k] * nums[r] + best.get((l, k), 0) + best.get((k, r), 0)
-                best[(l, r)] = max(best.get((l, r), 0), coins)
-    return best.get((0, n - 1), 0)
+def minOperations(nums, x):
+    target = sum(nums) - x                          # the sum of the stretch we keep in the middle
+    if target < 0:                                  # x is bigger than everything together
+        return -1
+    l = 0
+    window_sum = 0
+    keep = -1                                       # length of the longest valid stretch; -1 means none yet
+    for r, v in enumerate(nums):
+        window_sum += v                             # the right edge takes in a number
+        while window_sum > target:                  # too big: let the left edge go
+            window_sum -= nums[l]
+            l += 1
+        if window_sum == target:
+            keep = max(keep, r - l + 1)
+    return -1 if keep == -1 else len(nums) - keep
 ```
 
-That turns an O(n!) search over bursting orders into O(n³).
+Two edge cases come out correctly. If `x` is bigger than the total, `target` is negative and the answer is `-1`. If `x` equals the total, `target` is 0, the stretch kept is empty (length 0), and you remove everything.
 
 ### Worked example 3: make the format describe itself (Encode and Decode Strings, LeetCode 271)
 
@@ -3881,6 +3988,353 @@ The problems in the table above, plus the hardest problems in the 150 (Word Sear
 After solving any problem, write one sentence of the form: *"This was really [principle] once I saw the input as ___."* The sentence is the part that transfers to new problems. The code is not.
 
 ---
+
+# Later: the Hard worked examples
+
+These are the Hard worked examples, one for each principle that has one. Each is a LeetCode Hard, so none is for your first day with a principle. Read each after Phase 2, when the schedule reaches that problem by contrast pair or random draw.
+
+## Trapping Rain Water (LeetCode 42) (from P2)
+
+
+**Problem.** A list of non-negative numbers gives the heights of a row of bars, each one unit wide. After rain, water collects between the bars. Return the total amount of water trapped.
+
+```
+height = [3, 0, 2, 0, 4]
+answer: 7
+```
+
+**The insight.** Water above a bar rises to the height of the *shorter* of the two tallest walls around it: the tallest bar on its left (including itself) and the tallest on its right (including itself). So:
+
+```
+water at i = min(tallest on the left, tallest on the right) - height[i]
+```
+
+**The slow way** scans left and right from every bar to find those two walls: O(n²). But "tallest to the left" is a running maximum, and "tallest to the right" is a running maximum from the other end. Compute both lists once:
+
+| Position | Height | Tallest on the left | Tallest on the right | Water = min(left, right) − height |
+|---|---|---|---|---|
+| 0 | 3 | 3 | 4 | 3 − 3 = 0 |
+| 1 | 0 | 3 | 4 | 3 − 0 = 3 |
+| 2 | 2 | 3 | 4 | 3 − 2 = 1 |
+| 3 | 0 | 3 | 4 | 3 − 0 = 3 |
+| 4 | 4 | 4 | 4 | 4 − 4 = 0 |
+
+Total: 7.
+
+```python
+def trap(height):
+    n = len(height)
+    if n == 0:
+        return 0
+    left_max = [0] * n                   # left_max[i] = tallest bar in height[0..i]
+    left_max[0] = height[0]
+    for i in range(1, n):
+        left_max[i] = max(left_max[i - 1], height[i])
+    right_max = [0] * n                  # right_max[i] = tallest bar in height[i..n-1]
+    right_max[-1] = height[-1]
+    for i in range(n - 2, -1, -1):
+        right_max[i] = max(right_max[i + 1], height[i])
+    return sum(min(left_max[i], right_max[i]) - height[i] for i in range(n))
+```
+
+**Doing it with no extra lists.** Put a pointer at each end and keep the two running maximums as plain variables. Whichever side has the *smaller* running maximum can be settled right now: its water level is that smaller maximum, because the other side is already known to have a wall at least that tall. Settle it, move that pointer inward, repeat.
+
+```python
+def trap(height):
+    l, r = 0, len(height) - 1
+    left_max = right_max = 0
+    water = 0
+    while l <= r:
+        if left_max <= right_max:        # the left side's level is decided
+            left_max = max(left_max, height[l])
+            water += left_max - height[l]
+            l += 1
+        else:                            # the right side's level is decided
+            right_max = max(right_max, height[r])
+            water += right_max - height[r]
+            r -= 1
+    return water
+```
+
+This version mixes two principles: the running maximums are P2, and moving the pointers inward is P5.
+
+## Largest Rectangle in Histogram (LeetCode 84) (from P6)
+
+
+**Problem.** `heights[i]` is the height of a bar of width 1. Return the area of the largest rectangle that fits inside the bars.
+
+```
+heights = [2, 1, 5, 6, 2, 3]
+answer: 10          the bars of height 5 and 6 together hold a 5 × 2 rectangle
+```
+
+**The idea.** A rectangle that uses a bar's full height can stretch left and right until it hits a *shorter* bar. So every bar needs to know where the nearest shorter bar is on each side. Keep a stack of bars whose right edge is not known yet, in increasing height order. When a shorter bar arrives, it is the right edge for every taller bar on the stack: pop them and compute their areas. The new bar can also stretch back left as far as the leftmost bar it popped.
+
+The stack holds `(start position, height)`:
+
+| Position | Height | Popped (area = height × (position − start)) | Stack after |
+|---|---|---|---|
+| 0 | 2 | | (0, 2) |
+| 1 | 1 | (0, 2): 2 × 1 = 2 | (0, 1) *(starts at 0, where the popped bar started)* |
+| 2 | 5 | | (0, 1), (2, 5) |
+| 3 | 6 | | (0, 1), (2, 5), (3, 6) |
+| 4 | 2 | (3, 6): 6 × 1 = 6; (2, 5): 5 × 2 = **10** | (0, 1), (2, 2) |
+| 5 | 3 | | (0, 1), (2, 2), (5, 3) |
+| end (6) | | (5, 3): 3 × 1 = 3; (2, 2): 2 × 4 = 8; (0, 1): 1 × 6 = 6 | |
+
+```python
+def largestRectangleArea(heights):
+    best = 0
+    stack = []                                       # (start, height), heights increasing
+    for i, h in enumerate(heights):
+        start = i
+        while stack and stack[-1][1] > h:
+            s, height = stack.pop()                  # i is the first shorter bar to its right
+            best = max(best, height * (i - s))
+            start = s                                # the new bar can stretch back to here
+        stack.append((start, h))
+    for s, height in stack:                          # never met a shorter bar: stretch to the end
+        best = max(best, height * (len(heights) - s))
+    return best
+```
+
+## Minimum Window Substring (LeetCode 76) (from P8)
+
+
+**Problem.** Given strings `s` and `t`, return the shortest stretch of `s` that contains every character of `t` (including repeats). Return `""` if there is none.
+
+```
+s = "ADOBECODEBANC"    t = "ABC"
+answer: "BANC"
+```
+
+**Checking validity quickly.** Comparing two dictionaries at every step would be slow. Instead, count how many *distinct* characters of `t` currently have enough copies in the window (`have`), and compare it with how many distinct characters `t` needs (`need`). Update `have` only when a character's count crosses its requirement.
+
+Here are the key moments (`need` = 3: one A, one B, one C):
+
+| `r` | Char | `have` after adding | Window valid? | Shrinking | Shortest so far |
+|---|---|---|---|---|---|
+| 0–4 | A D O B E | 2 (A, B) | no | | |
+| 5 | C | 3 | yes: "ADOBEC" | record 6; drop A → `have` = 2 | "ADOBEC" |
+| 6–9 | O D E B | 2 | no | | |
+| 10 | A | 3 | yes: "DOBECODEBA" | drop D, O, B (a second B is still inside), E, C → `have` = 2 | "ADOBEC" |
+| 11 | N | 2 | no | | |
+| 12 | C | 3 | yes: "ODEBANC" | drop O, D, E, recording "EBANC" and "BANC"; drop B → `have` = 2 | **"BANC"** |
+
+```python
+def minWindow(s, t):
+    if not t or len(s) < len(t):
+        return ""
+    required = {}
+    for c in t:
+        required[c] = required.get(c, 0) + 1
+    need = len(required)                         # distinct characters still to satisfy
+    window = {}
+    have = 0
+    best_l, best_len = 0, float("inf")
+    l = 0
+    for r, c in enumerate(s):
+        window[c] = window.get(c, 0) + 1
+        if c in required and window[c] == required[c]:
+            have += 1                            # c just reached its required count
+        while have == need:                      # valid: record it, then try to shrink
+            if r - l + 1 < best_len:
+                best_l, best_len = l, r - l + 1
+            window[s[l]] -= 1
+            if s[l] in required and window[s[l]] < required[s[l]]:
+                have -= 1                        # s[l] just dropped below its requirement
+            l += 1
+    return s[best_l : best_l + best_len] if best_len != float("inf") else ""
+```
+
+## answering queries in sorted order (Minimum Interval to Include Each Query, LeetCode 1851) (from P9)
+
+
+**Problem.** Given intervals and a list of query points, for each query return the length of the *shortest* interval that contains it (`end − start + 1`), or −1 if none does.
+
+```
+intervals = [[1, 4], [2, 4], [3, 6], [4, 4]]    queries = [2, 3, 4, 5]
+answer: [3, 3, 1, 4]
+```
+
+**The idea.** Sort the intervals by start, and handle the queries from smallest to largest. As the query point moves right, add every interval that has now started to a heap (P10) ordered by length. Throw away, from the top of the heap, any interval that has already ended. The top of the heap is then the shortest interval containing the query.
+
+```python
+import heapq
+
+def minInterval(intervals, queries):
+    intervals.sort()
+    active = []                                  # heap of (length, end) for intervals that have started
+    answer = {}
+    i = 0
+    for q in sorted(queries):
+        while i < len(intervals) and intervals[i][0] <= q:
+            start, end = intervals[i]
+            heapq.heappush(active, (end - start + 1, end))
+            i += 1
+        while active and active[0][1] < q:       # the shortest one has already ended
+            heapq.heappop(active)
+        answer[q] = active[0][0] if active else -1
+    return [answer[q] for q in queries]          # report in the original order
+```
+
+## Find Median from Data Stream (LeetCode 295) (from P10)
+
+
+**Problem.** Build a class with `addNum(num)` and `findMedian()`. The median is the middle value of all numbers added so far, or the average of the two middle values if there is an even count.
+
+**The idea.** Split the numbers into a smaller half and a larger half. Keep the smaller half in a max-heap (so its largest is at the front) and the larger half in a min-heap (so its smallest is at the front). Keep the halves the same size, or let one have one extra. Then the median is always at the front of one or both heaps.
+
+Adding 5, 15, 1, 3:
+
+| Add | Goes to | Rebalance? | Smaller half | Larger half | Median |
+|---|---|---|---|---|---|
+| 5 | smaller | | 5 | | 5 |
+| 15 | smaller (larger half is empty) | smaller has 2 more: move 15 | 5 | 15 | (5 + 15) / 2 = 10 |
+| 1 | smaller (1 < 15) | | 1 5 | 15 | 5 |
+| 3 | smaller (3 < 15) | smaller has 2 more: move 5 | 1 3 | 5 15 | (3 + 5) / 2 = 4 |
+
+```python
+import heapq
+
+class MedianFinder:
+    def __init__(self):
+        self.small = []                          # max-heap (negated): the smaller half
+        self.large = []                          # min-heap: the larger half
+
+    def addNum(self, num):
+        if self.large and num > self.large[0]:
+            heapq.heappush(self.large, num)
+        else:
+            heapq.heappush(self.small, -num)
+        # keep the sizes within one of each other
+        if len(self.small) > len(self.large) + 1:
+            heapq.heappush(self.large, -heapq.heappop(self.small))
+        if len(self.large) > len(self.small) + 1:
+            heapq.heappush(self.small, -heapq.heappop(self.large))
+
+    def findMedian(self):
+        if len(self.small) > len(self.large):
+            return -self.small[0]
+        if len(self.large) > len(self.small):
+            return self.large[0]
+        return (-self.small[0] + self.large[0]) / 2
+```
+
+## when the best path can have negative values (Binary Tree Maximum Path Sum, LeetCode 124) (from P11)
+
+
+**Problem.** Node values may be negative. A path is any chain of connected nodes (at least one). Return the largest sum of values along any path.
+
+It is the diameter skeleton with values instead of edge counts, plus one change: if a child's best downward sum is negative, don't use it (treat it as 0).
+
+```python
+def maxPathSum(root):
+    best = root.val                              # not 0: an all-negative tree must return its largest node
+    def gain(node):                              # best sum of a path going down from node
+        nonlocal best
+        if not node:
+            return 0
+        left = max(gain(node.left), 0)           # a negative branch is better left out
+        right = max(gain(node.right), 0)
+        best = max(best, node.val + left + right)
+        return node.val + max(left, right)       # the parent can only extend one side
+    gain(root)
+    return best
+```
+
+## placing pieces with conflict checks (N-Queens, LeetCode 51) (from P12)
+
+
+**Problem.** Place `n` queens on an `n × n` chessboard so that no two share a row, column or diagonal. Return every such board.
+
+**The decisions.** Put exactly one queen in each row, one row per level of recursion. For the current row, try each column.
+
+**Fast conflict checks.** Keep three sets: the columns in use, and the two diagonal directions in use. Every square on the same "↘" diagonal has the same `row − col`, and every square on the same "↙" diagonal has the same `row + col`. So a square is safe exactly when its column, `row − col` and `row + col` are all unused.
+
+```python
+def solveNQueens(n):
+    result = []
+    board = [["."] * n for _ in range(n)]
+    cols, diag1, diag2 = set(), set(), set()     # diag1: row - col, diag2: row + col
+    def place(row):
+        if row == n:
+            result.append(["".join(r) for r in board])
+            return
+        for col in range(n):
+            if col in cols or row - col in diag1 or row + col in diag2:
+                continue                         # attacked: skip this square
+            cols.add(col); diag1.add(row - col); diag2.add(row + col)
+            board[row][col] = "Q"
+            place(row + 1)
+            cols.remove(col); diag1.remove(row - col); diag2.remove(row + col)   # undo
+            board[row][col] = "."
+    place(0)
+    return result
+```
+
+## minimizing the worst step (Swim in Rising Water, LeetCode 778) (from P15)
+
+
+**Problem.** `grid[r][c]` is the height of each square in an `n × n` grid. At time `t` the water level is `t`, and you can swim between neighboring squares if both are at most `t`. Starting at the top-left, return the earliest time you can reach the bottom-right.
+
+**The idea.** A route's "cost" is the highest square on it, not the sum. Use the same loop as Network Delay Time, but combine with `max` instead of `+`. The "settle the cheapest" argument still works, because a route's highest point can only stay the same or go up as it gets longer.
+
+```python
+import heapq
+
+def swimInWater(grid):
+    n = len(grid)
+    heap = [(grid[0][0], 0, 0)]                  # (highest square on the route, row, col)
+    seen = {(0, 0)}
+    while heap:
+        t, r, c = heapq.heappop(heap)
+        if (r, c) == (n - 1, n - 1):
+            return t
+        for nr, nc in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):
+            if 0 <= nr < n and 0 <= nc < n and (nr, nc) not in seen:
+                seen.add((nr, nc))
+                heapq.heappush(heap, (max(t, grid[nr][nc]), nr, nc))
+```
+
+(Marking squares when they are pushed, rather than when popped, is safe here because a square's cost only depends on the square itself and on `t`, and `t` never decreases from one pop to the next. In ordinary Dijkstra, mark on pop.)
+
+## choose the last step, not the first (Burst Balloons, LeetCode 312) (from P18)
+
+
+**Problem.** Balloons in a row have numbers on them. Bursting balloon `i` earns `left × nums[i] × right` coins, where `left` and `right` are the numbers on its current neighbors (a missing neighbor counts as 1). After bursting, its neighbors become adjacent. Return the most coins you can collect by bursting all of them.
+
+```
+nums = [3, 1, 5, 8]
+answer: 167
+```
+
+**Why the obvious approach fails.** Choosing which balloon to burst *first* in a range doesn't split the problem: after it bursts, the balloons on its left and right become neighbors, so the two sides still affect each other.
+
+**The reformulation.** Instead ask: which balloon in the range `(left, right)` is burst **last**? When it is burst, everything else in the range is already gone, so its neighbors are exactly the range's two boundaries, `nums[left]` and `nums[right]`. And the balloons to its left and to its right were burst in two completely separate sub-ranges that never touched. So:
+
+```
+best(left, right) = max over the last balloon k between them of
+    nums[left] × nums[k] × nums[right] + best(left, k) + best(k, right)
+```
+
+This is a DP over ranges (P3). Pad the list with a 1 at each end so the boundaries always exist.
+
+```python
+def maxCoins(nums):
+    nums = [1] + nums + [1]
+    n = len(nums)
+    best = {}                                    # best[(l, r)] = coins from bursting everything strictly between l and r
+    for width in range(2, n):                    # solve narrow ranges before wide ones
+        for l in range(n - width):
+            r = l + width
+            for k in range(l + 1, r):            # k is the last balloon burst in (l, r)
+                coins = nums[l] * nums[k] * nums[r] + best.get((l, k), 0) + best.get((k, r), 0)
+                best[(l, r)] = max(best.get((l, r), 0), coins)
+    return best.get((0, n - 1), 0)
+```
+
+That turns an O(n!) search over bursting orders into O(n³).
 
 # Tricks that genuinely must be memorized
 
