@@ -1,0 +1,533 @@
+<title>Heap (P10)</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: the same reading column (~46rem) as the P5, P6, P8 and P9 pages in this series. Widgets sit in the column as framed panels.
+   Colors: amber = the item that moves now. Blue = the item it is compared with. Teal = the rule holds, or the item is kept. Red = the rule is broken, or the item leaves. Grey = gone. */
+:root{
+  --bg:#f6f7f4; --panel:#ffffff; --ink:#1d2321; --muted:#5d6762; --line:#d9ddd6; --gone:#e6e8e3;
+  --left:#0f7f78; --right:#b8640c; --hit:#2f6fd0; --good:#d3ebe3; --win:#e2ebfa; --bad:#c23a2b; --badbg:#f7e1de; --amberbg:#f6e6d2;
+  --display:"Young Serif", Georgia, serif;
+  --body:"Atkinson Hyperlegible", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141917; --panel:#1c2220; --ink:#e7ebe8; --muted:#9aa49f; --line:#323a37; --gone:#262d2a;
+  --left:#3cc4b9; --right:#f0a24a; --hit:#7aa9ff; --good:#1f3d35; --win:#1d2a40; --bad:#ff7a6b; --badbg:#3d2420; --amberbg:#3a2c1a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141917; --panel:#1c2220; --ink:#e7ebe8; --muted:#9aa49f; --line:#323a37; --gone:#262d2a;
+  --left:#3cc4b9; --right:#f0a24a; --hit:#7aa9ff; --good:#1f3d35; --win:#1d2a40; --bad:#ff7a6b; --badbg:#3d2420; --amberbg:#3a2c1a; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;
+  padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px));padding-block:32px 64px}
+main{max-width:46rem;margin:0 auto;display:flex;flex-direction:column;gap:1.1rem}
+h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.4rem,7vw,3.6rem)}
+h2{font-size:1.8rem;margin-top:2.2rem;padding-top:1.4rem;border-top:1px solid var(--line)}
+h3{font-size:1.3rem;margin-top:1.3rem}
+p{margin:0}
+.eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lede{font-size:1.15rem;color:var(--muted)}
+.A{color:var(--right);font-weight:700}.B{color:var(--hit);font-weight:700}.T{color:var(--left);font-weight:700}.R{color:var(--bad);font-weight:700}
+code{font-family:var(--mono);font-size:.88em;background:var(--gone);padding:.05em .3em;border-radius:3px}
+pre{font-family:var(--mono);font-size:.85rem;line-height:1.5;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px;overflow-x:auto;margin:0}
+pre code{background:none;padding:0;font-size:inherit}
+.cm{color:var(--muted)}
+.widget{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.widget svg{width:100%;height:auto;display:block}
+.widget svg .node,.widget svg .cell{transition:transform .55s ease}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button{font:600 .9rem var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 14px;cursor:pointer}
+button:hover{border-color:var(--muted)}
+input[type=text],select{font:400 .9rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 10px;min-width:0}
+input[type=text]{flex:1 1 10rem}
+input.short{flex:0 1 5rem;width:5rem}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--hit);outline-offset:2px}
+.status{font-size:.97rem;min-height:3.2em;border-left:3px solid var(--line);padding:2px 0 2px 12px}
+.status.wrong{border-left-color:var(--bad)}
+.status.ok{border-left-color:var(--left)}
+.err{color:var(--bad);font-size:.88rem}
+.caption{font-size:.9rem;color:var(--muted)}
+.facts{font-family:var(--mono);font-size:.85rem;display:flex;flex-wrap:wrap;gap:6px 18px;font-variant-numeric:tabular-nums}
+.facts b{font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:6px;font-family:var(--mono);font-size:.85rem;font-variant-numeric:tabular-nums;align-items:center;min-height:2rem}
+.chips span{border:1px solid var(--line);border-radius:5px;padding:2px 8px;transition:background .3s,border-color .3s}
+.chips .past{color:var(--muted);background:var(--gone)}
+.chips .now{border:2px solid var(--right);background:var(--amberbg);padding:1px 7px;font-weight:600}
+.chips .kept{border-color:var(--left);background:var(--good)}
+.chips .gate{border:2px solid var(--left);padding:1px 7px;font-weight:600}
+.chips .out{border-color:var(--bad);background:var(--badbg);color:var(--bad)}
+.chips .empty{border-style:dashed;color:var(--muted)}
+.lane{display:grid;grid-template-columns:6.5rem 1fr;gap:6px 12px;align-items:center}
+.lane>.caption{font-family:var(--mono);font-size:.78rem;letter-spacing:.04em;text-transform:uppercase}
+.halves{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center}
+.halves .chips{min-width:0}
+.halves .lo{justify-content:flex-end}
+.mid{font-family:var(--mono);font-size:.85rem;text-align:center;border:2px solid var(--hit);border-radius:6px;padding:4px 10px;background:var(--win);font-variant-numeric:tabular-nums;white-space:nowrap}
+table{border-collapse:collapse;font-size:.92rem;font-variant-numeric:tabular-nums;width:100%}
+.tw{overflow-x:auto}
+th,td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:400}
+.rule{border-left:3px solid var(--hit);padding:4px 0 4px 14px;font-size:1.08rem}
+details{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+summary{cursor:pointer;font-weight:700}
+details[open] summary{margin-bottom:8px}
+input[type=range]{width:100%;accent-color:var(--hit)}
+.napkin{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:10px}
+.napkin div{border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-variant-numeric:tabular-nums}
+.napkin b{display:block;font-family:var(--mono);font-size:1.15rem}
+.napkin span{font-size:.85rem;color:var(--muted)}
+ul{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem}
+@media (max-width:30rem){.lane{grid-template-columns:1fr}.halves{grid-template-columns:1fr}.halves .lo{justify-content:flex-start}}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<main>
+<header style="display:flex;flex-direction:column;gap:.6rem">
+  <span class="eyebrow">Principled Algos · Principle 10 of 18</span>
+  <h1>Heap</h1>
+  <p class="lede">Keep the smallest item at the top. When the pile changes, fix one short path, not the whole order.</p>
+  <p class="caption">Card 15 in DRILLS.md drills this page.</p>
+</header>
+
+<h2>As if to a child</h2>
+<p>A school nurse gives each sick kid a number: 1 is very sick, 9 is a little sick. She always sees the smallest number next. Kids come all day, so she does not sort the whole line each time.</p>
+<p>She makes a pyramid. Each kid stands on top of kids with bigger numbers, so the smallest number is always at the top. A new kid starts at the bottom and swaps up while his number is smaller than the number above him. When the top kid leaves, the last kid goes to the top and swaps down with the smaller of the two kids below him. 1,000 kids make only 10 rows, so a change is 10 swaps or less.</p>
+
+<h2>The extended explanation</h2>
+
+<h3>Start from what is true</h3>
+<ul>
+  <li><b>Fact 1.</b> Many programs ask again and again: "Which item is the smallest now?" Between questions, items come and go.</li>
+  <li><b>Fact 2. The easy tools are slow.</b> In a list with no order, you look at all <i>n</i> items to find the smallest. In a sorted list, the smallest is at the front, but to remove it or to put a new item in place, Python moves up to <i>n</i> items.</li>
+  <li><b>Fact 3. A full order is more than you need.</b> A sorted list also knows the 900th item, and you pay for that at each change.</li>
+  <li><b>Fact 4. A tree with two children under each item is short.</b> Each row doubles, so <i>n</i> items fill about log<sub>2</sub> <i>n</i> rows: 10 for 1,000 items, 20 for 1,000,000.</li>
+</ul>
+<p>Join the facts. Use a tree, and keep only a weak rule: <b>each parent is smaller than or equal to its children.</b> Then the smallest item is at the top. A change can break the rule only along one path from top to bottom: at most 20 items for a million.</p>
+
+<h3>A tree that is only a list</h3>
+<p>Put the items in a list, row by row, from left to right. Then the item at index <code>i</code> has its children at <code>2i + 1</code> and <code>2i + 2</code>, and its parent at <code>(i − 1) // 2</code>. J. W. J. Williams found this in 1964, for heapsort.</p>
+<p><b>Push</b> puts a number at the end and swaps it up while it is smaller than its parent (<b>sift up</b>). <b>Pop</b> takes the top, moves the last item to the top, then swaps it down with its <i>smaller</i> child while it is larger (<b>sift down</b>). The smaller child, because it becomes the other child's parent.</p>
+
+<div class="widget" id="w1">
+  <svg id="svg1" viewBox="0 0 600 330" role="img" aria-label="A heap drawn as a tree, with the same items as a list below"></svg>
+  <div class="facts" id="facts1"></div>
+  <div class="status" id="s1" aria-live="polite"></div>
+  <div class="controls">
+    <label for="v1" class="caption">Number:</label>
+    <input type="text" class="short" id="v1" value="0" autocomplete="off" inputmode="numeric">
+    <button id="b1push" type="button">Push</button>
+    <button id="b1pop" type="button">Pop smallest</button>
+    <button id="b1step" type="button">Next step</button>
+    <button id="b1play" type="button">Play</button>
+    <button id="b1reset" type="button">Reset</button>
+  </div>
+  <span class="err" id="e1"></span>
+  <p class="caption">Bottom: the real Python list. <span class="A">Amber</span>: the item that moves. <span class="B">Blue</span>: the item it is compared with. <span class="T">Teal</span>: the rule holds. <span class="R">Red</span>: leaves. Numbers 0–99, at most 15.</p>
+</div>
+
+<h3>The sentence that keeps the code correct</h3>
+<p class="rule">Each parent is smaller than or equal to each of its children. So index 0 holds the smallest item.</p>
+<p>This <b>invariant</b> holds after each push and pop. Why? Say the new item <i>x</i> swaps with its parent <i>p</i>, which has another child <i>s</i>. Before the push, <i>p</i> ≤ <i>s</i>. Now <i>x</i> is the parent of <i>p</i> and <i>s</i>, and <i>x</i> &lt; <i>p</i> ≤ <i>s</i>. So the rule holds below <i>x</i>; the only problem moves up a row. Sift down is the mirror image.</p>
+<p>Python's <code>heapq</code> does the sifts. It only has a min-heap; for a max-heap, store <code>-x</code>.</p>
+<pre><code>import heapq
+h = []
+heapq.heappush(h, 5)       <span class="cm"># sift up: about log2 n steps</span>
+h[0]                       <span class="cm"># the smallest item: 1 step</span>
+heapq.heappop(h)           <span class="cm"># sift down: about log2 n steps</span>
+heapq.heapreplace(h, 7)    <span class="cm"># pop the smallest, then push 7: one sift</span>
+nums = [5, 3, 8]
+heapq.heapify(nums)        <span class="cm"># in place, about 2n steps; it returns None</span></code></pre>
+
+<h3>Worked example 1: Kth Largest Element in a Stream (LeetCode 703)</h3>
+<p><b>Problem.</b> You get <code>k</code> and a list <code>nums</code>. Then <code>add(val)</code> adds one number and returns the <code>k</code>-th largest so far. With <code>k = 3</code> and <code>[4, 5, 8, 2]</code>: <code>add(3)</code> → 4, <code>add(5)</code> → 5, <code>add(10)</code> → 5, <code>add(9)</code> → 8, <code>add(4)</code> → 8.</p>
+<p><b>The key fact.</b> A number outside the top <code>k</code> now can never get in later: new numbers only push the bar up. So keep only the <code>k</code> largest, in a <b>min</b>-heap. Its top, <code>h[0]</code>, is the <span class="T">gate</span>: it is the answer, and it is the item to remove when a larger number comes in.</p>
+
+<div class="widget" id="w2">
+  <div class="lane"><span class="caption">Stream</span><div class="chips" id="st2"></div></div>
+  <div class="lane"><span class="caption">Kept (k)</span><div class="chips" id="kp2" aria-label="The kept numbers, smallest first"></div></div>
+  <div class="lane"><span class="caption">Not kept</span><div class="chips" id="dr2"></div></div>
+  <div class="facts" id="facts2"></div>
+  <div class="status" id="s2" aria-live="polite"></div>
+  <div class="controls">
+    <button id="b2step" type="button">Next step</button>
+    <button id="b2play" type="button">Play</button>
+    <button id="b2reset" type="button">Reset</button>
+    <label for="k2" class="caption">k =</label>
+    <select id="k2"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select>
+  </div>
+  <div class="controls">
+    <label for="in2" class="caption">Your stream:</label>
+    <input type="text" id="in2" value="4, 5, 8, 2, 3, 5, 10, 9, 4" autocomplete="off" spellcheck="false">
+    <button id="b2use" type="button">Use these</button>
+    <button id="b2rand" type="button">Random</button>
+  </div>
+  <span class="err" id="e2"></span>
+  <p class="caption">The first four numbers are <code>nums</code>. Kept numbers are shown smallest first. <span class="T">Teal border</span>: the gate. Not kept: <span class="R">red</span> was removed, grey bounced off. Heap steps: 1 compare plus log<sub>2</sub> <i>k</i>. Sort steps: about <i>n</i> moves per add (see Claim 2).</p>
+</div>
+
+<pre><code>class KthLargest:
+    def __init__(self, k, nums):
+        self.k, self.heap = k, []          <span class="cm"># the k largest numbers so far</span>
+        for x in nums:
+            self.add(x)
+
+    def add(self, val):
+        if len(self.heap) &lt; self.k:
+            heapq.heappush(self.heap, val)
+        elif val &gt; self.heap[0]:           <span class="cm"># beats the gate</span>
+            heapq.heapreplace(self.heap, val)
+        return self.heap[0]                <span class="cm"># smallest of the top k = the k-th largest</span></code></pre>
+<p>Each <code>add</code> is one comparison and at most one sift: about log<sub>2</sub> <i>k</i> steps, for any stream length. A common short version always pushes, then pops when the size is more than <code>k</code>.</p>
+
+<h3>Worked example 2: Last Stone Weight (LeetCode 1046)</h3>
+<p><b>Problem.</b> Each turn, smash the two heaviest stones. Equal weights both go; otherwise the difference stays. Return the last weight, or 0. <code>[2, 7, 4, 1, 8, 1]</code>: 8 and 7 leave 1; 4 and 2 leave 2; 2 and 1 leave 1; 1 and 1 go; the answer is 1.</p>
+<pre><code>def lastStoneWeight(stones):
+    heap = [-s for s in stones]            <span class="cm"># minus signs make a max-heap</span>
+    heapq.heapify(heap)
+    while len(heap) &gt; 1:
+        first = -heapq.heappop(heap)       <span class="cm"># heaviest</span>
+        second = -heapq.heappop(heap)      <span class="cm"># next heaviest</span>
+        if first != second:
+            heapq.heappush(heap, -(first - second))
+    return -heap[0] if heap else 0</code></pre>
+
+<h3>Worked example 3: Find Median from Data Stream (LeetCode 295)</h3>
+<p><b>Problem.</b> Build <code>addNum(num)</code> and <code>findMedian()</code>, which returns the middle value (or the average of the two middle values).</p>
+<p><b>The idea.</b> Cut the numbers in two halves. Keep the smaller half in a max-heap and the larger half in a min-heap, so both tops sit at the middle. Two rules:</p>
+<ul>
+  <li><b>Each item in the smaller half ≤ each item in the larger half.</b> A new number goes to the larger half only if it is larger than that half's top. When the sizes differ by 2, move one top across. A top is nearest the middle, so the rule holds.</li>
+  <li><b>The sizes differ by 1 or less.</b> Then the median is the top of the bigger half, or the average of the two tops.</li>
+</ul>
+
+<div class="widget" id="w3">
+  <div class="lane"><span class="caption">Stream</span><div class="chips" id="st3"></div></div>
+  <div class="halves">
+    <div class="chips lo" id="lo3" aria-label="The smaller half, max-heap"></div>
+    <div class="mid" id="md3">median</div>
+    <div class="chips" id="hi3" aria-label="The larger half, min-heap"></div>
+  </div>
+  <div class="halves caption"><span style="text-align:right">smaller half (max-heap) · top →</span><span></span><span>← top · larger half (min-heap)</span></div>
+  <div class="status" id="s3" aria-live="polite"></div>
+  <div class="controls">
+    <button id="b3step" type="button">Next step</button>
+    <button id="b3play" type="button">Play</button>
+    <button id="b3reset" type="button">Reset</button>
+  </div>
+  <div class="controls">
+    <label for="in3" class="caption">Your numbers:</label>
+    <input type="text" id="in3" value="5, 15, 1, 3, 8, 7, 9, 2" autocomplete="off" spellcheck="false">
+    <button id="b3use" type="button">Use these</button>
+  </div>
+  <span class="err" id="e3"></span>
+  <p class="caption"><span class="A">Amber</span>: the number that moves. <span class="T">Teal</span>: the two tops.</p>
+</div>
+
+<pre><code>class MedianFinder:
+    def __init__(self):
+        self.small, self.large = [], []    <span class="cm"># small: max-heap (negated); large: min-heap</span>
+
+    def addNum(self, num):
+        if self.large and num &gt; self.large[0]:
+            heapq.heappush(self.large, num)
+        else:
+            heapq.heappush(self.small, -num)
+        if len(self.small) &gt; len(self.large) + 1:      <span class="cm"># keep sizes within one</span>
+            heapq.heappush(self.large, -heapq.heappop(self.small))
+        if len(self.large) &gt; len(self.small) + 1:
+            heapq.heappush(self.small, -heapq.heappop(self.large))
+
+    def findMedian(self):
+        if len(self.small) &gt; len(self.large): return -self.small[0]
+        if len(self.large) &gt; len(self.small): return self.large[0]
+        return (-self.small[0] + self.large[0]) / 2</code></pre>
+
+<h3>Worked example 4: Merge K Sorted Lists (LeetCode 23)</h3>
+<p><b>Problem.</b> Merge <code>k</code> sorted linked lists. <code>[1→4→5, 1→3→4, 2→6]</code> → <code>1→1→2→3→4→4→5→6</code>.</p>
+<p><b>The idea.</b> The next answer item is the front of some list, so the heap holds the front node of each list. Pop the smallest, add it to the answer, and push the next node from the <i>same</i> list. With <i>N</i> nodes in all: about <i>N</i> × log<sub>2</sub> <i>k</i> steps.</p>
+<pre><code>def mergeKLists(lists):                    <span class="cm"># ListNode has .val and .next</span>
+    h = [(node.val, i, node) for i, node in enumerate(lists) if node]
+    heapq.heapify(h)
+    dummy = cur = ListNode()
+    while h:
+        _, i, node = heapq.heappop(h)      <span class="cm"># the smallest front node</span>
+        cur.next = node; cur = node
+        if node.next:                      <span class="cm"># its list's next node takes its place</span>
+            heapq.heappush(h, (node.next.val, i, node.next))
+    return dummy.next</code></pre>
+<p><b>Why the <code>i</code>?</b> On equal values, Python compares the next tuple item, and two <code>ListNode</code> objects cannot be compared. Each list has one node in the heap, so <code>(val, i)</code> is unique.</p>
+
+<h3>Napkin math: how much does the heap save?</h3>
+<p>One operation: take the smallest, add an item. The slider assumes 10<sup>9</sup> steps each second (compiled code; Python is about 100 times slower).</p>
+<div class="widget">
+  <label for="nslider" class="caption">Items in the collection <i>n</i> = <b id="nval"></b>. The program does <i>n</i> operations.</label>
+  <input type="range" id="nslider" min="1" max="8" step="1" value="6">
+  <div class="napkin">
+    <div><b id="t1"></b><span id="t1s"></span></div>
+    <div><b id="t2"></b><span id="t2s"></span></div>
+    <div><b id="t3"></b><span id="t3s"></span></div>
+  </div>
+</div>
+<p><b>Claim 1</b>, from PRINCIPLES.md: "<code>heapify</code> is O(<i>n</i>)." Half the items are in the bottom row and cannot move down; a quarter can move 1 row, an eighth 2 rows: <i>n</i> × (1/4 + 2/8 + 3/16 + …) = <i>n</i> moves at most. Each move is 2 comparisons (child with child, then with the item). In Python, <code>heapify</code> of 100,000 items made 165,178 comparisons: 1.65 each, not 17 (log<sub>2</sub> 100,000). <b>Verdict: accurate.</b></p>
+<p><b>Claim 2:</b> "for a stream, a heap of size <i>k</i> is much faster than a sort after each add." With 20,000 adds and <i>k</i> = 10: the list is sorted except for the new item, so Python's sort moves about <i>n</i> items: 20,000<sup>2</sup> ÷ 2 = 2 × 10<sup>8</sup> moves in all. The heap: at most 20,000 × (1 + 4) = 100,000 steps. On the machine that built this page: 652 ms against 4 ms, 160 times faster. The step ratio is 2,000; memory moves in large blocks are fast, so the clock ratio is smaller. <b>Verdict: accurate.</b></p>
+<p><b>Claim 3:</b> "for the <i>k</i>-th largest of a fixed list, a heap beats a sort." For 1,000,000 numbers and <i>k</i> = 10, the sort is about 10<sup>6</sup> × 20 = 20 million steps. The heap: at most 10<sup>6</sup> × 5 = 5 million, less when numbers bounce. Clock: sort 258 ms; heap in a Python <code>for</code> loop 185 ms, because each Python pass costs much more than a C step; <code>heapq.nlargest(10, nums)</code> 18 ms. <b>Verdict: accurate in steps. In Python, use <code>nlargest</code>.</b></p>
+
+<h3>Four ways heaps are used</h3>
+<div class="tw"><table>
+<tr><th>Pattern</th><th>How it works</th><th>Problems</th></tr>
+<tr><td>Keep only the best k</td><td>the heap top is the worst kept item</td><td>Kth Largest 703, 215; K Closest Points 973</td></tr>
+<tr><td>A live "largest item" source</td><td>pop, process, push results back</td><td>Last Stone Weight 1046; Task Scheduler 621</td></tr>
+<tr><td>Merge k sorted lists</td><td>the heap holds the front of each list</td><td>Merge K Lists 23; Design Twitter 355 (each user's tweets are a sorted list)</td></tr>
+<tr><td>Two heaps that meet at the middle</td><td>max-heap below, min-heap above</td><td>Find Median 295</td></tr>
+</table></div>
+
+<h3>How to recognize it</h3>
+<ul>
+  <li>"The <code>k</code> largest, smallest or closest", mostly for small <code>k</code> or a stream.</li>
+  <li>"Again and again, take the largest"; <code>k</code> sorted lists; a running median.</li>
+  <li>"Always go to the cheapest place next": Dijkstra and Prim, in P15.</li>
+  <li><b>Not a heap</b> when you need the full order only once: sort (P9).</li>
+</ul>
+
+<h3>Common mistakes</h3>
+<ul>
+  <li><b>The wrong heap for "keep the k best".</b> The top must be the item you remove next. So the <i>k</i> largest need a min-heap, and the <i>k</i> smallest need a max-heap.</li>
+  <li><b>No tiebreaker:</b> use <code>(value, i, item)</code>.</li>
+  <li><b>A lost minus sign</b> on a negated heap, or <code>h = heapq.heapify(h)</code>, which sets <code>h</code> to <code>None</code>.</li>
+  <li><b>A search in the heap.</b> Any item except the top takes <i>n</i> steps to find.</li>
+</ul>
+
+<h3>Try it yourself</h3>
+<details><summary>1. In a heap list, what are the parent and the children of index 4?</summary>
+<p>Parent: (4 − 1) // 2 = 1. Children: 9 and 10.</p>
+</details>
+<details><summary>2. Push 0 into [1, 3, 2, 4, 9, 8, 6, 5, 7]. What is the list after?</summary>
+<p>0 starts at index 9 and swaps with 9, 3 and 1. Answer: [0, 1, 2, 4, 3, 8, 6, 5, 7, 9]. Check it: this is the first widget's start heap.</p>
+</details>
+<details><summary>3. Which heap gives the k closest points to (0, 0)?</summary>
+<p>The top must be the largest kept distance: a max-heap of size <code>k</code>. Push <code>(-(x*x + y*y), x, y)</code> (squared distance keeps the order; integers always compare), and pop when the size is more than <code>k</code>.</p>
+</details>
+
+<h2>In the real world</h2>
+<p><b>Compression, 1951.</b> David Huffman, an MIT student, wrote a paper in place of a final exam. He found the best way to give short codes to common letters: again and again, join the two least common symbols. That is Last Stone Weight with the two smallest, so a min-heap. ZIP files and JPEG images still use his codes.</p>
+<p><b>Timers.</b> A server with 10,000 connections asks all the time: "Which timeout ends next?" Python's <code>asyncio</code> and <code>sched</code> keep timers in a <code>heapq</code> heap, and libuv (under Node.js) uses a min-heap too. A check is 1 step, and a new timer is about log<sub>2</sub> 10,000 ≈ 13 steps, not 10,000.</p>
+<p><b>Maps.</b> Dijkstra's route finder (P15) goes again and again to the nearest unfinished place. A research map of USA roads has about 24 million places and 58 million roads. Claim: "a heap makes this 100,000 times faster." A plain scan of all unfinished places at each step costs (2.4 × 10<sup>7</sup>)<sup>2</sup> ≈ 6 × 10<sup>14</sup> steps, about 7 days at 10<sup>9</sup> steps each second. With a heap: about (24 + 58) million × 25 ≈ 2 × 10<sup>9</sup> steps, about 2 seconds. Ratio: 300,000. <b>Verdict: approximately accurate, if anything low.</b></p>
+</main>
+
+<script>
+(function(){
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NS='http://www.w3.org/2000/svg';
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e};
+const txt=(p,x,y,s,a={})=>{const t=el('text',Object.assign({x,y,'text-anchor':'middle','font-family':'JetBrains Mono, monospace','font-size':15,fill:'var(--ink)'},a),p);t.textContent=s;return t};
+const $=id=>document.getElementById(id);
+const nums=v=>(String(v).match(/-?\d+/g)||[]).map(Number);
+
+/* ---------- Widget 1: the heap as a tree and a list ---------- */
+const svg1=$('svg1'), W=600, MAX=15, cellW=36, cellX0=(W-MAX*cellW)/2, cellY=268;
+const START=[1,3,2,4,9,8,6,5,7];
+let items, nextId, frames, fi, comps, popped, timer1=null;
+const treeXY=i=>{const d=Math.floor(Math.log2(i+1)), p=i-(2**d-1), n=2**d; return [(p+.5)*W/n, 30+d*58]};
+const edgesG=el('g',{},svg1), cellsBg=el('g',{},svg1), nodesG=el('g',{},svg1), cellsG=el('g',{},svg1), labG=el('g',{},svg1);
+for(let i=0;i<MAX;i++){
+  el('rect',{x:cellX0+i*cellW,y:cellY,width:cellW,height:30,fill:'var(--bg)',stroke:'var(--line)'},cellsBg);
+  txt(labG,cellX0+i*cellW+cellW/2,cellY+48,String(i),{fill:'var(--muted)','font-size':12});
+}
+txt(labG,cellX0-6,cellY+20,'h',{'text-anchor':'end',fill:'var(--muted)','font-size':13});
+txt(labG,cellX0-6,cellY+48,'i',{'text-anchor':'end',fill:'var(--muted)','font-size':12});
+const vis={};  // id -> {node, circle, ntext, cell, crect, ctext}
+function mkVis(it){
+  const node=el('g',{class:'node'},nodesG), circle=el('circle',{r:19,cx:0,cy:0},node), ntext=txt(node,0,5,String(it.v));
+  const cell=el('g',{class:'cell'},cellsG), crect=el('rect',{x:2,y:2,width:cellW-4,height:26,rx:4},cell), ctext=txt(cell,cellW/2,20,String(it.v),{'font-size':14});
+  vis[it.id]={node,circle,ntext,cell,crect,ctext,v:it.v};
+}
+function reset1(){stop1(); nodesG.innerHTML=''; cellsG.innerHTML=''; for(const k in vis) delete vis[k];
+  nextId=0; items=START.map(v=>({id:nextId++,v})); items.forEach(mkVis);
+  frames=[{ids:items.map(x=>x.id),hl:{},msg:'A min-heap of 9 numbers. Type a number and press Push, or press Pop smallest.'}]; fi=0; comps=0; popped=[]; $('e1').textContent=''; draw1();}
+function draw1(){
+  const f=frames[fi], ids=f.ids, pos={};
+  ids.forEach((id,i)=>pos[id]=i);
+  edgesG.innerHTML='';
+  for(let i=1;i<ids.length;i++){const [x,y]=treeXY(i),[px,py]=treeXY((i-1)>>1);
+    const ok=f.ok&&(f.ok.includes(i)); el('line',{x1:px,y1:py,x2:x,y2:y,stroke:ok?'var(--left)':'var(--line)','stroke-width':ok?3:1.5},edgesG);}
+  for(const id in vis){const V=vis[id], i=pos[id];
+    if(i===undefined){V.node.style.opacity=0;V.cell.style.opacity=0;continue}
+    const [tx,ty]=treeXY(i), cx=cellX0+i*cellW;
+    V.node.style.opacity=1; V.cell.style.opacity=1;
+    V.node.style.transform=`translate(${tx}px, ${ty}px)`; V.cell.style.transform=`translate(${cx}px, ${cellY}px)`;
+    const role=f.hl[id]||'';
+    const fill={now:'var(--amberbg)',cmp:'var(--win)',ok:'var(--good)',out:'var(--badbg)'}[role]||'var(--panel)';
+    const stroke={now:'var(--right)',cmp:'var(--hit)',ok:'var(--left)',out:'var(--bad)'}[role]||'var(--ink)';
+    const sw=role?3:1.2;
+    V.circle.setAttribute('fill',fill);V.circle.setAttribute('stroke',stroke);V.circle.setAttribute('stroke-width',sw);
+    V.crect.setAttribute('fill',fill);V.crect.setAttribute('stroke',stroke);V.crect.setAttribute('stroke-width',role?2.5:1);
+  }
+  const n=ids.length, rows=n?Math.floor(Math.log2(n))+1:0;
+  $('facts1').innerHTML=`<span>items: <b>${n}</b></span><span>rows: <b>${rows}</b></span><span>comparisons in this change: <b>${f.c||0}</b></span><span>popped: <b>${popped.slice(0,f.np||0).join(' ')||'none'}</b></span>`;
+  $('s1').textContent=f.msg; $('s1').className='status'+(f.done?' ok':'');
+}
+function finishPending(){ if(fi<frames.length-1){fi=frames.length-1; draw1();} }
+function vOf(id){return vis[id].v}
+function pushPlan(v){
+  finishPending();
+  const base=frames[frames.length-1], ids=base.ids.slice(), np=base.np||0;
+  if(ids.length>=MAX){$('e1').textContent=`The widget holds at most ${MAX} items. Press Pop smallest first.`;return}
+  const it={id:nextId++,v}; mkVis(it); ids.push(it.id);
+  let i=ids.length-1, c=0; const F=[];
+  F.push({ids:ids.slice(),hl:{[it.id]:'now'},c,np,msg:`Put ${v} at the end, index ${i}. The tree keeps its shape. Only the path above ${v} can break the rule.`});
+  while(i>0){const p=(i-1)>>1, pv=vOf(ids[p]); c++;
+    if(v<pv){F.push({ids:ids.slice(),hl:{[it.id]:'now',[ids[p]]:'cmp'},c,np,msg:`${v} is at index ${i}. Its parent is at (${i} − 1) // 2 = ${p}, and holds ${pv}. ${v} < ${pv}: the rule is broken, so swap.`});
+      [ids[i],ids[p]]=[ids[p],ids[i]]; i=p;
+      F.push({ids:ids.slice(),hl:{[it.id]:'now'},c,np,msg:`Swapped. ${v} is now at index ${i}.`+(i===0?'':' Check its new parent.')});}
+    else {F.push({ids:ids.slice(),hl:{[it.id]:'ok',[ids[p]]:'ok'},ok:[i],c,np,done:true,msg:`${v} is at index ${i}. Its parent at index ${p} holds ${pv}. ${pv} ≤ ${v}: the rule holds, so stop. ${c} comparison${c>1?'s':''}.`}); i=-1;}
+  }
+  if(i===0) F.push({ids:ids.slice(),hl:{[it.id]:'ok'},c,np,done:true,msg:`${v} is at the root, index 0. It is the new smallest item. ${c} comparison${c>1?'s':''}: one for each row it went up.`});
+  frames=frames.concat(F); $('e1').textContent='';
+}
+function popPlan(){
+  finishPending();
+  const base=frames[frames.length-1], ids=base.ids.slice();
+  if(!ids.length){$('e1').textContent='The heap is empty. Push a number first.';return}
+  const top=ids[0], tv=vOf(top); let np=(base.np||0); popped=popped.slice(0,np); popped.push(tv); np++;
+  const F=[]; let c=0;
+  F.push({ids:ids.slice(),hl:{[top]:'out'},c,np:np-1,msg:`The smallest item is always at index 0: ${tv}. Take it out.`});
+  const last=ids.pop();
+  if(!ids.length){F.push({ids:[],hl:{},outId:top,c,np,done:true,msg:`${tv} was the only item. The heap is now empty.`}); frames=frames.concat(F); return}
+  if(last!==top){ids[0]=last;}
+  const x=vOf(last);
+  F.push({ids:ids.slice(),hl:{[last]:'now'},outId:top,c,np,msg:`Move the last item, ${x}, to index 0. The tree keeps its shape, but the rule can break at the top.`});
+  let i=0;
+  while(true){const l=2*i+1, r=2*i+2; if(l>=ids.length) {F.push({ids:ids.slice(),hl:{[last]:'ok'},c,np,done:true,msg:`${x} is at index ${i} and has no children. Stop. ${c} comparison${c===1?'':'s'}.`});break}
+    let s=l; let msg=`${x} is at index ${i}. Its children are at ${l}`;
+    if(r<ids.length){c++; const lv=vOf(ids[l]), rv=vOf(ids[r]); if(rv<lv) s=r; msg+=` and ${r}: ${lv} and ${rv}. The smaller is ${vOf(ids[s])}.`}
+    else msg+=` only: ${vOf(ids[l])}.`;
+    const sv=vOf(ids[s]); c++;
+    if(sv<x){F.push({ids:ids.slice(),hl:{[last]:'now',[ids[s]]:'cmp'},c,np,msg:msg+` ${sv} < ${x}: swap.`});
+      [ids[i],ids[s]]=[ids[s],ids[i]]; i=s;
+      F.push({ids:ids.slice(),hl:{[last]:'now'},c,np,msg:`Swapped. ${x} is now at index ${i}.`});}
+    else {const okE=[l]; if(r<ids.length) okE.push(r);
+      F.push({ids:ids.slice(),hl:{[last]:'ok'},ok:okE,c,np,done:true,msg:msg+` ${x} ≤ ${sv}: the rule holds, so stop. ${c} comparison${c===1?'':'s'}.`});break}
+  }
+  frames=frames.concat(F); $('e1').textContent='';
+}
+function step1(){ if(fi<frames.length-1){fi++; draw1(); return true} return false }
+function stop1(){clearInterval(timer1);timer1=null;$('b1play').textContent='Play'}
+function play1(){ if(timer1){stop1();return} if(fi>=frames.length-1){$('s1').textContent='Nothing to play. Press Push or Pop smallest first, then Play.';return}
+  $('b1play').textContent='Pause'; step1(); timer1=setInterval(()=>{ if(!step1()) stop1(); }, reduce?500:1100); }
+function readV(){const a=nums($('v1').value); if(a.length!==1||a[0]<0||a[0]>99){$('e1').textContent='Type one whole number from 0 to 99.';return null} return a[0]}
+$('b1push').onclick=()=>{stop1(); const v=readV(); if(v===null) return; const before=frames.length; pushPlan(v); if(frames.length>before) play1();};
+$('b1pop').onclick=()=>{stop1(); const before=frames.length; popPlan(); if(frames.length>before) play1();};
+$('b1step').onclick=()=>{stop1(); if(!step1()) $('s1').textContent='No steps are left. Press Push or Pop smallest.';};
+$('b1play').onclick=play1;
+$('b1reset').onclick=reset1;
+$('v1').addEventListener('keydown',e=>{if(e.key==='Enter')$('b1push').click()});
+reset1();
+
+/* ---------- Widget 2: keep the k largest ---------- */
+let S2=[4,5,8,2,3,5,10,9,4], k2, pos2, heap2, dropped2, lastOut2, lastIn2, timer2=null, slowSteps, heapSteps;
+const hpush=(h,x)=>{h.push(x);let i=h.length-1;while(i>0){const p=(i-1)>>1;if(h[p]<=h[i])break;[h[p],h[i]]=[h[i],h[p]];i=p}};
+const hpop=h=>{const top=h[0],last=h.pop();if(h.length){h[0]=last;let i=0;for(;;){const l=2*i+1,r=l+1;let s=i;if(l<h.length&&h[l]<h[s])s=l;if(r<h.length&&h[r]<h[s])s=r;if(s===i)break;[h[s],h[i]]=[h[i],h[s]];i=s}}return top};
+function reset2(){stop2(); k2=+$('k2').value; pos2=0; heap2=[]; dropped2=[]; lastOut2=null; lastIn2=null; slowSteps=0; heapSteps=0;
+  draw2(`k = ${k2}. Nothing is kept yet. Press Next step.`);}
+function draw2(msg,cls){
+  $('st2').innerHTML=S2.map((x,i)=>`<span class="${i<pos2-1?'past':i===pos2-1?'now':''}">${x}</span>`).join('');
+  const sorted=heap2.slice().sort((a,b)=>a-b); let html='';
+  sorted.forEach((x,i)=>{html+=`<span class="${i===0&&heap2.length===k2?'gate':'kept'}">${x}${i===0&&heap2.length===k2?' ← h[0]':''}</span>`});
+  for(let i=heap2.length;i<k2;i++) html+='<span class="empty">empty</span>';
+  $('kp2').innerHTML=html;
+  $('dr2').innerHTML=dropped2.length?dropped2.map((d,i)=>`<span class="${d.evicted?'out':'past'}"${i===dropped2.length-1?' style="font-weight:700"':''}>${d.x}</span>`).join(''):'<span class="empty">none</span>';
+  const n=pos2;
+  $('facts2').innerHTML=`<span>answer: <b>${heap2.length===k2?heap2[0]:'—'}</b></span><span>heap list: <b>[${heap2.join(', ')}]</b></span><span>heap steps so far: <b>${heapSteps}</b></span><span>steps with a sort each time: <b>${slowSteps}</b></span>`;
+  $('s2').textContent=msg; $('s2').className='status'+(cls?' '+cls:'');
+}
+function step2(){
+  if(pos2>=S2.length){draw2('The stream is done. Press Reset, change k, or type a new stream.','ok');return false}
+  const x=S2[pos2]; pos2++; lastOut2=null; let msg;
+  slowSteps+=pos2;
+  const lg=Math.max(1,Math.ceil(Math.log2(k2)));
+  if(heap2.length<k2){hpush(heap2,x); heapSteps+=1+lg; msg=`${x} comes in. Fewer than ${k2} numbers are kept, so keep it.`+(heap2.length===k2?` Now ${k2} are kept, and the gate h[0] = ${heap2[0]} is the answer.`:' No answer yet.');}
+  else if(x>heap2[0]){const out=hpop(heap2); hpush(heap2,x); heapSteps+=1+lg; dropped2.push({x:out,evicted:true}); lastOut2=out;
+    msg=`${x} comes in. ${x} > ${out}, the gate. One kept number must go to make room, and the smallest, ${out}, goes (heapreplace). The new gate and answer: ${heap2[0]}.`;}
+  else {heapSteps+=1; dropped2.push({x,evicted:false}); lastOut2=x;
+    msg=`${x} comes in. ${x} ≤ ${heap2[0]}, the gate. So ${x} bounces off: ${k2} kept numbers are already at least as large. One comparison. The answer stays ${heap2[0]}.`;}
+  draw2(msg); return true;
+}
+function stop2(){clearInterval(timer2);timer2=null;$('b2play').textContent='Play'}
+$('b2step').onclick=()=>{stop2();step2()};
+$('b2play').onclick=()=>{ if(timer2){stop2();return} if(pos2>=S2.length) reset2(); $('b2play').textContent='Pause'; step2(); timer2=setInterval(()=>{ if(!step2()||pos2>=S2.length) stop2(); }, reduce?600:1300); };
+$('b2reset').onclick=reset2; $('k2').onchange=reset2;
+$('b2use').onclick=()=>{const a=nums($('in2').value); if(a.length<2||a.length>16||a.some(x=>x<0||x>99)){$('e2').textContent='Type 2 to 16 whole numbers from 0 to 99, with commas between them.';return}
+  $('e2').textContent=''; S2=a; reset2();};
+$('in2').addEventListener('keydown',e=>{if(e.key==='Enter')$('b2use').click()});
+$('b2rand').onclick=()=>{S2=Array.from({length:12},()=>Math.floor(Math.random()*50)); $('in2').value=S2.join(', '); $('e2').textContent=''; reset2();};
+reset2();
+
+/* ---------- Widget 3: two heaps for the median ---------- */
+let S3=[5,15,1,3,8,7,9,2], F3, f3, timer3=null;
+function plan3(){
+  const small=[], large=[]; // small: values (max-heap), large: values (min-heap); shown sorted
+  const mx=a=>Math.max(...a), mn=a=>Math.min(...a), rm=(a,v)=>a.splice(a.indexOf(v),1);
+  const med=()=>small.length>large.length?mx(small):large.length>small.length?mn(large):(mx(small)+mn(large))/2;
+  F3=[{small:[],large:[],pos:0,mv:null,msg:'Both halves are empty. Press Next step.'}];
+  S3.forEach((x,i)=>{
+    let msg;
+    if(large.length&&x>mn(large)){const t=mn(large); large.push(x); msg=`${x} comes in. ${x} > ${t}, the top of the larger half, so it goes to the larger half.`;}
+    else {small.push(x); msg=large.length?`${x} comes in. ${x} ≤ ${mn(large)}, the top of the larger half, so it goes to the smaller half.`:`${x} comes in. The larger half is empty, so it goes to the smaller half.`;}
+    F3.push({small:small.slice(),large:large.slice(),pos:i+1,mv:x,msg:msg+` Sizes: ${small.length} and ${large.length}.`});
+    if(small.length>large.length+1){const m=mx(small); rm(small,m); large.push(m);
+      F3.push({small:small.slice(),large:large.slice(),pos:i+1,mv:m,msg:`The smaller half has 2 more. Move its top, ${m}, across. Sizes: ${small.length} and ${large.length}.`});}
+    if(large.length>small.length+1){const m=mn(large); rm(large,m); small.push(m);
+      F3.push({small:small.slice(),large:large.slice(),pos:i+1,mv:m,msg:`The larger half has 2 more. Move its top, ${m}, across. Sizes: ${small.length} and ${large.length}.`});}
+    const last=F3[F3.length-1], md=med(), how=small.length>large.length?`the top of the smaller half`:large.length>small.length?`the top of the larger half`:`(${mx(small)} + ${mn(large)}) / 2`;
+    last.med=md; last.msg+=` Median: ${how} = ${md}.`; last.done=true;
+  });
+  f3=0;
+}
+function draw3(){
+  const F=F3[f3], tS=F.small.length?Math.max(...F.small):null, tL=F.large.length?Math.min(...F.large):null;
+  $('st3').innerHTML=S3.map((x,i)=>`<span class="${i<F.pos-1?'past':i===F.pos-1?'now':''}">${x}</span>`).join('');
+  let mvLeft=F.mv!==null&&F.mv!==undefined;
+  const chip=(x,top)=>{const now=mvLeft&&x===F.mv; if(now) mvLeft=false; return `<span class="${now?'now':top?'gate':'kept'}">${x}</span>`};
+  const sS=F.small.slice().sort((a,b)=>a-b), sL=F.large.slice().sort((a,b)=>a-b);
+  $('lo3').innerHTML=sS.length?sS.map((x,i)=>chip(x,i===sS.length-1)).join(''):'<span class="empty">empty</span>';
+  $('hi3').innerHTML=sL.length?sL.map((x,i)=>chip(x,i===0)).join(''):'<span class="empty">empty</span>';
+  $('md3').textContent=F.med!==undefined?`median ${F.med}`:f3===0?'median —':'not balanced yet';
+  $('s3').textContent=F.msg; $('s3').className='status'+(F.done?' ok':'');
+}
+function step3(){ if(f3>=F3.length-1){$('s3').textContent='All numbers are in. Press Reset, or type new numbers.';return false} f3++; draw3(); return true}
+function stop3(){clearInterval(timer3);timer3=null;$('b3play').textContent='Play'}
+function reset3(){stop3(); plan3(); draw3();}
+$('b3step').onclick=()=>{stop3();step3()};
+$('b3play').onclick=()=>{ if(timer3){stop3();return} if(f3>=F3.length-1){f3=0;draw3()} $('b3play').textContent='Pause'; step3(); timer3=setInterval(()=>{ if(!step3()) stop3(); }, reduce?600:1300); };
+$('b3reset').onclick=reset3;
+$('b3use').onclick=()=>{const a=nums($('in3').value); if(a.length<1||a.length>12||a.some(x=>x<0||x>99)){$('e3').textContent='Type 1 to 12 whole numbers from 0 to 99, with commas between them.';return}
+  $('e3').textContent=''; S3=a; reset3();};
+$('in3').addEventListener('keydown',e=>{if(e.key==='Enter')$('b3use').click()});
+reset3();
+
+/* ---------- Napkin slider ---------- */
+const SUP='⁰¹²³⁴⁵⁶⁷⁸⁹';
+const sup=e=>String(e).split('').map(d=>SUP[d]).join('');
+function sci(x){const e=Math.floor(Math.log10(x)+1e-9), m=Math.round(x/10**e*10)/10; return e<5?Math.round(x).toLocaleString('en-US'):(m===1?'':m+' × ')+'10'+sup(e)}
+const nice=v=>Number(v.toPrecision(2)).toLocaleString('en-US');
+function fmtT(s){
+  if(s<1e-6) return nice(s*1e9)+' nanoseconds';
+  if(s<1e-3) return nice(s*1e6)+' microseconds';
+  if(s<1) return nice(s*1e3)+' milliseconds';
+  if(s<120) return nice(s)+' seconds';
+  if(s<7200) return nice(s/60)+' minutes';
+  if(s<172800) return nice(s/3600)+' hours';
+  return nice(s/86400)+' days';
+}
+function napkin(){
+  const e=+$('nslider').value, N=10**e, lg=Math.log2(N);
+  const a=N*N, b=N*N, c=N*2*lg;
+  $('nval').textContent=N.toLocaleString('en-US');
+  $('t1').textContent=fmtT(a/1e9); $('t1s').textContent=`list with no order: look at all n each time. n × n = ${sci(a)} steps`;
+  $('t2').textContent=fmtT(b/1e9); $('t2s').textContent=`sorted list: remove the front and put the new item in place, about n moves. ${sci(b)} steps`;
+  $('t3').textContent=fmtT(c/1e9); $('t3s').textContent=`heap: about 2 × log₂ n = ${nice(2*lg)} steps each. ${sci(c)} steps`;
+}
+$('nslider').oninput=napkin; napkin();
+})();
+</script>
