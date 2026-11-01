@@ -167,7 +167,7 @@ heapq.heappush(h, 5)       <span class="cm"># add 5, then sift up</span>
 heapq.heappush(h, 2)       <span class="cm"># add 2, then sift up: 2 goes to the top</span>
 print(h[0])                <span class="cm"># prints 2: the smallest item is always h[0]</span>
 print(heapq.heappop(h))    <span class="cm"># takes out and prints 2, then sifts down</span>
-heapq.heapreplace(h, 7)    <span class="cm"># FIRST takes out the smallest (5), THEN adds 7: one sift</span>
+heapq.heapreplace(h, 7)    <span class="cm"># puts 7 in the place of the smallest (5), sifts down once, returns 5</span>
 nums = [5, 3, 8]
 heapq.heapify(nums)        <span class="cm"># makes nums into a heap (see Napkin math below)</span></code></pre>
 <p><code>heapify</code> works <b>in place</b>: it changes the list you give it, and it does not make a new list. It returns <code>None</code>.</p>
@@ -280,7 +280,7 @@ class KthLargest:
 <p>Three details:</p>
 <ul>
   <li><code>__init__</code> calls <code>self.add(x)</code> for each start number, so the start numbers follow the same rules. <code>add</code> returns a value each time, but <code>__init__</code> does not use it, because the start numbers return nothing.</li>
-  <li><code>heapreplace</code> takes out the top <i>first</i> and adds the new number <i>second</i>. So the code calls it only after it checks <code>val &gt; self.heap[0]</code>. Without that check, a small number would push out the gate and take its place, and the answer would be wrong.</li>
+  <li><code>heapreplace</code> puts the new number straight into the place of the top item, <code>h[0]</code>, then repairs the heap with one sift down. It does not compare the new number with the old top first: the old top always goes out. So the code calls it only after it checks <code>val &gt; self.heap[0]</code>. Without that check, a small number would push out the gate and take its place, and the answer would be wrong.</li>
   <li>LeetCode promises that each <code>add</code> happens when there are at least <code>k</code> numbers in all, so <code>self.heap[0]</code> is always a real answer. (The widget shows "—" if you break that promise.)</li>
   <li>If the number is not larger than the gate, neither branch runs, so the heap does not change. That is "forget it".</li>
 </ul>
