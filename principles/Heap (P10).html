@@ -87,28 +87,39 @@ ul{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem}
 <header style="display:flex;flex-direction:column;gap:.6rem">
   <span class="eyebrow">Principled Algos · Principle 10 of 18</span>
   <h1>Heap</h1>
-  <p class="lede">Keep the smallest item at the top. When the pile changes, fix one short path, not the whole order.</p>
-  <p class="caption">Card 15 in DRILLS.md drills this page.</p>
+  <p class="lede">You only need the smallest item. So keep only enough order to find it, and pay for nothing more.</p>
+  <p class="caption">P9 is "sort then scan" and P15 is "weighted paths". Card 15 in DRILLS.md drills this page.</p>
 </header>
 
 <h2>As if to a child</h2>
-<p>A school nurse gives each sick kid a number: 1 is very sick, 9 is a little sick. She always sees the smallest number next. Kids come all day, so she does not sort the whole line each time.</p>
-<p>She makes a pyramid. Each kid stands on top of kids with bigger numbers, so the smallest number is always at the top. A new kid starts at the bottom and swaps up while his number is smaller than the number above him. When the top kid leaves, the last kid goes to the top and swaps down with the smaller of the two kids below him. 1,000 kids make only 10 rows, so a change is 10 swaps or less.</p>
+<p>A school nurse must always see the sickest kid first, and sick kids come in all day. She gives each kid a number: 1 means very sick, 9 means a little sick. She could put the kids in a line from 1 to 9, but then each new kid must find his place, and every kid behind him must step back. So she does something smarter. The kids stand in a pyramid, with one rule: your number must be smaller than the numbers of the kids under you. Then the smallest number is always at the top.</p>
+<p>A new kid starts at the bottom, and changes places with the kid above him while his number is smaller. When the top kid leaves, the last kid climbs to the top, then changes places with the smaller of the two kids under him until the rule is true again. A pyramid of 1,000 kids has only 10 rows, so each change needs 10 moves or less.</p>
 
 <h2>The extended explanation</h2>
 
-<h3>Start from what is true</h3>
+<h3>The question a heap answers</h3>
+<p>Many programs keep a collection that changes all the time, and ask the same question about it again and again: "Which item is the smallest now?" Think of the timers in a web server: which one ends next?</p>
+<p>Try the obvious tools first:</p>
 <ul>
-  <li><b>Fact 1.</b> Many programs ask again and again: "Which item is the smallest now?" Between questions, items come and go.</li>
-  <li><b>Fact 2. The easy tools are slow.</b> In a list with no order, you look at all <i>n</i> items to find the smallest. In a sorted list, the smallest is at the front, but to remove it or to put a new item in place, Python moves up to <i>n</i> items.</li>
-  <li><b>Fact 3. A full order is more than you need.</b> A sorted list also knows the 900th item, and you pay for that at each change.</li>
-  <li><b>Fact 4. A tree with two children under each item is short.</b> Each row doubles, so <i>n</i> items fill about log<sub>2</sub> <i>n</i> rows: 10 for 1,000 items, 20 for 1,000,000.</li>
+  <li><b>A list in no order.</b> To add an item is easy: append it. But any item can be the smallest, so to find it you must look at all <i>n</i> items. That is <i>n</i> steps for each question.</li>
+  <li><b>A sorted list.</b> Now the question is easy: the smallest item is at the front. But a new item must go to its correct place, and Python must move each item after that place by one position. To remove the front item, Python moves all the others. That is up to <i>n</i> steps for each change.</li>
 </ul>
-<p>Join the facts. Use a tree, and keep only a weak rule: <b>each parent is smaller than or equal to its children.</b> Then the smallest item is at the top. A change can break the rule only along one path from top to bottom: at most 20 items for a million.</p>
+<p>Both tools spend about <i>n</i> steps on each operation. Where is the waste? The sorted list knows much more than we ask. It knows the second smallest item, the tenth, the 900th. We pay to keep all of that order correct, but we only read the front. So the real question is: what is the <i>least</i> order that still shows us the smallest item?</p>
 
-<h3>A tree that is only a list</h3>
-<p>Put the items in a list, row by row, from left to right. Then the item at index <code>i</code> has its children at <code>2i + 1</code> and <code>2i + 2</code>, and its parent at <code>(i − 1) // 2</code>. J. W. J. Williams found this in 1964, for heapsort.</p>
-<p><b>Push</b> puts a number at the end and swaps it up while it is smaller than its parent (<b>sift up</b>). <b>Pop</b> takes the top, moves the last item to the top, then swaps it down with its <i>smaller</i> child while it is larger (<b>sift down</b>). Why the <i>smaller</i> child? After the swap, it is the parent of the other child, so it must be the smaller of the two.</p>
+<h3>The least order that is enough</h3>
+<p>Put the items in a tree, with at most two children under each item. Then give the tree only one rule:</p>
+<p class="rule">Each parent is smaller than or equal to each of its children.</p>
+<p>This rule says nothing about two items side by side, or about cousins. It is a weak rule, but it is enough. Start at any item and walk up. At each step you go to a parent, and the parent is smaller or equal. So the values only get smaller as you climb, and every path ends at the top. That makes the top smaller than or equal to every item in the tree. The smallest item is always at the top, and you read it in one step.</p>
+<p>And a weak rule is cheap to repair. Count the rows: the top row has 1 item, then 2, then 4, then 8. Each row holds two times the items of the row above, so the rows fill very fast. 10 rows hold about 1,000 items (2<sup>10</sup> = 1,024), and 20 rows hold about a million (2<sup>20</sup> = 1,048,576). In other words, <i>n</i> items need only about log<sub>2</sub> <i>n</i> rows. You will see below that a change can only break the rule along one path from top to bottom. A path has one item in each row, so even with a million items, a repair touches about 20 of them.</p>
+<p>That is the whole trick. A full order costs about <i>n</i> steps to keep. An order along each path costs about log<sub>2</sub> <i>n</i> steps, and it still answers our question. This tree is a <b>heap</b>.</p>
+
+<h3>A tree with no links</h3>
+<p>A tree usually needs a link from each item to its children. A heap does not. Write the items into an ordinary list, row by row, from left to right: index 0 is the top, indexes 1 and 2 are the second row, and indexes 3 to 6 are the third row. Each row is full except the last, so the positions follow a fixed pattern. The children of index <code>i</code> are at <code>2i + 1</code> and <code>2i + 2</code>, and its parent is at <code>(i − 1) // 2</code>. For example, index 4 has its children at 9 and 10, and its parent at 1. Simple arithmetic does the work of the links.</p>
+
+<h3>Two repairs: sift up and sift down</h3>
+<p><b>Push.</b> Put the new item at the end of the list. That fills the next free place in the bottom row, so the tree keeps its shape. Now only one thing can be wrong: the new item can be smaller than its parent. If it is, swap them. In its new place, it can be smaller than its new parent, so check again. Stop when the parent is smaller or equal, or when the item gets to the top. This is <b>sift up</b>. Each swap moves the item up one row, so it costs at most one comparison for each row.</p>
+<p><b>Pop.</b> The smallest item is at index 0, so take it out. That leaves a hole at the top. Fill it with the last item in the list, so the tree keeps its shape. But that item came from the bottom, so it is probably too large for the top. Compare it with its two children. If it is larger than one of them, swap it with the <i>smaller</i> child. Why the smaller one? After the swap, that child becomes the parent of the other child, and a parent must be the smaller of the two. Then do the same check one row lower. Stop when the item is smaller than or equal to its children, or when it has no children. This is <b>sift down</b>.</p>
+<p>Try both in the widget: push 0 and watch it climb to the top, then pop it.</p>
 
 <div class="widget" id="w1">
   <svg id="svg1" viewBox="0 0 600 330" role="img" aria-label="A heap drawn as a tree, with the same items as a list below"></svg>
@@ -124,25 +135,30 @@ ul{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem}
     <button id="b1reset" type="button">Reset</button>
   </div>
   <span class="err" id="e1"></span>
-  <p class="caption">Bottom: the real Python list. <span class="A">Amber</span>: the item that moves. <span class="B">Blue</span>: the item it is compared with. <span class="T">Teal</span>: the rule holds. <span class="R">Red</span>: leaves. Numbers 0–99, at most 15.</p>
+  <p class="caption">The tree is at the top. The real Python list is at the bottom, with its index numbers. <span class="A">Amber</span> is the item that moves, and <span class="B">blue</span> is the item it is compared with. <span class="T">Teal</span> shows where the rule holds, so the repair stops. <span class="R">Red</span> is the item that is popped. Use numbers from 0 to 99. The widget holds up to 15 items.</p>
 </div>
 
-<h3>The sentence that keeps the code correct</h3>
-<p class="rule">Each parent is smaller than or equal to each of its children. So index 0 holds the smallest item.</p>
-<p>This <b>invariant</b> holds after each push and pop. Why? Say the new item <i>x</i> swaps with its parent <i>p</i>, which has another child <i>s</i>. Before the push, <i>p</i> ≤ <i>s</i>. Now <i>x</i> is the parent of <i>p</i> and <i>s</i>, and <i>x</i> &lt; <i>p</i> ≤ <i>s</i>. So the rule holds below <i>x</i>; the only problem moves up a row. Sift down works the same way, from the top: the item swaps with its smaller child, and the problem moves down one row.</p>
-<p>You do not write sift up or sift down yourself: Python's <code>heapq</code> module does them. But <code>heapq</code> only keeps the <i>smallest</i> item on top. To keep the largest on top, put each number in with a minus sign. Then the largest number has the smallest value: 9, 4 and 1 go in as −9, −4 and −1, and −9 is on top. When you take an item out, put the minus sign back: −(−9) = 9.</p>
+<h3>Why the repairs are enough</h3>
+<p class="rule">Before and after each push and pop, every parent is smaller than or equal to each of its children.</p>
+<p>This is the <b>invariant</b>: the promise that the code keeps. It is easy to worry that a swap fixes one place and breaks another. So check sift up with care. Say the new item <i>x</i> is smaller than its parent <i>p</i>, and <i>p</i> has another child, <i>s</i>. The rule was true before the push, so <i>p</i> ≤ <i>s</i>. After the swap, <i>x</i> is the parent of both <i>p</i> and <i>s</i>. We know <i>x</i> &lt; <i>p</i>, and <i>p</i> ≤ <i>s</i>, so <i>x</i> &lt; <i>s</i> too. Both children of <i>x</i> are correct. The only place where the rule can still fail is between <i>x</i> and its new parent, one row higher. So each swap moves the problem up one row, and the problem disappears at the top. Sift down uses the same argument in the other direction: each swap moves the problem down one row, and it disappears at the bottom.</p>
+
+<h3>Heaps in Python</h3>
+<p>You do not write sift up and sift down yourself. Python's <code>heapq</code> module does them for you, on an ordinary list:</p>
 <pre><code>import heapq
 h = []
-heapq.heappush(h, 5)       <span class="cm"># sift up: about log2 n steps</span>
-h[0]                       <span class="cm"># the smallest item: 1 step</span>
-heapq.heappop(h)           <span class="cm"># sift down: about log2 n steps</span>
-heapq.heapreplace(h, 7)    <span class="cm"># pop the smallest, then push 7: one sift</span>
+heapq.heappush(h, 5)       <span class="cm"># add an item, then sift up: about log2 n steps</span>
+h[0]                       <span class="cm"># read the smallest item: 1 step</span>
+heapq.heappop(h)           <span class="cm"># remove the smallest, then sift down: about log2 n steps</span>
+heapq.heapreplace(h, 7)    <span class="cm"># remove the smallest and add 7, with one sift</span>
 nums = [5, 3, 8]
-heapq.heapify(nums)        <span class="cm"># in place, about 2n steps; it returns None</span></code></pre>
+heapq.heapify(nums)        <span class="cm"># make a list into a heap in place: about 2n steps; it returns None</span></code></pre>
+<p><code>heapq</code> only keeps the <i>smallest</i> item on top. When you want the largest item on top, use a minus sign. Put −<i>x</i> into the heap in place of <i>x</i>. Then the largest number has the smallest value: 9, 4 and 1 go in as −9, −4 and −1, and −9 is on top. When you take an item out, put the minus sign back: −(−9) = 9.</p>
 
 <h3>Worked example 1: Kth Largest Element in a Stream (LeetCode 703)</h3>
-<p><b>Problem.</b> You get <code>k</code> and a list <code>nums</code>. Then <code>add(val)</code> adds one number and returns the <code>k</code>-th largest so far. With <code>k = 3</code> and <code>[4, 5, 8, 2]</code>: <code>add(3)</code> → 4, <code>add(5)</code> → 5, <code>add(10)</code> → 5, <code>add(9)</code> → 8, <code>add(4)</code> → 8.</p>
-<p><b>The key fact.</b> A number outside the top <code>k</code> now can never get in later: new numbers only push the bar up. So keep only the <code>k</code> largest, in a <b>min</b>-heap. Its top, <code>h[0]</code>, is the <span class="T">gate</span>: it is the answer, and it is the item to remove when a larger number comes in.</p>
+<p><b>Problem.</b> You get a number <code>k</code> and a list <code>nums</code>. Then each call <code>add(val)</code> adds one number and returns the <code>k</code>-th largest number so far. With <code>k = 3</code> and <code>nums = [4, 5, 8, 2]</code>, the calls <code>add(3)</code>, <code>add(5)</code>, <code>add(10)</code>, <code>add(9)</code> and <code>add(4)</code> return 4, 5, 5, 8 and 8.</p>
+<p><b>The slow way.</b> Keep every number in a list. After each add, sort the list and read the <code>k</code>-th number from the end. Each add costs a sort, and the list grows forever.</p>
+<p><b>Where the work goes.</b> The sort puts all the numbers in order, but we read only one. Now think about a number that is not in the top <code>k</code>. Can it ever become the answer later? No. Each new number is either too small to matter, or it enters the top <code>k</code> and pushes the smallest of them out. The bar only goes up. So a number that falls below the bar can never come back, and we can forget it.</p>
+<p><b>The fix.</b> Keep only the <code>k</code> largest numbers so far. Which of them do we need quickly? Two things: the answer, which is the smallest of the kept numbers, and the number to throw out when a larger one comes, which is <i>also</i> the smallest of the kept numbers. So keep the <code>k</code> largest numbers in a <b>min</b>-heap. Its top, <code>h[0]</code>, is the <span class="T">gate</span>. A new number gets in only if it is larger than the gate, and then the gate goes out. A min-heap for the <i>largest</i> numbers sounds backwards, until you remember that the top of a heap is always the item you remove next.</p>
 
 <div class="widget" id="w2">
   <div class="lane"><span class="caption">Stream</span><div class="chips" id="st2"></div></div>
@@ -164,42 +180,33 @@ heapq.heapify(nums)        <span class="cm"># in place, about 2n steps; it retur
     <button id="b2rand" type="button">Random</button>
   </div>
   <span class="err" id="e2"></span>
-  <p class="caption">The first four numbers are <code>nums</code>. Kept numbers are shown smallest first. <span class="T">Teal border</span>: the gate. Not kept: <span class="R">red</span> was removed, grey bounced off. Heap steps: 1 compare plus log<sub>2</sub> <i>k</i>. Sort steps: about <i>n</i> moves per add (see Claim 2).</p>
+  <p class="caption">The first four numbers in the stream are <code>nums</code>. Kept numbers are shown smallest first; the real list is in heap order. The <span class="T">teal border</span> marks the gate. Under "Not kept", <span class="R">red</span> numbers were kept and then pushed out, and grey numbers bounced off the gate.</p>
 </div>
 
 <pre><code>class KthLargest:
     def __init__(self, k, nums):
-        self.k, self.heap = k, []          <span class="cm"># the k largest numbers so far</span>
+        self.k = k
+        self.heap = []                     <span class="cm"># the k largest numbers so far</span>
         for x in nums:
             self.add(x)
 
     def add(self, val):
         if len(self.heap) &lt; self.k:
-            heapq.heappush(self.heap, val)
-        elif val &gt; self.heap[0]:           <span class="cm"># beats the gate</span>
-            heapq.heapreplace(self.heap, val)
-        return self.heap[0]                <span class="cm"># smallest of the top k = the k-th largest</span></code></pre>
-<p>Each <code>add</code> is one comparison and at most one sift: about log<sub>2</sub> <i>k</i> steps, for any stream length.</p>
+            heapq.heappush(self.heap, val) <span class="cm"># not full yet: keep it</span>
+        elif val &gt; self.heap[0]:
+            heapq.heapreplace(self.heap, val)   <span class="cm"># beats the gate: the gate goes out</span>
+        return self.heap[0]                <span class="cm"># the smallest of the top k is the k-th largest</span></code></pre>
+<p>Each add is one comparison with the gate, and at most one sift in a heap of <code>k</code> items. That is about log<sub>2</sub> <i>k</i> steps, no matter how long the stream is.</p>
 
-<h3>Worked example 2: Last Stone Weight (LeetCode 1046)</h3>
-<p><b>Problem.</b> Each turn, smash the two heaviest stones. Equal weights both go; otherwise the difference stays. Return the last weight, or 0. <code>[2, 7, 4, 1, 8, 1]</code>: 8 and 7 leave 1; 4 and 2 leave 2; 2 and 1 leave 1; 1 and 1 go; the answer is 1.</p>
-<pre><code>def lastStoneWeight(stones):
-    heap = [-s for s in stones]            <span class="cm"># minus signs make a max-heap</span>
-    heapq.heapify(heap)
-    while len(heap) &gt; 1:
-        first = -heapq.heappop(heap)       <span class="cm"># heaviest</span>
-        second = -heapq.heappop(heap)      <span class="cm"># next heaviest</span>
-        if first != second:
-            heapq.heappush(heap, -(first - second))
-    return -heap[0] if heap else 0</code></pre>
-
-<h3>Worked example 3: Find Median from Data Stream (LeetCode 295)</h3>
-<p><b>Problem.</b> Build <code>addNum(num)</code> and <code>findMedian()</code>, which returns the middle value (or the average of the two middle values).</p>
-<p><b>The idea.</b> Cut the numbers in two halves. Keep the smaller half in a max-heap and the larger half in a min-heap, so both tops sit at the middle. Two rules:</p>
+<h3>Worked example 2: Find Median from Data Stream (LeetCode 295)</h3>
+<p><b>Problem.</b> Build two methods. <code>addNum(num)</code> adds a number. <code>findMedian()</code> returns the middle value of all numbers so far, or the average of the two middle values when the count is even. After adding 5, 15, 1 and 3, the median is (3 + 5) / 2 = 4.</p>
+<p><b>The idea.</b> A heap shows you one end of a collection, but the median is in the middle. So cut the numbers into two halves at the middle: a smaller half and a larger half. The median is at the place where the two halves touch. It is the largest number of the smaller half, or the smallest number of the larger half, or the average of the two. So each half needs quick access to its edge next to the middle. Keep the smaller half in a max-heap, so its largest number is on top. Keep the larger half in a min-heap, so its smallest number is on top. The two tops face each other across the middle.</p>
+<p>Two rules keep this picture true:</p>
 <ul>
-  <li><b>Each item in the smaller half ≤ each item in the larger half.</b> A new number goes to the larger half only if it is larger than that half's top. When the sizes differ by 2, move one top across. A top is nearest the middle, so the rule holds.</li>
-  <li><b>The sizes differ by 1 or less.</b> Then the median is the top of the bigger half, or the average of the two tops.</li>
+  <li><b>Order.</b> Every number in the smaller half is smaller than or equal to every number in the larger half. When a new number comes, compare it with the top of the larger half. If it is larger, it goes into the larger half. If not, it goes into the smaller half.</li>
+  <li><b>Balance.</b> The sizes of the halves differ by one or less. After an add, if one half has two more numbers than the other, move its top across. The top is the number nearest the middle, so the move does not break the order rule.</li>
 </ul>
+<p>With both rules true, the median is easy to read. If one half is bigger, its top is the median. If the halves are equal, the median is the average of the two tops.</p>
 
 <div class="widget" id="w3">
   <div class="lane"><span class="caption">Stream</span><div class="chips" id="st3"></div></div>
@@ -221,45 +228,43 @@ heapq.heapify(nums)        <span class="cm"># in place, about 2n steps; it retur
     <button id="b3use" type="button">Use these</button>
   </div>
   <span class="err" id="e3"></span>
-  <p class="caption"><span class="A">Amber</span>: the number that moves. <span class="T">Teal</span>: the two tops.</p>
+  <p class="caption">Each half is shown in order, with its top next to the middle box. <span class="A">Amber</span> is the number that moves. <span class="T">Teal</span> marks the two tops.</p>
 </div>
 
 <pre><code>class MedianFinder:
     def __init__(self):
-        self.small, self.large = [], []    <span class="cm"># small: max-heap (negated); large: min-heap</span>
+        self.small = []                    <span class="cm"># the smaller half: a max-heap, stored with minus signs</span>
+        self.large = []                    <span class="cm"># the larger half: a min-heap</span>
 
     def addNum(self, num):
         if self.large and num &gt; self.large[0]:
-            heapq.heappush(self.large, num)
+            heapq.heappush(self.large, num)          <span class="cm"># order rule</span>
         else:
             heapq.heappush(self.small, -num)
-        if len(self.small) &gt; len(self.large) + 1:      <span class="cm"># keep sizes within one</span>
+        if len(self.small) &gt; len(self.large) + 1:    <span class="cm"># balance rule</span>
             heapq.heappush(self.large, -heapq.heappop(self.small))
         if len(self.large) &gt; len(self.small) + 1:
             heapq.heappush(self.small, -heapq.heappop(self.large))
 
     def findMedian(self):
-        if len(self.small) &gt; len(self.large): return -self.small[0]
-        if len(self.large) &gt; len(self.small): return self.large[0]
+        if len(self.small) &gt; len(self.large):
+            return -self.small[0]
+        if len(self.large) &gt; len(self.small):
+            return self.large[0]
         return (-self.small[0] + self.large[0]) / 2</code></pre>
+<p>Each add does at most three pushes and pops, so it costs about log<sub>2</sub> <i>n</i> steps. Each median reads one or two tops: 1 step.</p>
 
-<h3>Worked example 4: Merge K Sorted Lists (LeetCode 23)</h3>
-<p><b>Problem.</b> Merge <code>k</code> sorted linked lists. <code>[1→4→5, 1→3→4, 2→6]</code> → <code>1→1→2→3→4→4→5→6</code>.</p>
-<p><b>The idea.</b> The next answer item is the front of some list, so the heap holds the front node of each list. Pop the smallest, add it to the answer, and push the next node from the <i>same</i> list. With <i>N</i> nodes in all: about <i>N</i> × log<sub>2</sub> <i>k</i> steps.</p>
-<pre><code>def mergeKLists(lists):                    <span class="cm"># ListNode has .val and .next</span>
-    h = [(node.val, i, node) for i, node in enumerate(lists) if node]
-    heapq.heapify(h)
-    dummy = cur = ListNode()
-    while h:
-        _, i, node = heapq.heappop(h)      <span class="cm"># the smallest front node</span>
-        cur.next = node; cur = node
-        if node.next:                      <span class="cm"># its list's next node takes its place</span>
-            heapq.heappush(h, (node.next.val, i, node.next))
-    return dummy.next</code></pre>
-<p><b>Why the <code>i</code>?</b> On equal values, Python compares the next tuple item, and two <code>ListNode</code> objects cannot be compared. Each list has one node in the heap, so <code>(val, i)</code> is unique.</p>
+<h3>Where else it shows up</h3>
+<ul>
+  <li><b>Last Stone Weight (1046).</b> Again and again, smash the two heaviest stones and put back the difference if it is not 0. That is the heap question with the largest on top, so use a heap with minus signs.</li>
+  <li><b>Merge K Sorted Lists (23).</b> The smallest unused item of all the lists must be the front of one list, so keep the <code>k</code> front nodes in a min-heap. Pop the smallest, add it to the answer, and push the next node of the same list. Store <code>(node.val, i, node)</code>, for the reason in Common mistakes. Card 15 has the code.</li>
+  <li><b>Kth Largest Element in an Array (215).</b> Worked example 1, on a fixed list. In Python, <code>heapq.nlargest(k, nums)[-1]</code> does it in one line.</li>
+  <li><b>K Closest Points to Origin (973).</b> Keep the <code>k</code> smallest distances. The item to throw out is the largest kept distance, so you need a max-heap of size <code>k</code>: push <code>(-(x*x + y*y), x, y)</code>.</li>
+  <li><b>Not a heap:</b> if you need the full order only once, sort (P9).</li>
+</ul>
 
-<h3>Napkin math: how much does the heap save?</h3>
-<p>One operation is: take the smallest item out, then add a new item. The slider assumes 10<sup>9</sup> steps each second (compiled code; Python is about 100 times slower).</p>
+<h3>Napkin math: how much does a heap save?</h3>
+<p>Take a collection of <i>n</i> items, and do <i>n</i> operations. Each operation takes the smallest item out, then adds a new item. The slider assumes 10<sup>9</sup> simple steps each second, which is fast compiled code; Python is about 100 times slower.</p>
 <div class="widget">
   <label for="nslider" class="caption">Items in the collection <i>n</i> = <b id="nval"></b>. The program does <i>n</i> operations.</label>
   <input type="range" id="nslider" min="1" max="8" step="1" value="6">
@@ -269,40 +274,17 @@ heapq.heapify(nums)        <span class="cm"># in place, about 2n steps; it retur
     <div><b id="t3"></b><span id="t3s"></span></div>
   </div>
 </div>
-<p><b>Claim 1</b>, from PRINCIPLES.md: "<code>heapify</code> is O(<i>n</i>)." Half the items are in the bottom row and cannot move down; a quarter can move 1 row, an eighth 2 rows: <i>n</i> × (1/4 + 2/8 + 3/16 + …) = <i>n</i> moves at most. Each move down costs 2 comparisons: one to find the smaller child, and one to compare that child with the item. In Python, <code>heapify</code> of 100,000 items made 165,178 comparisons: 1.65 each, not 17 (log<sub>2</sub> 100,000). <b>Verdict: accurate.</b></p>
-<p><b>Claim 2:</b> "for a stream, a heap of size <i>k</i> is much faster than a sort after each add." With 20,000 adds and <i>k</i> = 10: the list is sorted except for the new item, so Python's sort moves about <i>n</i> items: 20,000<sup>2</sup> ÷ 2 = 2 × 10<sup>8</sup> moves in all. The heap: at most 20,000 × (1 + 4) = 100,000 steps. On the machine that built this page: 652 ms against 4 ms, 160 times faster. The step ratio is 2,000; the clock ratio is smaller because the sort moves items in large blocks of memory, which is much faster than one step at a time. <b>Verdict: accurate.</b></p>
-<p><b>Claim 3:</b> "for the <i>k</i>-th largest of a fixed list, a heap beats a sort." For 1,000,000 numbers and <i>k</i> = 10, the sort is about 10<sup>6</sup> × 20 = 20 million steps, and the heap at most 10<sup>6</sup> × 5 = 5 million. On the clock, the sort took 258 ms and <code>heapq.nlargest(10, nums)</code> took 18 ms. A heap in a hand-written Python loop took 185 ms, because each pass of a Python loop is slow. <b>Verdict: accurate. In Python, use <code>nlargest</code>.</b></p>
-
-<h3>How to recognize it</h3>
-<div class="tw"><table>
-<tr><th>The problem says</th><th>What the heap holds</th><th>Problems</th></tr>
-<tr><td>"the <code>k</code> largest, smallest or closest", mostly with a stream or a small <code>k</code></td><td><code>k</code> items; the top is the worst one kept</td><td>703, 215, 973</td></tr>
-<tr><td>"again and again, take the largest"</td><td>all items; pop, process, push the result back</td><td>1046, 621</td></tr>
-<tr><td><code>k</code> lists that are each already sorted</td><td>the front item of each list</td><td>23, 355</td></tr>
-<tr><td>"the median" of numbers that keep coming</td><td>two halves that meet at the middle</td><td>295</td></tr>
-<tr><td>"always go to the cheapest place next"</td><td>the places you can go next (P15)</td><td>743, 778</td></tr>
-</table></div>
-<p>If you need the full order only once, do not use a heap: sort (P9).</p>
+<p><b>Claim 1</b>, from PRINCIPLES.md: "<code>heapify</code> turns a list into a heap in O(<i>n</i>) steps." That sounds too good. Pushing <i>n</i> items one at a time can cost log<sub>2</sub> <i>n</i> steps each. But <code>heapify</code> works from the bottom up, and sifts each item <i>down</i>. An item can only sift down as far as there are rows under it. Half of the items are in the bottom row, so they cannot move at all. A quarter can move down 1 row, an eighth 2 rows, a sixteenth 3 rows. Add it up: <i>n</i> × (1/4 + 2/8 + 3/16 + 4/32 + …) = <i>n</i> × 1. So there are at most about <i>n</i> moves. Each move costs 2 comparisons: one to find the smaller child, and one to compare that child with the item. That gives about 2<i>n</i> comparisons. I counted them in Python: <code>heapify</code> on 100,000 random numbers made 165,178 comparisons. That is 1.65 for each item, not 17 (log<sub>2</sub> 100,000). <b>Verdict: accurate.</b></p>
 
 <h3>Common mistakes</h3>
 <ul>
-  <li><b>The wrong heap for "keep the k best".</b> The top must be the item you remove next. So the <i>k</i> largest need a min-heap, and the <i>k</i> smallest need a max-heap.</li>
-  <li><b>No tiebreaker in a tuple.</b> Use <code>(value, i, item)</code>, for the reason in worked example 4.</li>
-  <li><b>A lost minus sign</b> on a negated heap, or <code>h = heapq.heapify(h)</code>, which sets <code>h</code> to <code>None</code>.</li>
-  <li><b>A search in the heap.</b> Any item except the top takes <i>n</i> steps to find.</li>
+  <li><b>The wrong kind of heap for "keep the <i>k</i> best".</b> The top of the heap must be the item you throw out next. To keep the <i>k</i> largest, use a min-heap. To keep the <i>k</i> smallest, use a max-heap.</li>
+  <li><b>No tiebreaker in a tuple.</b> Python compares tuples one item at a time. If two values are equal, it compares the next item, and it cannot compare objects such as list nodes, so the program stops with an error. Put a unique number between them: <code>(value, i, item)</code>.</li>
+  <li><b><code>h = heapq.heapify(h)</code>.</b> <code>heapify</code> changes the list in place and returns <code>None</code>, so this line sets <code>h</code> to <code>None</code>.</li>
 </ul>
 
-<h3>Try it yourself</h3>
-<details><summary>1. Push 0 into [1, 3, 2, 4, 9, 8, 6, 5, 7]. What is the list after?</summary>
-<p>0 starts at index 9 and swaps with 9, 3 and 1. Answer: [0, 1, 2, 4, 3, 8, 6, 5, 7, 9]. Check it: this is the first widget's start heap.</p>
-</details>
-<details><summary>2. Which heap gives the k closest points to (0, 0)?</summary>
-<p>The top must be the largest kept distance: a max-heap of size <code>k</code>. Push <code>(-(x*x + y*y), x, y)</code> (squared distance keeps the order; integers always compare), and pop when the size is more than <code>k</code>.</p>
-</details>
-
 <h2>In the real world</h2>
-<p><b>Compression, 1951.</b> David Huffman, an MIT student, wrote a paper in place of a final exam. He found the best way to give short codes to common letters: again and again, join the two least common symbols. That is Last Stone Weight with the two smallest, so a min-heap. ZIP files and JPEG images still use his codes.</p>
-<p><b>Maps.</b> Dijkstra's route finder (P15) goes again and again to the nearest unfinished place. A research map of USA roads has about 24 million places and 58 million roads. Claim: "a heap makes this 100,000 times faster." A plain scan of all unfinished places at each step costs (2.4 × 10<sup>7</sup>)<sup>2</sup> ≈ 6 × 10<sup>14</sup> steps, about 7 days at 10<sup>9</sup> steps each second. With a heap: about (24 + 58) million × 25 ≈ 2 × 10<sup>9</sup> steps, about 2 seconds. Ratio: 300,000. <b>Verdict: approximately accurate, if anything low.</b></p>
+<p><b>Huffman codes, 1951.</b> David Huffman was a graduate student at MIT, in a class taught by Robert Fano. Fano gave the students a choice: take the final exam, or solve a hard problem in a paper. The problem was to find the shortest way to write a message in 0s and 1s, when you know how often each letter is used. Fano himself had worked on it without a full solution, and Huffman nearly gave up. Then he found a simple method: take the two least common symbols, join them into one symbol whose count is the sum of the two, and do it again until one symbol is left. Each join adds one bit to the codes of the letters inside it, so rare letters get long codes and common letters short ones. "Take the two smallest and put back their sum" is Last Stone Weight (in "Where else") with a min-heap. ZIP files and JPEG images still use Huffman codes. For the 256 possible byte values, a heap builds the code in 255 joins, each of three heap operations of about log<sub>2</sub> 256 = 8 steps.</p>
 </main>
 
 <script>
