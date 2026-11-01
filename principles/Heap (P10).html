@@ -108,7 +108,7 @@ ul{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem}
 
 <h3>A tree that is only a list</h3>
 <p>Put the items in a list, row by row, from left to right. Then the item at index <code>i</code> has its children at <code>2i + 1</code> and <code>2i + 2</code>, and its parent at <code>(i − 1) // 2</code>. J. W. J. Williams found this in 1964, for heapsort.</p>
-<p><b>Push</b> puts a number at the end and swaps it up while it is smaller than its parent (<b>sift up</b>). <b>Pop</b> takes the top, moves the last item to the top, then swaps it down with its <i>smaller</i> child while it is larger (<b>sift down</b>). The smaller child, because it becomes the other child's parent.</p>
+<p><b>Push</b> puts a number at the end and swaps it up while it is smaller than its parent (<b>sift up</b>). <b>Pop</b> takes the top, moves the last item to the top, then swaps it down with its <i>smaller</i> child while it is larger (<b>sift down</b>). Why the <i>smaller</i> child? After the swap, it is the parent of the other child, so it must be the smaller of the two.</p>
 
 <div class="widget" id="w1">
   <svg id="svg1" viewBox="0 0 600 330" role="img" aria-label="A heap drawn as a tree, with the same items as a list below"></svg>
@@ -129,8 +129,8 @@ ul{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem}
 
 <h3>The sentence that keeps the code correct</h3>
 <p class="rule">Each parent is smaller than or equal to each of its children. So index 0 holds the smallest item.</p>
-<p>This <b>invariant</b> holds after each push and pop. Why? Say the new item <i>x</i> swaps with its parent <i>p</i>, which has another child <i>s</i>. Before the push, <i>p</i> ≤ <i>s</i>. Now <i>x</i> is the parent of <i>p</i> and <i>s</i>, and <i>x</i> &lt; <i>p</i> ≤ <i>s</i>. So the rule holds below <i>x</i>; the only problem moves up a row. Sift down is the mirror image.</p>
-<p>Python's <code>heapq</code> does the sifts. It only has a min-heap; for a max-heap, store <code>-x</code>.</p>
+<p>This <b>invariant</b> holds after each push and pop. Why? Say the new item <i>x</i> swaps with its parent <i>p</i>, which has another child <i>s</i>. Before the push, <i>p</i> ≤ <i>s</i>. Now <i>x</i> is the parent of <i>p</i> and <i>s</i>, and <i>x</i> &lt; <i>p</i> ≤ <i>s</i>. So the rule holds below <i>x</i>; the only problem moves up a row. Sift down works the same way, from the top: the item swaps with its smaller child, and the problem moves down one row.</p>
+<p>You do not write sift up or sift down yourself: Python's <code>heapq</code> module does them. But <code>heapq</code> only keeps the <i>smallest</i> item on top. To keep the largest on top, put each number in with a minus sign. Then the largest number has the smallest value: 9, 4 and 1 go in as −9, −4 and −1, and −9 is on top. When you take an item out, put the minus sign back: −(−9) = 9.</p>
 <pre><code>import heapq
 h = []
 heapq.heappush(h, 5)       <span class="cm"># sift up: about log2 n steps</span>
@@ -179,7 +179,7 @@ heapq.heapify(nums)        <span class="cm"># in place, about 2n steps; it retur
         elif val &gt; self.heap[0]:           <span class="cm"># beats the gate</span>
             heapq.heapreplace(self.heap, val)
         return self.heap[0]                <span class="cm"># smallest of the top k = the k-th largest</span></code></pre>
-<p>Each <code>add</code> is one comparison and at most one sift: about log<sub>2</sub> <i>k</i> steps, for any stream length. A common short version always pushes, then pops when the size is more than <code>k</code>.</p>
+<p>Each <code>add</code> is one comparison and at most one sift: about log<sub>2</sub> <i>k</i> steps, for any stream length.</p>
 
 <h3>Worked example 2: Last Stone Weight (LeetCode 1046)</h3>
 <p><b>Problem.</b> Each turn, smash the two heaviest stones. Equal weights both go; otherwise the difference stays. Return the last weight, or 0. <code>[2, 7, 4, 1, 8, 1]</code>: 8 and 7 leave 1; 4 and 2 leave 2; 2 and 1 leave 1; 1 and 1 go; the answer is 1.</p>
@@ -259,7 +259,7 @@ heapq.heapify(nums)        <span class="cm"># in place, about 2n steps; it retur
 <p><b>Why the <code>i</code>?</b> On equal values, Python compares the next tuple item, and two <code>ListNode</code> objects cannot be compared. Each list has one node in the heap, so <code>(val, i)</code> is unique.</p>
 
 <h3>Napkin math: how much does the heap save?</h3>
-<p>One operation: take the smallest, add an item. The slider assumes 10<sup>9</sup> steps each second (compiled code; Python is about 100 times slower).</p>
+<p>One operation is: take the smallest item out, then add a new item. The slider assumes 10<sup>9</sup> steps each second (compiled code; Python is about 100 times slower).</p>
 <div class="widget">
   <label for="nslider" class="caption">Items in the collection <i>n</i> = <b id="nval"></b>. The program does <i>n</i> operations.</label>
   <input type="range" id="nslider" min="1" max="8" step="1" value="6">
@@ -269,49 +269,39 @@ heapq.heapify(nums)        <span class="cm"># in place, about 2n steps; it retur
     <div><b id="t3"></b><span id="t3s"></span></div>
   </div>
 </div>
-<p><b>Claim 1</b>, from PRINCIPLES.md: "<code>heapify</code> is O(<i>n</i>)." Half the items are in the bottom row and cannot move down; a quarter can move 1 row, an eighth 2 rows: <i>n</i> × (1/4 + 2/8 + 3/16 + …) = <i>n</i> moves at most. Each move is 2 comparisons (child with child, then with the item). In Python, <code>heapify</code> of 100,000 items made 165,178 comparisons: 1.65 each, not 17 (log<sub>2</sub> 100,000). <b>Verdict: accurate.</b></p>
-<p><b>Claim 2:</b> "for a stream, a heap of size <i>k</i> is much faster than a sort after each add." With 20,000 adds and <i>k</i> = 10: the list is sorted except for the new item, so Python's sort moves about <i>n</i> items: 20,000<sup>2</sup> ÷ 2 = 2 × 10<sup>8</sup> moves in all. The heap: at most 20,000 × (1 + 4) = 100,000 steps. On the machine that built this page: 652 ms against 4 ms, 160 times faster. The step ratio is 2,000; memory moves in large blocks are fast, so the clock ratio is smaller. <b>Verdict: accurate.</b></p>
-<p><b>Claim 3:</b> "for the <i>k</i>-th largest of a fixed list, a heap beats a sort." For 1,000,000 numbers and <i>k</i> = 10, the sort is about 10<sup>6</sup> × 20 = 20 million steps. The heap: at most 10<sup>6</sup> × 5 = 5 million, less when numbers bounce. Clock: sort 258 ms; heap in a Python <code>for</code> loop 185 ms, because each Python pass costs much more than a C step; <code>heapq.nlargest(10, nums)</code> 18 ms. <b>Verdict: accurate in steps. In Python, use <code>nlargest</code>.</b></p>
-
-<h3>Four ways heaps are used</h3>
-<div class="tw"><table>
-<tr><th>Pattern</th><th>How it works</th><th>Problems</th></tr>
-<tr><td>Keep only the best k</td><td>the heap top is the worst kept item</td><td>Kth Largest 703, 215; K Closest Points 973</td></tr>
-<tr><td>A live "largest item" source</td><td>pop, process, push results back</td><td>Last Stone Weight 1046; Task Scheduler 621</td></tr>
-<tr><td>Merge k sorted lists</td><td>the heap holds the front of each list</td><td>Merge K Lists 23; Design Twitter 355 (each user's tweets are a sorted list)</td></tr>
-<tr><td>Two heaps that meet at the middle</td><td>max-heap below, min-heap above</td><td>Find Median 295</td></tr>
-</table></div>
+<p><b>Claim 1</b>, from PRINCIPLES.md: "<code>heapify</code> is O(<i>n</i>)." Half the items are in the bottom row and cannot move down; a quarter can move 1 row, an eighth 2 rows: <i>n</i> × (1/4 + 2/8 + 3/16 + …) = <i>n</i> moves at most. Each move down costs 2 comparisons: one to find the smaller child, and one to compare that child with the item. In Python, <code>heapify</code> of 100,000 items made 165,178 comparisons: 1.65 each, not 17 (log<sub>2</sub> 100,000). <b>Verdict: accurate.</b></p>
+<p><b>Claim 2:</b> "for a stream, a heap of size <i>k</i> is much faster than a sort after each add." With 20,000 adds and <i>k</i> = 10: the list is sorted except for the new item, so Python's sort moves about <i>n</i> items: 20,000<sup>2</sup> ÷ 2 = 2 × 10<sup>8</sup> moves in all. The heap: at most 20,000 × (1 + 4) = 100,000 steps. On the machine that built this page: 652 ms against 4 ms, 160 times faster. The step ratio is 2,000; the clock ratio is smaller because the sort moves items in large blocks of memory, which is much faster than one step at a time. <b>Verdict: accurate.</b></p>
+<p><b>Claim 3:</b> "for the <i>k</i>-th largest of a fixed list, a heap beats a sort." For 1,000,000 numbers and <i>k</i> = 10, the sort is about 10<sup>6</sup> × 20 = 20 million steps, and the heap at most 10<sup>6</sup> × 5 = 5 million. On the clock, the sort took 258 ms and <code>heapq.nlargest(10, nums)</code> took 18 ms. A heap in a hand-written Python loop took 185 ms, because each pass of a Python loop is slow. <b>Verdict: accurate. In Python, use <code>nlargest</code>.</b></p>
 
 <h3>How to recognize it</h3>
-<ul>
-  <li>"The <code>k</code> largest, smallest or closest", mostly for small <code>k</code> or a stream.</li>
-  <li>"Again and again, take the largest"; <code>k</code> sorted lists; a running median.</li>
-  <li>"Always go to the cheapest place next": Dijkstra and Prim, in P15.</li>
-  <li><b>Not a heap</b> when you need the full order only once: sort (P9).</li>
-</ul>
+<div class="tw"><table>
+<tr><th>The problem says</th><th>What the heap holds</th><th>Problems</th></tr>
+<tr><td>"the <code>k</code> largest, smallest or closest", mostly with a stream or a small <code>k</code></td><td><code>k</code> items; the top is the worst one kept</td><td>703, 215, 973</td></tr>
+<tr><td>"again and again, take the largest"</td><td>all items; pop, process, push the result back</td><td>1046, 621</td></tr>
+<tr><td><code>k</code> lists that are each already sorted</td><td>the front item of each list</td><td>23, 355</td></tr>
+<tr><td>"the median" of numbers that keep coming</td><td>two halves that meet at the middle</td><td>295</td></tr>
+<tr><td>"always go to the cheapest place next"</td><td>the places you can go next (P15)</td><td>743, 778</td></tr>
+</table></div>
+<p>If you need the full order only once, do not use a heap: sort (P9).</p>
 
 <h3>Common mistakes</h3>
 <ul>
   <li><b>The wrong heap for "keep the k best".</b> The top must be the item you remove next. So the <i>k</i> largest need a min-heap, and the <i>k</i> smallest need a max-heap.</li>
-  <li><b>No tiebreaker:</b> use <code>(value, i, item)</code>.</li>
+  <li><b>No tiebreaker in a tuple.</b> Use <code>(value, i, item)</code>, for the reason in worked example 4.</li>
   <li><b>A lost minus sign</b> on a negated heap, or <code>h = heapq.heapify(h)</code>, which sets <code>h</code> to <code>None</code>.</li>
   <li><b>A search in the heap.</b> Any item except the top takes <i>n</i> steps to find.</li>
 </ul>
 
 <h3>Try it yourself</h3>
-<details><summary>1. In a heap list, what are the parent and the children of index 4?</summary>
-<p>Parent: (4 − 1) // 2 = 1. Children: 9 and 10.</p>
-</details>
-<details><summary>2. Push 0 into [1, 3, 2, 4, 9, 8, 6, 5, 7]. What is the list after?</summary>
+<details><summary>1. Push 0 into [1, 3, 2, 4, 9, 8, 6, 5, 7]. What is the list after?</summary>
 <p>0 starts at index 9 and swaps with 9, 3 and 1. Answer: [0, 1, 2, 4, 3, 8, 6, 5, 7, 9]. Check it: this is the first widget's start heap.</p>
 </details>
-<details><summary>3. Which heap gives the k closest points to (0, 0)?</summary>
+<details><summary>2. Which heap gives the k closest points to (0, 0)?</summary>
 <p>The top must be the largest kept distance: a max-heap of size <code>k</code>. Push <code>(-(x*x + y*y), x, y)</code> (squared distance keeps the order; integers always compare), and pop when the size is more than <code>k</code>.</p>
 </details>
 
 <h2>In the real world</h2>
 <p><b>Compression, 1951.</b> David Huffman, an MIT student, wrote a paper in place of a final exam. He found the best way to give short codes to common letters: again and again, join the two least common symbols. That is Last Stone Weight with the two smallest, so a min-heap. ZIP files and JPEG images still use his codes.</p>
-<p><b>Timers.</b> A server with 10,000 connections asks all the time: "Which timeout ends next?" Python's <code>asyncio</code> and <code>sched</code> keep timers in a <code>heapq</code> heap, and libuv (under Node.js) uses a min-heap too. A check is 1 step, and a new timer is about log<sub>2</sub> 10,000 ≈ 13 steps, not 10,000.</p>
 <p><b>Maps.</b> Dijkstra's route finder (P15) goes again and again to the nearest unfinished place. A research map of USA roads has about 24 million places and 58 million roads. Claim: "a heap makes this 100,000 times faster." A plain scan of all unfinished places at each step costs (2.4 × 10<sup>7</sup>)<sup>2</sup> ≈ 6 × 10<sup>14</sup> steps, about 7 days at 10<sup>9</sup> steps each second. With a heap: about (24 + 58) million × 25 ≈ 2 × 10<sup>9</sup> steps, about 2 seconds. Ratio: 300,000. <b>Verdict: approximately accurate, if anything low.</b></p>
 </main>
 
