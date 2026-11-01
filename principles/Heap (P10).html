@@ -96,7 +96,7 @@ ul{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem}
 <p>A school nurse must always see the sickest kid first, and sick kids come in all day. She gives each kid a number: 1 means very sick, 9 means a little sick. So she always wants the kid with the smallest number.</p>
 <p>She could put the kids in a line from 1 to 9. But then each new kid must find his place in the line, and every kid behind that place must step back. That is a lot of moving.</p>
 <p>So she makes a pyramid. Each kid stands on two kids. The top row has 1 kid, the next row has 2, then 4, then 8, because each row has twice as many kids as the row above. There is one rule: your number must not be bigger than the numbers of the two kids under you. Then the smallest number is always at the top, and the nurse sees it at once.</p>
-<p>A new kid joins at the end of the bottom row. If his number is smaller than the number of the kid above him, they change places. He checks again, and again, until the kid above him has a smaller or equal number. When the top kid goes to the nurse, the kid at the end of the bottom row climbs to the top. Then he changes places with the smaller of the two kids under him, again and again, until the rule is true. Because the rows double, 1,000 kids fit in only 10 rows (1 + 2 + 4 + … + 512 = 1,023). So each change needs 10 moves or less.</p>
+<p>A new kid joins at the end of the bottom row. If his number is smaller than the number of the kid above him, they change places. He checks again, and again, until the kid above him has a smaller or equal number. When the top kid goes to the nurse, the kid at the end of the bottom row climbs to the top. Then he changes places with the smaller of the two kids under him. (If he changed places with the bigger one, that kid would stand on top of a smaller number, and the rule would break.) He does this again and again, until the rule is true. Because the rows double, 1,000 kids fit in only 10 rows (1 + 2 + 4 + … + 512 = 1,023). So a kid never needs to change places more than 9 times.</p>
 
 <h2>The extended explanation</h2>
 
@@ -153,13 +153,13 @@ ul{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem}
 </div>
 
 <h3>Why a swap never breaks the rule somewhere else</h3>
-<p>A careful reader will worry: a swap fixes one parent and child, but can it break the rule between other items? Look at a real swap. When you push 0 in the widget, it first climbs to index 4. Now its parent is index 1, which holds 3. The other child of index 1 is index 3, which holds 4. Before the push, the rule was true, so 3 ≤ 4.</p>
-<p>Now 0 and 3 swap. 0 becomes the parent of 3 and of 4. Is the rule true for both children? 0 is smaller than 3 (that is why they swapped), and 3 is smaller than or equal to 4 (the rule was true before), so 0 is smaller than 4 too. Both children are fine. The only place where the rule can still fail is between 0 and its new parent, one row higher. So each swap moves the possible problem up one row, and at the root there is nothing above to check.</p>
-<p>Sift down needs the <i>smaller</i> child for the same reason. In the widget's pop, 9 moves to the root, and its children are 1 and 2. If 9 swaps with 1, then 1 becomes the parent of 9 and 2, and that is correct. If 9 swapped with 2 instead, then 2 would become the parent of 1, and 2 is larger than 1: the rule would break.</p>
+<p>A careful reader will worry: a swap fixes one parent and child, but can it break the rule between other items? Look at a real swap. Press Reset in the widget, then push 0. 0 first swaps with 9 and climbs to index 4. Now its parent is index 1, which holds 3. The other child of index 1 is index 3, which holds 4. Before the push, the rule was true, so 3 ≤ 4.</p>
+<p>Now 0 and 3 swap. 0 becomes the parent of 3 and of 4. Is the rule true for both children? 0 is smaller than 3 (that is why they swapped), and 3 is smaller than or equal to 4 (the rule was true before), so 0 is smaller than 4 too. Both children are fine. And 3 moved down to index 4, where its child is 9. Before the swap, 9 was also under 3, two rows down, and values never get smaller as you go down, so 3 ≤ 9. That is fine too. The only place where the rule can still fail is between 0 and its new parent, one row higher. So each swap moves the possible problem up one row, and at the root there is nothing above to check.</p>
+<p>Sift down needs the <i>smaller</i> child for the same reason. After you push 0, press Pop smallest. 0 leaves, 9 moves to the root, and its children are 1 and 2. If 9 swaps with 1, then 1 becomes the parent of 9 and 2, and that is correct. If 9 swapped with 2 instead, then 2 would become the parent of 1, and 2 is larger than 1: the rule would break.</p>
 <p>A rule that is true before and after every operation is called an <b>invariant</b>. The heap's invariant is the rule "each parent ≤ each of its children".</p>
 
 <h3>Heaps in Python</h3>
-<p>You do not write sift up and sift down yourself. Python's <code>heapq</code> module does them for you, on an ordinary list:</p>
+<p>You do not write sift up and sift down yourself. Python's <code>heapq</code> module (a file of ready-made code that you load with <code>import</code>) does them for you, on an ordinary list:</p>
 <pre><code>import heapq
 h = []
 heapq.heappush(h, 5)       <span class="cm"># add 5, then sift up</span>
@@ -185,7 +185,13 @@ heapq.heapify(nums)        <span class="cm"># makes nums into a heap (see Napkin
 c = Counter(10)                    <span class="cm"># runs __init__ with start = 10</span>
 print(c.add(5))                    <span class="cm"># prints 15</span>
 print(c.add(1))                    <span class="cm"># prints 16: it remembers the 15</span></code></pre>
-<p>A normal function forgets its variables when it returns. An object keeps its data in <code>self</code>, so each call can use what the earlier calls left. That is why these problems use a class: each answer depends on all the numbers from the earlier calls.</p>
+<p><code>c = Counter(10)</code> makes an <b>object</b>: one bundle of data, built from the class. A few rules:</p>
+<ul>
+  <li><b>Every method has <code>self</code> as its first parameter, and Python fills it in for you.</b> When you write <code>c.add(5)</code>, Python runs <code>add</code> with <code>self = c</code> and <code>x = 5</code>. So the <code>def</code> line has two parameters, but the call gives only one value.</li>
+  <li><b>Inside a method, <code>self.</code> reaches the object's data and its other methods.</b> <code>self.total</code> is the object's total. A method can also call another method of the same object, for example <code>self.add(3)</code>.</li>
+  <li><b>The data stays.</b> A normal function forgets its variables when it returns. An object keeps its data in <code>self</code>, so each call can use what the earlier calls left.</li>
+</ul>
+<p>That is why these problems use a class: each answer depends on all the numbers from the earlier calls.</p>
 
 <h3>Worked example 1: Kth Largest Element in a Stream (LeetCode 703)</h3>
 <p><b>The problem in plain words.</b> Numbers come to you one at a time. (A flow of numbers that arrive one at a time is called a <b>stream</b>.) After each new number, you must say which number is the 3rd largest of all the numbers you have seen so far. The problem calls the position <code>k</code>, so it can also ask for the 1st, the 2nd or the 10th largest. In our example, <code>k = 3</code>.</p>
@@ -272,8 +278,9 @@ class KthLargest:
         return self.heap[0]                     <span class="cm"># the smallest kept number = the k-th largest</span></code></pre>
 <p>Three details:</p>
 <ul>
-  <li><code>__init__</code> sends each start number through <code>add</code>, so the start numbers follow the same rules. <code>add</code> returns a value each time, but <code>__init__</code> does not use it, because the start numbers return nothing.</li>
+  <li><code>__init__</code> calls <code>self.add(x)</code> for each start number, so the start numbers follow the same rules. <code>add</code> returns a value each time, but <code>__init__</code> does not use it, because the start numbers return nothing.</li>
   <li><code>heapreplace</code> takes out the top <i>first</i> and adds the new number <i>second</i>. So the code calls it only after it checks <code>val &gt; self.heap[0]</code>. Without that check, a small number would push out the gate and take its place, and the answer would be wrong.</li>
+  <li>LeetCode promises that each <code>add</code> happens when there are at least <code>k</code> numbers in all, so <code>self.heap[0]</code> is always a real answer. (The widget shows "—" if you break that promise.)</li>
   <li>If the number is not larger than the gate, neither branch runs, so the heap does not change. That is "forget it".</li>
 </ul>
 <p><b>The cost.</b> Each <code>add</code> does one comparison, and at most one sift in a heap of <code>k</code> items. A sift touches one item in each row, so it is at most about log<sub>2</sub> <i>k</i> steps: 2 steps for <code>k = 3</code>. That stays the same however long the stream gets. The slow way sorts a list that grows with every number.</p>
@@ -284,10 +291,10 @@ class KthLargest:
 <p><b>The idea.</b> A heap shows you one end of a collection, but the median is in the middle. So cut the numbers into two halves at the middle: a smaller half and a larger half. The median is where the two halves touch: it is the largest number of the smaller half, or the smallest number of the larger half, or the average of those two. So each half must show us its number nearest the middle. Keep the smaller half in a max-heap, so its largest number is on top. Keep the larger half in a min-heap, so its smallest number is on top. The two tops face each other across the middle.</p>
 <p>Two rules keep this picture true:</p>
 <ul>
-  <li><b>Order.</b> Every number in the smaller half is smaller than or equal to every number in the larger half. So when a new number comes, compare it with the top of the larger half. If it is larger, it goes into the larger half. If not, it goes into the smaller half.</li>
+  <li><b>Order.</b> Every number in the smaller half is smaller than or equal to every number in the larger half. So when a new number comes, compare it with the top of the larger half, which is the smallest number of that half. If the new number is larger, it belongs with the larger half. If not, it is smaller than or equal to every number in the larger half, so it can safely go into the smaller half.</li>
   <li><b>Balance.</b> The sizes of the halves differ by one or less. After an add, if one half has two more numbers than the other, move its top across. The top is the number nearest the middle, so the move does not break the order rule.</li>
 </ul>
-<p>With both rules true, the median is easy to read. If one half has one more number, its top is the median. If the halves are the same size, the median is the average of the two tops. Here are the four numbers from the example:</p>
+<p>With both rules true, the median is easy to read. Say there are 5 numbers, 3 in one half and 2 in the other. In order from smallest to largest, the middle number is the 3rd one, and it sits at the edge of the bigger half, next to the other half: that is the bigger half's top. So if one half has one more number, its top is the median. If the halves are the same size, the median is the average of the two tops. Here are the four numbers from the example. (In Python, <code>/</code> always gives a decimal number, so the code returns 10.0 and 4.0.)</p>
 <div class="tw"><table>
 <tr><th>Add</th><th>Goes to</th><th>Balance?</th><th>Smaller half</th><th>Larger half</th><th>Median</th></tr>
 <tr><td>5</td><td>smaller (the larger half is empty)</td><td>sizes 1 and 0: fine</td><td>5</td><td></td><td>5</td></tr>
@@ -316,7 +323,7 @@ class KthLargest:
     <button id="b3use" type="button">Use these</button>
   </div>
   <span class="err" id="e3"></span>
-  <p class="caption">Each half is shown in order, with its top next to the middle box. <span class="A">Amber</span> is the number that moves. <span class="T">Teal</span> marks the two tops. "Not balanced yet" means that a top must move across before the median is correct.</p>
+  <p class="caption">Each half is shown as plain numbers in order, with its top next to the middle box, so you can read it. In the code, the smaller half is stored with minus signs, and both halves are in heap order. <span class="A">Amber</span> is the number that moves. <span class="T">Teal</span> marks the two tops. "Not balanced yet" means that a top must move across before the median is correct.</p>
 </div>
 
 <pre><code>import heapq
@@ -345,7 +352,7 @@ class MedianFinder:
 <p>Three details:</p>
 <ul>
   <li><code>if self.large and ...</code>: an empty list counts as false in Python, so this first checks that the larger half is not empty.</li>
-  <li>The smaller half stores each number with a minus sign, so 5 is stored as −5. In the balance line, <code>heapq.heappop(self.small)</code> takes out the most negative value, for example −5, which stands for the largest number of the smaller half, 5. The minus sign in front makes it 5 again, and 5 goes into the larger half. The last balance line does the opposite: it takes 15 from the larger half and stores it as −15 in the smaller half.</li>
+  <li>The smaller half stores each number with a minus sign, so 5 is stored as −5. In the balance line, <code>heapq.heappop(self.small)</code> takes out the most negative value, for example −5, which stands for the largest number of the smaller half, 5. The minus sign in front makes it 5 again, and 5 goes into the larger half. The last balance line does the opposite. In the widget's run, when 7 is added, the larger half has 4 numbers (5, 7, 8, 15) and the smaller half has 2. So this line takes out 5, the smallest of the larger half, and stores it as −5 in the smaller half.</li>
   <li><code>findMedian</code> puts the minus sign back when it reads <code>self.small[0]</code>.</li>
 </ul>
 <p><b>The cost.</b> Each add does at most three pushes and pops, so it costs about log<sub>2</sub> <i>n</i> steps. Each median only reads one or two tops: 1 step.</p>
@@ -354,7 +361,7 @@ class MedianFinder:
 <p>The numbers are LeetCode problem numbers.</p>
 <ul>
   <li><b>Last Stone Weight (1046).</b> You have stones of different weights. Again and again, smash the two heaviest stones together. If they weigh the same, both are destroyed. If not, the heavier one stays, with the difference as its new weight. You need the two largest items again and again while the collection changes, so use a max-heap, with minus signs.</li>
-  <li><b>Kth Largest Element in an Array (215).</b> Worked example 1, but all the numbers come at once, in one list. In Python, <code>heapq.nlargest(k, nums)[-1]</code> does it in one line.</li>
+  <li><b>Kth Largest Element in an Array (215).</b> Worked example 1, but all the numbers come at once, in one list. In Python, <code>heapq.nlargest(k, nums)</code> returns the <code>k</code> largest numbers, largest first, so <code>heapq.nlargest(k, nums)[-1]</code> (the last of them) is the <code>k</code>-th largest.</li>
   <li><b>K Closest Points to Origin (973).</b> You get points (<i>x</i>, <i>y</i>), and you must return the <code>k</code> points closest to (0, 0). This is worked example 1 turned around: you keep the <code>k</code> <i>smallest</i> distances, so the number to throw out is the <i>largest</i> kept distance. That needs a max-heap of size <code>k</code>. Push a <b>tuple</b> (a fixed group of values in parentheses) for each point: <code>(-(x*x + y*y), x, y)</code>. Python orders tuples by their first value, so only the first value gets the minus sign. <code>x*x + y*y</code> is the distance squared: it has the same order as the distance, and it needs no square root.</li>
   <li><b>Merge K Sorted Lists (23).</b> You get <code>k</code> sorted lists and must join them into one sorted list. The smallest item that is not used yet is always at the front of one of the lists. So keep the front item of each list in a min-heap. Take out the smallest, add it to the answer, and push the next item from the same list. (On LeetCode, the lists are linked lists, which this page does not teach. Card 15 in DRILLS.md has the code.)</li>
   <li><b>Not a heap:</b> if you need the whole order only once, just sort the list.</li>
@@ -365,14 +372,14 @@ class MedianFinder:
 <p>There are two ways to make a heap from <i>n</i> numbers. You can push them one at a time. Or you can call <code>heapify</code>, which is often said to be much faster: its work grows in step with <i>n</i> (twice the numbers, about twice the work). Is that true? Count the moves, for a full tree of 10 rows with 1,023 items.</p>
 <p><b>Push one at a time.</b> In the worst case, each new item climbs all the way to the root. An item in row 10 can climb 9 rows, an item in row 9 can climb 8 rows, and so on. Most items are in the bottom rows, so most items can climb far:</p>
 <p>512 × 9 + 256 × 8 + 128 × 7 + 64 × 6 + 32 × 5 + 16 × 4 + 8 × 3 + 4 × 2 + 2 × 1 = <b>8,194 moves</b>.</p>
-<p><b>heapify.</b> It starts with the items in the order they are, and works from the bottom of the tree to the top. It sifts each parent <i>down</i>. (When it gets to an item, the items under it already follow the rule, so one sift down is enough.) Now the big rows are the lucky ones. The 512 items in row 10 have no children, so they cannot move. An item in row 9 can move down 1 row, an item in row 8 can move down 2 rows, and so on:</p>
+<p><b>heapify.</b> It starts with the items in the order they are. The items in the bottom row have nothing under them, so they need no work. So <code>heapify</code> starts at the last item that has a child, and works back to the root. It sifts each of these parents <i>down</i>. (When it gets to an item, the items under it already follow the rule, so one sift down is enough.) Now the big rows are the lucky ones. The 512 items in row 10 have no children, so they cannot move. An item in row 9 can move down 1 row, an item in row 8 can move down 2 rows, and so on:</p>
 <p>512 × 0 + 256 × 1 + 128 × 2 + 64 × 3 + 32 × 4 + 16 × 5 + 8 × 6 + 4 × 7 + 2 × 8 + 1 × 9 = <b>1,013 moves</b>.</p>
-<p>That is fewer moves than items. The trick is that most items are near the bottom, and in <code>heapify</code> they have almost nowhere to go. Each move costs at most 2 comparisons (one to find the smaller child, one to compare that child with the item), so <code>heapify</code> needs at most about 2 comparisons for each item. I counted in Python: <code>heapify</code> on 100,000 random numbers made 165,178 comparisons, about 1.65 for each number. <b>Verdict: the claim is accurate.</b></p>
+<p>That is fewer moves than items. The trick is that most items are near the bottom, and in <code>heapify</code> they have almost nowhere to go. Now count comparisons. At each row, a sift down needs at most 2 comparisons: one to find the smaller child, and one to compare that child with the item. Each of the 511 parents also has one last check, where it stops. So the worst case is 2 × 1,013 + 2 × 511 = 3,048 comparisons for 1,023 items: fewer than 3 for each item. In a real test in Python, <code>heapify</code> on 100,000 random numbers made 165,178 comparisons, about 1.65 for each number. That is lower than 3, because on random numbers most sifts stop early. <b>Verdict: the claim is accurate.</b></p>
 
 <h3>Common mistakes</h3>
 <ul>
   <li><b>The wrong kind of heap for "keep the <i>k</i> best".</b> The top of the heap must be the item you throw out next. To keep the <i>k</i> largest, use a min-heap. To keep the <i>k</i> smallest, use a max-heap.</li>
-  <li><b>No tiebreaker in a tuple.</b> Python compares tuples one value at a time. If the first values are equal, it compares the second values. If the second value is an object that Python cannot compare, the program stops with an error. So put a unique number second: <code>(value, i, item)</code>, where <code>i</code> is different for each item.</li>
+  <li><b>No tiebreaker in a tuple.</b> Python compares tuples one value at a time. If the first values are equal, it compares the second values. If the second value is something that Python cannot compare with <code>&lt;</code>, such as a dictionary, the program stops with an error. So put a unique number second: <code>(value, i, item)</code>, where <code>i</code> is different for each item.</li>
   <li><b>A search in the heap.</b> A heap only knows where its smallest item is. To find or remove any other item, you must look at all <i>n</i> items.</li>
   <li><b><code>h = heapq.heapify(h)</code>.</b> <code>heapify</code> changes the list in place and returns <code>None</code>, so this line sets <code>h</code> to <code>None</code>. Write <code>heapq.heapify(h)</code> alone.</li>
 </ul>
@@ -545,13 +552,13 @@ function plan3(){
   F3=[{small:[],large:[],pos:0,mv:null,msg:'Both halves are empty. Press Next step.'}];
   S3.forEach((x,i)=>{
     let msg;
-    if(large.length&&x>mn(large)){const t=mn(large); large.push(x); msg=`${x} comes in. ${x} > ${t}, the top of the larger half, so it goes to the larger half.`;}
-    else {small.push(x); msg=large.length?`${x} comes in. ${x} ≤ ${mn(large)}, the top of the larger half, so it goes to the smaller half.`:`${x} comes in. The larger half is empty, so it goes to the smaller half.`;}
-    F3.push({small:small.slice(),large:large.slice(),pos:i+1,mv:x,msg:msg+` Sizes: ${small.length} and ${large.length}.`});
+    if(large.length&&x>mn(large)){const t=mn(large); large.push(x); var side='hi'; msg=`${x} comes in. ${x} > ${t}, the top of the larger half, so it goes to the larger half.`;}
+    else {small.push(x); var side='lo'; msg=large.length?`${x} comes in. ${x} ≤ ${mn(large)}, the top of the larger half, so it goes to the smaller half.`:`${x} comes in. The larger half is empty, so it goes to the smaller half.`;}
+    F3.push({small:small.slice(),large:large.slice(),pos:i+1,mv:x,side,msg:msg+` Sizes: ${small.length} and ${large.length}.`});
     if(small.length>large.length+1){const m=mx(small); rm(small,m); large.push(m);
-      F3.push({small:small.slice(),large:large.slice(),pos:i+1,mv:m,msg:`The smaller half has 2 more. Move its top, ${m}, across. Sizes: ${small.length} and ${large.length}.`});}
+      F3.push({small:small.slice(),large:large.slice(),pos:i+1,mv:m,side:'hi',msg:`The smaller half has 2 more. Move its top, ${m}, across. Sizes: ${small.length} and ${large.length}.`});}
     if(large.length>small.length+1){const m=mn(large); rm(large,m); small.push(m);
-      F3.push({small:small.slice(),large:large.slice(),pos:i+1,mv:m,msg:`The larger half has 2 more. Move its top, ${m}, across. Sizes: ${small.length} and ${large.length}.`});}
+      F3.push({small:small.slice(),large:large.slice(),pos:i+1,mv:m,side:'lo',msg:`The larger half has 2 more. Move its top, ${m}, across. Sizes: ${small.length} and ${large.length}.`});}
     const last=F3[F3.length-1], md=med(), how=small.length>large.length?`the top of the smaller half`:large.length>small.length?`the top of the larger half`:`(${mx(small)} + ${mn(large)}) / 2`;
     last.med=md; last.msg+=` Median: ${how} = ${md}.`; last.done=true;
   });
@@ -560,11 +567,11 @@ function plan3(){
 function draw3(){
   const F=F3[f3], tS=F.small.length?Math.max(...F.small):null, tL=F.large.length?Math.min(...F.large):null;
   $('st3').innerHTML=S3.map((x,i)=>`<span class="${i<F.pos-1?'past':i===F.pos-1?'now':''}">${x}</span>`).join('');
-  let mvLeft=F.mv!==null&&F.mv!==undefined;
-  const chip=(x,top)=>{const now=mvLeft&&x===F.mv; if(now) mvLeft=false; return `<span class="${now?'now':top?'gate':'kept'}">${x}</span>`};
+  let mvLeft=F.mv!==null&&F.mv!==undefined, curSide='';
+  const chip=(x,top)=>{const now=mvLeft&&F.side===curSide&&x===F.mv; if(now) mvLeft=false; return `<span class="${now?'now':top?'gate':'kept'}">${x}</span>`};
   const sS=F.small.slice().sort((a,b)=>a-b), sL=F.large.slice().sort((a,b)=>a-b);
-  $('lo3').innerHTML=sS.length?sS.map((x,i)=>chip(x,i===sS.length-1)).join(''):'<span class="empty">empty</span>';
-  $('hi3').innerHTML=sL.length?sL.map((x,i)=>chip(x,i===0)).join(''):'<span class="empty">empty</span>';
+  curSide='lo'; $('lo3').innerHTML=sS.length?sS.map((x,i)=>chip(x,i===sS.length-1)).join(''):'<span class="empty">empty</span>';
+  curSide='hi'; $('hi3').innerHTML=sL.length?sL.map((x,i)=>chip(x,i===0)).join(''):'<span class="empty">empty</span>';
   $('md3').textContent=F.med!==undefined?`median ${F.med}`:f3===0?'median —':'not balanced yet';
   $('s3').textContent=F.msg; $('s3').className='status'+(F.done?' ok':'');
 }
