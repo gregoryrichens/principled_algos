@@ -158,59 +158,37 @@ ul{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem}
 </table></div>
 <p>Why can the shortest case move <code>l</code>? When the window is good, every later window that starts at <code>l</code> is longer. So <code>l</code> is finished: record, then move <code>l</code>.</p>
 
-<details class="later"><summary>Later, not for your first day: Minimum Window Substring (LeetCode 76, a Hard)</summary><div>
-<h3>Worked example 2: Minimum Window Substring (LeetCode 76)</h3>
-<p><b>Problem.</b> Return the shortest stretch of <code>s</code> that contains every character of <code>t</code>, with repeats, or <code>""</code> if there is none. For <code>s = "ADOBECODEBANC"</code> and <code>t = "ABC"</code>, the answer is <code>"BANC"</code>.</p>
-<p><b>Test the mirror of Fact 3.</b> For a shortest problem, a good window must stay good when it grows. Here it does: added letters cannot remove a letter of <code>t</code>.</p>
-<p><b>A fast test.</b> Keep one number, <code>have</code>: how many different letters of <code>t</code> have enough copies in the window. <code>need</code> is how many different letters <code>t</code> has. The window is good when <code>have == need</code>. <code>have</code> changes only when a letter's count crosses its target.</p>
+<h3>Worked example 2: Permutation in String (LeetCode 567)</h3>
+<p><b>Problem.</b> Given two strings <code>s1</code> and <code>s2</code>, return <code>True</code> if <code>s2</code> contains a stretch that is a rearrangement of <code>s1</code>: the same letters, the same number of each, in any order.</p>
+<pre><code>s1 = "ab", s2 = "eidbaooo"
+answer: True        <span class="cm"># "ba" is a rearrangement of "ab"</span>
 
-<div class="widget" id="w2">
-  <svg id="str2" viewBox="0 0 600 110" role="img" aria-label="The string s, with the window and the best window so far"></svg>
-  <div class="meters" id="meters2"></div>
-  <div class="facts" id="facts2"></div>
-  <div class="status" id="s2" aria-live="polite"></div>
-  <div class="controls">
-    <button id="b2step" type="button">Next step</button>
-    <button id="b2play" type="button">Play</button>
-    <button id="b2reset" type="button">Reset</button>
-  </div>
-  <div class="controls">
-    <label for="s2in" class="caption">s</label>
-    <input type="text" id="s2in" value="ADOBECODEBANC" autocomplete="off" spellcheck="false">
-    <label for="t2in" class="caption">t</label>
-    <input type="text" id="t2in" value="ABC" autocomplete="off" spellcheck="false" style="flex:0 1 6rem">
-    <button id="b2use" type="button">Use these</button>
-  </div>
-  <span class="err" id="e2"></span>
-  <p class="caption">Each bar is one letter of t, and a blue bar has enough copies. The dashed line marks the shortest good window so far.</p>
-</div>
-
-<pre><code>def minWindow(s, t):
-    if not t or len(s) &lt; len(t):
-        return ""
-    required = {}
-    for c in t:
-        required[c] = required.get(c, 0) + 1
-    need = len(required)                  <span class="cm"># different letters to satisfy</span>
-    window = {}
-    have = 0
-    best_l, best_len = 0, float("inf")
-    l = 0
-    for r, c in enumerate(s):
-        window[c] = window.get(c, 0) + 1
-        if c in required and window[c] == required[c]:
-            have += 1                     <span class="cm"># c just got enough copies</span>
-        while have == need:               <span class="cm"># good: record, then shrink</span>
-            if r - l + 1 &lt; best_len:
-                best_l, best_len = l, r - l + 1
-            window[s[l]] -= 1
-            if s[l] in required and window[s[l]] &lt; required[s[l]]:
-                have -= 1                 <span class="cm"># s[l] just fell below its target</span>
-            l += 1
-    return s[best_l : best_l + best_len] if best_len != float("inf") else ""</code></pre>
-<p>The invariant here: when the shrink loop ends, the window is bad, and every good window that ends at <code>r</code> was recorded.</p>
-</div></details>
-
+s1 = "ab", s2 = "eidboaoo"
+answer: False</code></pre>
+<p>A rearrangement of <code>s1</code> has exactly <code>len(s1)</code> letters, so the stretch you are looking for has a <b>fixed length</b>. Every candidate is a window of that size. This window does not grow or shrink. It only slides.</p>
+<p>A stretch is a rearrangement of <code>s1</code> exactly when it has the <b>same count of every letter</b>. So keep two lists of 26 counts: <code>need</code> (from <code>s1</code>) and <code>have</code> (from the current window). Sliding one step to the right changes <code>have</code> in two places only: the new letter on the right comes in, and the letter that falls off the left goes out. Then compare the two lists.</p>
+<p>Windows of size 2 in <code>"eidbaooo"</code>:</p>
+<div class="tw"><table>
+<tr><th>Window positions</th><th>Letters</th><th>Same counts as <code>ab</code>?</th></tr>
+<tr><td>0 to 1</td><td><code>ei</code></td><td>no</td></tr>
+<tr><td>1 to 2</td><td><code>id</code></td><td>no</td></tr>
+<tr><td>2 to 3</td><td><code>db</code></td><td>no</td></tr>
+<tr><td>3 to 4</td><td><code>ba</code></td><td><b>yes</b>, so return True</td></tr>
+</table></div>
+<pre><code>def checkInclusion(s1, s2):
+    if len(s1) &gt; len(s2):
+        return False
+    need, have = [0] * 26, [0] * 26             <span class="cm"># how many of each letter: wanted, and in the window</span>
+    for c in s1:
+        need[ord(c) - 97] += 1
+    for r, c in enumerate(s2):
+        have[ord(c) - 97] += 1                   <span class="cm"># the right edge takes in a new letter</span>
+        if r &gt;= len(s1):
+            have[ord(s2[r - len(s1)]) - 97] -= 1 # the left edge lets one go
+        if have == need:
+            return True
+    return False</code></pre>
+<p>Comparing two lists of 26 costs a constant amount, so the whole scan is O(n). The window is never rebuilt, only nudged.</p>
 <h3>Worked example 3: Longest Repeating Character Replacement (LeetCode 424)</h3>
 <p><b>Problem.</b> You can change at most <code>k</code> letters. Return the longest stretch that you can make into one letter. For <code>"AABABBA"</code> and <code>k = 1</code>, the answer is 4 (<code>"AABA"</code>).</p>
 <p><b>Find the rule.</b> Keep the most common letter (count <code>top</code>) and change the others: <code>length − top</code> changes. The window is good when <code>length − top ≤ k</code>.</p>
@@ -273,6 +251,58 @@ ul{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem}
 <p><b>A story from 1981.</b> TCP, the part of the internet that delivers data in order, uses a sliding window. Inside it are the bytes that were sent but not yet confirmed. New bytes go in on the right until the window is full. Confirmed bytes leave on the left.</p>
 <p>The first rules allowed 65,535 bytes at most. A round trip across the United States takes about 70 milliseconds, and the sender can send one window for each round trip: 65,535 ÷ 0.07 ≈ 936,000 bytes, or about 7.5 megabits, each second. In 1992, RFC 1323 added "window scaling", which lets the window grow to about 1 gigabyte. Claim: "without scaling, one connection across the US cannot go faster than about 7.5 megabits each second." <b>Verdict: approximately accurate</b>, because real round trips are about 60 to 80 milliseconds.</p>
 <p>Rate limits ("100 requests in any 60 seconds") and moving averages (heart rate for the last 30 seconds) use the same shape.</p>
+<details class="later"><summary>Later, after Phase 2: Minimum Window Substring (LeetCode 76, a Hard)</summary><div>
+<h3>Minimum Window Substring (LeetCode 76)</h3>
+<p><b>Problem.</b> Return the shortest stretch of <code>s</code> that contains every character of <code>t</code>, with repeats, or <code>""</code> if there is none. For <code>s = "ADOBECODEBANC"</code> and <code>t = "ABC"</code>, the answer is <code>"BANC"</code>.</p>
+<p><b>Test the mirror of Fact 3.</b> For a shortest problem, a good window must stay good when it grows. Here it does: added letters cannot remove a letter of <code>t</code>.</p>
+<p><b>A fast test.</b> Keep one number, <code>have</code>: how many different letters of <code>t</code> have enough copies in the window. <code>need</code> is how many different letters <code>t</code> has. The window is good when <code>have == need</code>. <code>have</code> changes only when a letter's count crosses its target.</p>
+
+<div class="widget" id="w2">
+  <svg id="str2" viewBox="0 0 600 110" role="img" aria-label="The string s, with the window and the best window so far"></svg>
+  <div class="meters" id="meters2"></div>
+  <div class="facts" id="facts2"></div>
+  <div class="status" id="s2" aria-live="polite"></div>
+  <div class="controls">
+    <button id="b2step" type="button">Next step</button>
+    <button id="b2play" type="button">Play</button>
+    <button id="b2reset" type="button">Reset</button>
+  </div>
+  <div class="controls">
+    <label for="s2in" class="caption">s</label>
+    <input type="text" id="s2in" value="ADOBECODEBANC" autocomplete="off" spellcheck="false">
+    <label for="t2in" class="caption">t</label>
+    <input type="text" id="t2in" value="ABC" autocomplete="off" spellcheck="false" style="flex:0 1 6rem">
+    <button id="b2use" type="button">Use these</button>
+  </div>
+  <span class="err" id="e2"></span>
+  <p class="caption">Each bar is one letter of t, and a blue bar has enough copies. The dashed line marks the shortest good window so far.</p>
+</div>
+
+<pre><code>def minWindow(s, t):
+    if not t or len(s) &lt; len(t):
+        return ""
+    required = {}
+    for c in t:
+        required[c] = required.get(c, 0) + 1
+    need = len(required)                  <span class="cm"># different letters to satisfy</span>
+    window = {}
+    have = 0
+    best_l, best_len = 0, float("inf")
+    l = 0
+    for r, c in enumerate(s):
+        window[c] = window.get(c, 0) + 1
+        if c in required and window[c] == required[c]:
+            have += 1                     <span class="cm"># c just got enough copies</span>
+        while have == need:               <span class="cm"># good: record, then shrink</span>
+            if r - l + 1 &lt; best_len:
+                best_l, best_len = l, r - l + 1
+            window[s[l]] -= 1
+            if s[l] in required and window[s[l]] &lt; required[s[l]]:
+                have -= 1                 <span class="cm"># s[l] just fell below its target</span>
+            l += 1
+    return s[best_l : best_l + best_len] if best_len != float("inf") else ""</code></pre>
+<p>The invariant here: when the shrink loop ends, the window is bad, and every good window that ends at <code>r</code> was recorded.</p>
+</div></details>
 </main>
 
 <script>

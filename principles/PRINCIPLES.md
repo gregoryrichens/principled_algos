@@ -421,9 +421,43 @@ def maxProfit(prices):
     return best
 ```
 
-### Worked example 2 (moved): a Hard, for later
+### Worked example 2: Maximum Product Subarray (LeetCode 152)
 
-**Not for your first day.** This worked example covers a LeetCode Hard, so it now lives in "Later: the Hard worked examples" near the end of this file, under **Trapping Rain Water (LeetCode 42)**. Read it after Phase 2, when the schedule reaches that problem.
+**Problem.** `nums` holds whole numbers, some of them negative or zero. Return the largest product of any run of side-by-side numbers (at least one number).
+
+```
+nums = [2, 3, -2, 4]
+answer: 6            the run [2, 3]
+
+nums = [-2, 3, -4]
+answer: 24           the whole list: (-2) × 3 × (-4)
+```
+
+The slow way multiplies every run from scratch: O(n²) runs. The fix is the same as for sums: carry a summary forward. With sums, one number is enough (the best sum of a run ending here). With products, one number is not enough, because **a negative number flips everything**. The most negative product so far becomes the most positive one after you multiply by another negative.
+
+So carry two numbers for the runs that end at the current position: the **largest** product (`hi`) and the **smallest** product (`lo`). For each new number `x`, the runs ending at `x` are: `x` alone, `x` times the previous largest, or `x` times the previous smallest. Take the biggest of those three for the new `hi` and the smallest for the new `lo`.
+
+Trace for `[2, 3, -2, 4, -1]`:
+
+| `x` | `hi` | `lo` | Best so far |
+|---|---|---|---|
+| 2 | 2 | 2 | 2 |
+| 3 | 6 | 3 | 6 |
+| -2 | -2 | -12 | 6 |
+| 4 | 4 | -48 | 6 |
+| -1 | 48 | -4 | 48 |
+
+At `-2` the old `hi` (6) becomes the new `lo` (−12). At the final `-1`, that `lo` becomes the answer: (2 × 3 × −2 × 4) × −1 = 48.
+
+```python
+def maxProduct(nums):
+    hi = lo = best = nums[0]      # largest and smallest product of a run ending at the current number
+    for x in nums[1:]:
+        options = (x, x * hi, x * lo)   # start fresh, extend the largest, or extend the smallest
+        hi, lo = max(options), min(options)
+        best = max(best, hi)
+    return best
+```
 
 ### Worked example 3: counting subarrays with a given sum (running totals plus a dictionary)
 
@@ -1300,9 +1334,44 @@ def isValid(s):
 
 **Evaluate Reverse Polish Notation (150)** works the same way. *Evaluate an expression written with operators after their operands, like `["2", "1", "+", "3", "*"]` meaning (2 + 1) × 3 = 9.* Numbers are pushed; an operator pops the two most recent numbers and pushes the result.
 
-### Worked example 2 (moved): a Hard, for later
+### Worked example 2: Evaluate Reverse Polish Notation (LeetCode 150)
 
-**Not for your first day.** This worked example covers a LeetCode Hard, so it now lives in "Later: the Hard worked examples" near the end of this file, under **Largest Rectangle in Histogram (LeetCode 84)**. Read it after Phase 2, when the schedule reaches that problem.
+**Problem.** `tokens` is a calculation written in *reverse Polish notation*: each operator comes **after** its two numbers. So `["2", "1", "+", "3", "*"]` means (2 + 1) × 3. Return the value. Division throws away the fraction toward zero.
+
+```
+tokens = ["4", "13", "5", "/", "+"]
+answer: 6            13 / 5 is 2, and 4 + 2 is 6
+```
+
+Each number has to wait until the operator that uses it shows up. That is a pile of unfinished items again, and an operator settles the top of the pile: it needs the **two most recent** numbers, which are exactly the top two of the stack. It removes them, calculates, and puts the result back as a new waiting number.
+
+| Token | What happens | Stack (bottom → top) |
+|---|---|---|
+| `4` | push 4 | [4] |
+| `13` | push 13 | [4, 13] |
+| `5` | push 5 | [4, 13, 5] |
+| `/` | pop 5 and 13, push 13 / 5 = 2 | [4, 2] |
+| `+` | pop 2 and 4, push 4 + 2 = 6 | [6] |
+
+One detail causes most of the bugs: the number popped **first** is the right-hand side. For `13 5 /`, the pop gives 5, then 13, so the calculation is `13 / 5`, not `5 / 13`.
+
+```python
+def evalRPN(tokens):
+    stack = []                              # numbers still waiting for their operator
+    for t in tokens:
+        if t in ("+", "-", "*", "/"):
+            b = stack.pop()                 # the number pushed last is the right-hand side
+            a = stack.pop()
+            if t == "+": stack.append(a + b)
+            elif t == "-": stack.append(a - b)
+            elif t == "*": stack.append(a * b)
+            else: stack.append(int(a / b))  # division truncates toward zero
+        else:
+            stack.append(int(t))
+    return stack[0]
+```
+
+At the end, one number is left: the answer.
 
 ### Where else it shows up
 
@@ -1671,9 +1740,48 @@ The set is never rebuilt, only edited at the edges. If you ever find yourself bu
 
 For "shortest", you shrink while you still can, because every step makes a shorter valid window.
 
-### Worked example 2 (moved): a Hard, for later
+### Worked example 2: a fixed-size window (Permutation in String, LeetCode 567)
 
-**Not for your first day.** This worked example covers a LeetCode Hard, so it now lives in "Later: the Hard worked examples" near the end of this file, under **Minimum Window Substring (LeetCode 76)**. Read it after Phase 2, when the schedule reaches that problem.
+**Problem.** Given two strings `s1` and `s2`, return `True` if `s2` contains a stretch that is a rearrangement of `s1`: the same letters, the same number of each, in any order.
+
+```
+s1 = "ab", s2 = "eidbaooo"
+answer: True         "ba" is a rearrangement of "ab"
+
+s1 = "ab", s2 = "eidboaoo"
+answer: False
+```
+
+A rearrangement of `s1` has exactly `len(s1)` letters, so the stretch you are looking for has a **fixed length**. Every candidate is a window of that size. The window does not grow or shrink. It only slides.
+
+A stretch is a rearrangement of `s1` exactly when it has the **same count of every letter**. So keep two lists of 26 counts: `need` (from `s1`) and `have` (from the current window). Sliding one step to the right changes `have` in two places only: the new letter on the right comes in, and the letter that falls off the left goes out. Then compare the two lists.
+
+Windows of size 2 in `"eidbaooo"`:
+
+| Window positions | Letters | Same counts as `ab`? |
+|---|---|---|
+| 0–1 | `ei` | no |
+| 1–2 | `id` | no |
+| 2–3 | `db` | no |
+| 3–4 | `ba` | **yes** |
+
+```python
+def checkInclusion(s1, s2):
+    if len(s1) > len(s2):
+        return False
+    need, have = [0] * 26, [0] * 26             # how many of each letter: wanted, and in the window
+    for c in s1:
+        need[ord(c) - 97] += 1
+    for r, c in enumerate(s2):
+        have[ord(c) - 97] += 1                   # the right edge takes in a new letter
+        if r >= len(s1):
+            have[ord(s2[r - len(s1)]) - 97] -= 1 # the left edge lets one go
+        if have == need:
+            return True
+    return False
+```
+
+Comparing two lists of 26 costs a constant amount, so the whole scan is O(n). The window is never rebuilt, only nudged.
 
 ### Where else it shows up
 
@@ -1807,9 +1915,44 @@ def minMeetingRooms(intervals):
 
 This technique is called a **sweep line**: imagine a vertical line moving left to right across the timeline, and keep a count of what it is currently crossing.
 
-### Worked example 3 (moved): a Hard, for later
+### Worked example 3: inserting into a sorted list (Insert Interval, LeetCode 57)
 
-**Not for your first day.** This worked example covers a LeetCode Hard, so it now lives in "Later: the Hard worked examples" near the end of this file, under **answering queries in sorted order (Minimum Interval to Include Each Query, LeetCode 1851)**. Read it after Phase 2, when the schedule reaches that problem.
+**Problem.** `intervals` is a list of intervals that do not overlap, already sorted by start. Insert `newInterval` and merge anything it overlaps. Return the sorted list.
+
+```
+intervals = [[1, 2], [3, 5], [6, 7], [8, 10], [12, 16]],  newInterval = [4, 8]
+answer: [[1, 2], [3, 10], [12, 16]]      [3, 5], [6, 7] and [8, 10] all touch [4, 8]
+```
+
+This list is already in sorted order, so the first half of the idea is done for you: because the intervals are sorted by start, each one only has to be compared with its neighbor in the scan, and the scan only goes one way. The new interval splits the list into three parts, in order:
+
+1. **Before it:** intervals whose end is less than the new start. Copy them.
+2. **Overlapping it:** intervals whose start is at most the new end. Merge each one into the new interval (the smaller start, the larger end).
+3. **After it:** everything left. Copy it.
+
+| Interval | Compared with the new interval | Action | New interval |
+|---|---|---|---|
+| `[1, 2]` | ends at 2, before 4 | copy | `[4, 8]` |
+| `[3, 5]` | starts at 3, at most 8 | merge | `[3, 8]` |
+| `[6, 7]` | starts at 6, at most 8 | merge | `[3, 8]` |
+| `[8, 10]` | starts at 8, at most 8 | merge | `[3, 10]` |
+| `[12, 16]` | starts at 12, after 10 | stop merging; copy it and everything after | `[3, 10]` |
+
+```python
+def insert(intervals, new):
+    out, i, n = [], 0, len(intervals)
+    while i < n and intervals[i][1] < new[0]:      # ends before the new one starts: keep as is
+        out.append(intervals[i])
+        i += 1
+    while i < n and intervals[i][0] <= new[1]:     # starts before the new one ends: they overlap
+        new = [min(new[0], intervals[i][0]), max(new[1], intervals[i][1])]
+        i += 1
+    out.append(new)                                # the merged interval
+    out.extend(intervals[i:])                      # everything left starts after it ends
+    return out
+```
+
+Without the sorted order you would have to check every interval against the new one and then sort the result. With it, one pass is enough.
 
 ### Where else it shows up
 
@@ -1960,9 +2103,36 @@ def lastStoneWeight(stones):
     return -heap[0] if heap else 0
 ```
 
-### Worked example 3 (moved): a Hard, for later
+### Worked example 3: keep only the best k (K Closest Points to Origin, LeetCode 973)
 
-**Not for your first day.** This worked example covers a LeetCode Hard, so it now lives in "Later: the Hard worked examples" near the end of this file, under **Find Median from Data Stream (LeetCode 295)**. Read it after Phase 2, when the schedule reaches that problem.
+**Problem.** `points` holds points `[x, y]` on a plane. Return the `k` points closest to the origin `(0, 0)`, in any order.
+
+```
+points = [[3, 3], [5, -1], [-2, 4]],  k = 2
+answer: [[3, 3], [-2, 4]]         (squared distances 18, 26 and 20)
+```
+
+Sorting every point by distance works but does too much: O(n log n) to order points you will never return. You only need to remember the best `k` so far, and know **which kept point is the worst**, so you can throw it out when a better one arrives. A heap answers "which is the worst?" instantly.
+
+The distance from the origin is √(x² + y²). The square root never changes the order, so compare `x² + y²`. The heap must hand back the **largest** distance among the kept points, but Python's heap hands back the smallest. Store the distance as a **negative** number, so the farthest point sits at the top.
+
+| New point | Squared distance | Drops out | Kept points |
+|---|---|---|---|
+| (3, 3) | 18 | — | (3, 3) |
+| (5, -1) | 26 | — | (3, 3), (5, -1) |
+| (-2, 4) | 20 | drop (5, -1) | (3, 3), (-2, 4) |
+
+```python
+def kClosest(points, k):
+    h = []                                          # max-heap of the k nearest so far (negated distance)
+    for x, y in points:
+        heapq.heappush(h, (-(x * x + y * y), x, y)) # the squared distance is enough to compare
+        if len(h) > k:
+            heapq.heappop(h)                        # the farthest of the kept points goes
+    return [[x, y] for _, x, y in h]
+```
+
+The heap never holds more than `k` points, so each push or pop costs O(log k), and the whole scan is O(n log k).
 
 ### Worked example 4: Kth Largest Element in an Array (LeetCode 215), three ways
 
@@ -2179,9 +2349,50 @@ def isValidBST(root):
     return valid(root, float("-inf"), float("inf"))
 ```
 
-### Worked example 3 (moved): a Hard, for later
+### Worked example 3: returning two numbers (House Robber III, LeetCode 337)
 
-**Not for your first day.** This worked example covers a LeetCode Hard, so it now lives in "Later: the Hard worked examples" near the end of this file, under **when the best path can have negative values (Binary Tree Maximum Path Sum, LeetCode 124)**. Read it after Phase 2, when the schedule reaches that problem.
+**Problem.** The houses form a binary tree. Each node holds the money in one house. Robbing two houses that are directly linked (a parent and its child) sets off the alarm. Return the most money you can take.
+
+```
+        3
+       / \
+      2   3
+       \   \
+        3   1
+answer: 7           rob 3 (the root) + 3 + 1
+```
+
+You would like each house to answer "what is the most I can take from the tree below me?" But that answer is not enough for the parent. The parent also needs to know **whether this house was robbed**, because that decides whether the parent is allowed to rob itself. So each call reports **two** numbers up:
+
+- `rob_me`: the best total if this house is robbed. Then both children must be skipped: `node.val + skip_left + skip_right`.
+- `skip_me`: the best total if this house is skipped. Now each child is free to be robbed or not, whichever is better: `max(rob_l, skip_l) + max(rob_r, skip_r)`.
+
+The answer at the root is the larger of its two numbers. Working from the bottom up for the tree above (a missing child reports `(0, 0)`):
+
+| House | `rob_me` | `skip_me` |
+|---|---|---|
+| leaf `3` (under the left `2`) | 3 | 0 |
+| leaf `1` | 1 | 0 |
+| left `2` | 2 + 0 + 0 = 2 | max(0, 0) + max(3, 0) = 3 |
+| right `3` | 3 + 0 + 0 = 3 | max(0, 0) + max(1, 0) = 1 |
+| root `3` | 3 + 3 + 1 = **7** | max(2, 3) + max(3, 1) = 6 |
+
+For the root, robbing it means skipping both children. Their `skip_me` values are 3 (left `2`) and 1 (right `3`), so `rob_me` is 3 + 3 + 1 = 7.
+
+```python
+def rob(root):
+    def go(node):                                   # returns (best if I rob this house, best if I skip it)
+        if not node:
+            return 0, 0
+        rob_l, skip_l = go(node.left)
+        rob_r, skip_r = go(node.right)
+        rob_me = node.val + skip_l + skip_r         # robbing me means both children must be skipped
+        skip_me = max(rob_l, skip_l) + max(rob_r, skip_r)   # skipping me frees the children to do their best
+        return rob_me, skip_me
+    return max(go(root))
+```
+
+This is the same move as before: decide what each node reports upward before you write the code. Here the report is a pair instead of a single number.
 
 ### Worked example 4: level by level (Binary Tree Level Order Traversal, LeetCode 102)
 
@@ -2376,9 +2587,48 @@ def subsetsWithDup(nums):
 
 The check is `i > start`, not `i > 0`: skipping is only about repeats *at the same level*. Using the second `2` *after* the first (to build `[2, 2]`) is still allowed.
 
-### Worked example 2 (moved): a Hard, for later
+### Worked example 2: choosing what is still unused (Permutations, LeetCode 46)
 
-**Not for your first day.** This worked example covers a LeetCode Hard, so it now lives in "Later: the Hard worked examples" near the end of this file, under **placing pieces with conflict checks (N-Queens, LeetCode 51)**. Read it after Phase 2, when the schedule reaches that problem.
+**Problem.** `nums` holds distinct numbers. Return every ordering of them.
+
+```
+nums = [1, 2, 3]
+answer: [[1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], [3,2,1]]
+```
+
+Build each ordering one position at a time. At each position, try every number that has not been used yet in this ordering. If you place a number and then finish exploring, take it back out and try the next one. The rule for what is allowed is the **conflict check**: a number may only go in if it is not already in `path`. A list of `used` flags makes that check instant.
+
+The first few steps for `[1, 2, 3]`:
+
+| Step | `path` | What happens |
+|---|---|---|
+| 1 | `[1]` | choose 1 |
+| 2 | `[1, 2]` | choose 2 (1 is used) |
+| 3 | `[1, 2, 3]` | choose 3: full, so save a copy |
+| 4 | `[1, 2]` | undo 3. Nothing else is free. |
+| 5 | `[1]` | undo 2. Try the next free number. |
+| 6 | `[1, 3]` | choose 3 |
+| 7 | `[1, 3, 2]` | choose 2: full, so save a copy |
+| 8 | `[1, 3]`, `[1]`, `[]` | undo 2, undo 3, undo 1. Then start with 2. |
+
+```python
+def permute(nums):
+    res, path, used = [], [], [False] * len(nums)
+    def go():
+        if len(path) == len(nums):
+            res.append(path[:])                     # a copy: path keeps changing
+            return
+        for i, x in enumerate(nums):
+            if used[i]:                             # already placed in this ordering
+                continue
+            used[i] = True; path.append(x)          # choose
+            go()                                    # explore
+            path.pop(); used[i] = False             # undo
+    go()
+    return res
+```
+
+Two points matter. The `path[:]` makes a copy, because `path` keeps changing after you save it. And the undo lines must exactly reverse the choose lines, or the next branch starts with leftovers from the last one. For 3 numbers the result has 3! = 6 lists; for n numbers, n!.
 
 ### Four shapes the decisions take
 
@@ -2962,9 +3212,53 @@ def findCheapestPrice(n, flights, src, dst, k):
     return price[dst] if price[dst] != INF else -1
 ```
 
-### Worked example 3 (moved): a Hard, for later
+### Worked example 3: the cost is the biggest step (Path With Minimum Effort, LeetCode 1631)
 
-**Not for your first day.** This worked example covers a LeetCode Hard, so it now lives in "Later: the Hard worked examples" near the end of this file, under **minimizing the worst step (Swim in Rising Water, LeetCode 778)**. Read it after Phase 2, when the schedule reaches that problem.
+**Problem.** `heights` is a grid of heights. You start at the top-left cell and must reach the bottom-right cell, moving up, down, left or right. The *effort* of a route is the **largest** height difference between two cells next to each other on the route. Return the smallest effort of any route.
+
+```
+heights = [[1, 2, 2],
+           [3, 8, 2],
+           [5, 3, 5]]
+answer: 2        the route 1 → 3 → 5 → 3 → 5 has steps 2, 2, 2, 2
+```
+
+This is "always extend the cheapest route found so far" with one change: the cost of a route is **not the sum** of its steps, it is the **largest** step. The same rule still works. Keep a heap of routes ordered by cost. Take the cheapest route out; the first time it reaches the goal, no cheaper route can exist. When you move to a neighbor, the new cost is `max(cost so far, this step)` instead of `cost so far + this step`.
+
+The cheapest routes taken out of the heap, for the grid above:
+
+| Cell reached | Effort | Why |
+|---|---|---|
+| (0, 0) height 1 | 0 | start |
+| (0, 1) height 2 | 1 | step of 1 |
+| (0, 2) height 2 | 1 | step of 0, so the effort stays 1 |
+| (1, 2) height 2 | 1 | step of 0 |
+| (1, 0) height 3 | 2 | step of 2 from the start |
+| (2, 0) height 5 | 2 | step of 2 from (1, 0) |
+| (2, 1) height 3 | 2 | step of 2 from (2, 0) |
+| (2, 2) height 5, the goal | **2** | step of 2 from (2, 1) |
+
+```python
+def minimumEffortPath(heights):
+    rows, cols = len(heights), len(heights[0])
+    best = {(0, 0): 0}                              # the smallest known effort to reach each cell
+    h = [(0, 0, 0)]                                 # (effort so far, row, col)
+    while h:
+        effort, r, c = heapq.heappop(h)
+        if (r, c) == (rows - 1, cols - 1):
+            return effort                           # the cheapest route reaches the goal first
+        if effort > best[(r, c)]:
+            continue                                # an older, worse entry
+        for nr, nc in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):
+            if 0 <= nr < rows and 0 <= nc < cols:
+                step = abs(heights[nr][nc] - heights[r][c])
+                new = max(effort, step)             # a route's cost is its biggest step, not the total
+                if new < best.get((nr, nc), float("inf")):
+                    best[(nr, nc)] = new
+                    heapq.heappush(h, (new, nr, nc))
+```
+
+A worse offer to the goal (effort 3, from the cell above it) was put in the heap earlier. It is never used, because the effort-2 route reaches the goal first. The check `effort > best[...]` skips heap entries that a cheaper route has made obsolete.
 
 ### Worked example 4: connecting everything cheaply (Min Cost to Connect All Points, LeetCode 1584)
 
@@ -3546,9 +3840,46 @@ Each row is a problem stated in one line, the new way to see it, and the princip
 | **Alien Dictionary (269):** the alphabet behind a sorted word list | "letter before letter" facts from each neighboring pair of words | P14 |
 | **Trapping Rain Water (42):** water above each bar | `min(tallest on the left, tallest on the right) − height` | P2 |
 
-### Worked example 2 (moved): a Hard, for later
+### Worked example 2: break the circle into rows (House Robber II, LeetCode 213)
 
-**Not for your first day.** This worked example covers a LeetCode Hard, so it now lives in "Later: the Hard worked examples" near the end of this file, under **choose the last step, not the first (Burst Balloons, LeetCode 312)**. Read it after Phase 2, when the schedule reaches that problem.
+**Problem.** The houses stand in a **circle**, so the first and last houses are neighbors. Robbing two neighbors sets off the alarm. `nums[i]` is the money in house `i`. Return the most you can take.
+
+```
+nums = [2, 3, 2]
+answer: 3            the first and last are neighbors, so you cannot take both 2s
+
+nums = [1, 2, 3, 1]
+answer: 4            1 + 3
+```
+
+You already know how to solve the same problem on a straight row (House Robber, LeetCode 198, in P3). Only the circle is new. Do not invent a new method. **Describe the problem differently until it becomes the one you know.**
+
+In any valid choice, you cannot rob both the first house and the last house. So every valid choice either skips the first house or skips the last house (or both). That gives two straight rows:
+
+- the houses **without the last one**: `nums[:-1]`
+- the houses **without the first one**: `nums[1:]`
+
+The answer is the larger of the two straight-row answers. Nothing is lost: each valid circular choice fits one of those rows.
+
+| Row | Straight-row best |
+|---|---|
+| `[1, 2, 3]` (without the last house) | 4 (1 + 3) |
+| `[2, 3, 1]` (without the first house) | 3 |
+| Answer | **4** |
+
+```python
+def rob(nums):
+    def line(a):                                    # the ordinary House Robber on a straight row
+        take, skip = 0, 0
+        for x in a:
+            take, skip = skip + x, max(take, skip)
+        return max(take, skip)
+    if len(nums) == 1:
+        return nums[0]
+    return max(line(nums[:-1]), line(nums[1:]))     # leave out the last house, or leave out the first
+```
+
+A single house has no neighbors, so the two rows would both be empty. That one case is handled on its own line.
 
 ### Worked example 3: make the format describe itself (Encode and Decode Strings, LeetCode 271)
 
@@ -3586,7 +3917,7 @@ After solving any problem, write one sentence of the form: *"This was really [pr
 
 # Later: the Hard worked examples
 
-These worked examples used to sit inside their principles. Each is a LeetCode Hard, so none is for your first day with a principle. Come back to each after Phase 2 (the schedule reaches them by contrast pair or random draw). Every principle above can be learned in full without them.
+These are the Hard worked examples, one for each principle that has one. Each is a LeetCode Hard, so none is for your first day with a principle. Read each after Phase 2, when the schedule reaches that problem by contrast pair or random draw.
 
 ## Trapping Rain Water (LeetCode 42) (from P2)
 

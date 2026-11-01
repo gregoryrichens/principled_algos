@@ -243,46 +243,34 @@ for i in range(len(temperatures)):
             stack.append(int(t))
     return stack[0]</code></pre>
 
-<details class="later"><summary>Later, not for your first day: Largest Rectangle in Histogram (LeetCode 84, a Hard)</summary><div>
-<h3>Worked example 3: Largest Rectangle in Histogram (LeetCode 84)</h3>
-<p><code>heights[i]</code> is the height of a bar 1 unit wide. Find the area of the largest rectangle that fits inside the bars.</p>
-<pre><code>heights = [2, 1, 5, 6, 2, 3]
-answer: 10        <span class="cm"># bars of height 5 and 6 hold a rectangle 5 high and 2 wide</span></code></pre>
-<p><b>Start from what is true.</b> In the best rectangle, at least one bar touches the top edge. If no bar touched it, you could make the rectangle taller. So try each bar as the bar that sets the height. Its rectangle stops at a shorter bar on each side. So each bar needs its nearest shorter bar on each side: “next smaller” and “previous smaller” from the table.</p>
-<p>Keep a stack of bars with no right edge yet. Their heights go up from bottom to top. When a shorter bar arrives, it is the right edge for each taller bar on the top. Pop each one and measure: height × (position of the shorter bar − start).</p>
-<p>The hard part is the <b>start</b>, the left edge. The bars on the stack go up in height, so the entry below a bar is its previous smaller bar. A bar’s start is just after that shorter bar. A new short bar can reach back over the taller bars it pops, so it takes the start of the last bar it popped. Each stack entry is a pair: <code>(start, height)</code>. An equal bar does not pop: the older one stays and reaches further to the right later.</p>
-
-<figure class="widget" id="hw">
-  <svg id="hsvg" viewBox="0 0 640 300" role="img" aria-label="A histogram. Blue bars are on the stack. When a bar comes off the stack, its rectangle is shaded amber. The dashed rectangle is the best area so far."></svg>
-  <div class="status" id="hstat" aria-live="polite"></div>
-  <div class="controls">
-    <button id="hback">Back</button><button id="hstep" class="main">Step</button><button id="hplay">Play</button><button id="hreset">Reset</button>
-    <span class="sep"></span>
-    <button data-h="2,1,5,6,2,3">Example</button><button data-h="1,2,3,4,5">Goes up</button><button data-h="5,4,3,2,1">Goes down</button>
-    <span class="sep"></span>
-    <label for="hin" class="caption">Your heights (0 to 9):</label>
-    <input type="text" id="hin" value="2, 1, 5, 6, 2, 3"><button id="hgo">Use these</button>
-  </div>
-  <span class="err" id="herr"></span>
-  <figcaption>Numbers under the bars are edges. <span style="color:var(--hit);font-weight:700">Teal</span> is the current bar, <span class="W">blue</span> bars are on the stack, faded amber bars are finished. The teal bracket shows how far back the current bar reaches. A popped bar’s rectangle shows in <span class="D">amber</span>. The dashed outline is the best area so far.</figcaption>
-</figure>
-
-<pre><code>def largestRectangleArea(heights):
-    best = 0
-    stack = []                            <span class="cm"># (start, height), heights go up</span>
-    for i, h in enumerate(heights):
-        start = i
-        while stack and stack[-1][1] &gt; h:
-            s, height = stack.pop()       <span class="cm"># bar i is the first shorter bar to its right</span>
-            best = max(best, height * (i - s))
-            start = s                     <span class="cm"># the new bar can reach back to here</span>
-        stack.append((start, h))
-    for s, height in stack:               <span class="cm"># never met a shorter bar: go to the end</span>
-        best = max(best, height * (len(heights) - s))
-    return best</code></pre>
-<p>Bars still on the stack at the end reach to the right end.</p>
-</div></details>
-
+<h3>Worked example 3: Evaluate Reverse Polish Notation (LeetCode 150)</h3>
+<p><b>Problem.</b> <code>tokens</code> is a calculation written in <i>reverse Polish notation</i>: each operator comes <b>after</b> its two numbers. So <code>["2", "1", "+", "3", "*"]</code> means (2 + 1) × 3. Return the value. Division throws away the fraction toward zero.</p>
+<pre><code>tokens = ["4", "13", "5", "/", "+"]
+answer: 6        <span class="cm"># 13 / 5 is 2, and 4 + 2 is 6</span></code></pre>
+<p>Each number has to wait until the operator that uses it shows up. That is a pile of unfinished items again. An operator settles the top of the pile: it needs the <b>two most recent</b> numbers, which are exactly the top two of the stack. It removes them, calculates, and puts the result back as a new waiting number.</p>
+<div class="tw"><table>
+<tr><th>Token</th><th>What happens</th><th>Stack (bottom to top)</th></tr>
+<tr><td><code>4</code></td><td>push 4</td><td>[4]</td></tr>
+<tr><td><code>13</code></td><td>push 13</td><td>[4, 13]</td></tr>
+<tr><td><code>5</code></td><td>push 5</td><td>[4, 13, 5]</td></tr>
+<tr><td><code>/</code></td><td>pop 5 and 13, push 13 / 5 = 2</td><td>[4, 2]</td></tr>
+<tr><td><code>+</code></td><td>pop 2 and 4, push 4 + 2 = 6</td><td>[6]</td></tr>
+</table></div>
+<p>One detail causes most of the bugs: the number popped <b>first</b> is the right-hand side. For <code>13 5 /</code>, the pops give 5, then 13, so the calculation is <code>13 / 5</code>, not <code>5 / 13</code>.</p>
+<pre><code>def evalRPN(tokens):
+    stack = []                              <span class="cm"># numbers still waiting for their operator</span>
+    for t in tokens:
+        if t in ("+", "-", "*", "/"):
+            b = stack.pop()                 <span class="cm"># the number pushed last is the right-hand side</span>
+            a = stack.pop()
+            if t == "+": stack.append(a + b)
+            elif t == "-": stack.append(a - b)
+            elif t == "*": stack.append(a * b)
+            else: stack.append(int(a / b))  <span class="cm"># division truncates toward zero</span>
+        else:
+            stack.append(int(t))
+    return stack[0]</code></pre>
+<p>At the end, one number is left: the answer.</p>
 <h3>How to recognize it</h3>
 <ul>
 <li>“For each item, find the next (or previous) item that is larger (or smaller).”</li>
@@ -331,6 +319,45 @@ LOAD_NAME  c       <span class="cm"># push c</span>
 BINARY_OP  *       <span class="cm"># pop c and b, push b * c</span>
 BINARY_OP  +       <span class="cm"># pop b * c and a, push the sum</span></code></pre>
 <p><b>Why it is valuable.</b> A stack changes a search inside a search into one pass. Each item costs one push and one pop, and the memory is at most one slot for each item.</p>
+<details class="later"><summary>Later, after Phase 2: Largest Rectangle in Histogram (LeetCode 84, a Hard)</summary><div>
+<h3>Largest Rectangle in Histogram (LeetCode 84)</h3>
+<p><code>heights[i]</code> is the height of a bar 1 unit wide. Find the area of the largest rectangle that fits inside the bars.</p>
+<pre><code>heights = [2, 1, 5, 6, 2, 3]
+answer: 10        <span class="cm"># bars of height 5 and 6 hold a rectangle 5 high and 2 wide</span></code></pre>
+<p><b>Start from what is true.</b> In the best rectangle, at least one bar touches the top edge. If no bar touched it, you could make the rectangle taller. So try each bar as the bar that sets the height. Its rectangle stops at a shorter bar on each side. So each bar needs its nearest shorter bar on each side: “next smaller” and “previous smaller” from the table.</p>
+<p>Keep a stack of bars with no right edge yet. Their heights go up from bottom to top. When a shorter bar arrives, it is the right edge for each taller bar on the top. Pop each one and measure: height × (position of the shorter bar − start).</p>
+<p>The hard part is the <b>start</b>, the left edge. The bars on the stack go up in height, so the entry below a bar is its previous smaller bar. A bar’s start is just after that shorter bar. A new short bar can reach back over the taller bars it pops, so it takes the start of the last bar it popped. Each stack entry is a pair: <code>(start, height)</code>. An equal bar does not pop: the older one stays and reaches further to the right later.</p>
+
+<figure class="widget" id="hw">
+  <svg id="hsvg" viewBox="0 0 640 300" role="img" aria-label="A histogram. Blue bars are on the stack. When a bar comes off the stack, its rectangle is shaded amber. The dashed rectangle is the best area so far."></svg>
+  <div class="status" id="hstat" aria-live="polite"></div>
+  <div class="controls">
+    <button id="hback">Back</button><button id="hstep" class="main">Step</button><button id="hplay">Play</button><button id="hreset">Reset</button>
+    <span class="sep"></span>
+    <button data-h="2,1,5,6,2,3">Example</button><button data-h="1,2,3,4,5">Goes up</button><button data-h="5,4,3,2,1">Goes down</button>
+    <span class="sep"></span>
+    <label for="hin" class="caption">Your heights (0 to 9):</label>
+    <input type="text" id="hin" value="2, 1, 5, 6, 2, 3"><button id="hgo">Use these</button>
+  </div>
+  <span class="err" id="herr"></span>
+  <figcaption>Numbers under the bars are edges. <span style="color:var(--hit);font-weight:700">Teal</span> is the current bar, <span class="W">blue</span> bars are on the stack, faded amber bars are finished. The teal bracket shows how far back the current bar reaches. A popped bar’s rectangle shows in <span class="D">amber</span>. The dashed outline is the best area so far.</figcaption>
+</figure>
+
+<pre><code>def largestRectangleArea(heights):
+    best = 0
+    stack = []                            <span class="cm"># (start, height), heights go up</span>
+    for i, h in enumerate(heights):
+        start = i
+        while stack and stack[-1][1] &gt; h:
+            s, height = stack.pop()       <span class="cm"># bar i is the first shorter bar to its right</span>
+            best = max(best, height * (i - s))
+            start = s                     <span class="cm"># the new bar can reach back to here</span>
+        stack.append((start, h))
+    for s, height in stack:               <span class="cm"># never met a shorter bar: go to the end</span>
+        best = max(best, height * (len(heights) - s))
+    return best</code></pre>
+<p>Bars still on the stack at the end reach to the right end.</p>
+</div></details>
 </main>
 
 <script>
