@@ -243,34 +243,41 @@ for i in range(len(temperatures)):
             stack.append(int(t))
     return stack[0]</code></pre>
 
-<h3>Worked example 3: Evaluate Reverse Polish Notation (LeetCode 150)</h3>
-<p><b>Problem.</b> <code>tokens</code> is a calculation written in <i>reverse Polish notation</i>: each operator comes <b>after</b> its two numbers. So <code>["2", "1", "+", "3", "*"]</code> means (2 + 1) × 3. Return the value. Division throws away the fraction toward zero.</p>
-<pre><code>tokens = ["4", "13", "5", "/", "+"]
-answer: 6        <span class="cm"># 13 / 5 is 2, and 4 + 2 is 6</span></code></pre>
-<p>Each number has to wait until the operator that uses it shows up. That is a pile of unfinished items again. An operator settles the top of the pile: it needs the <b>two most recent</b> numbers, which are exactly the top two of the stack. It removes them, calculates, and puts the result back as a new waiting number.</p>
+<h3>Worked example 3: Remove K Digits (LeetCode 402)</h3>
+<p><b>Problem.</b> <code>num</code> is a string of digits that spells a whole number, and <code>k</code> is how many digits you must delete. Delete exactly <code>k</code> digits so that the number left over is as small as possible. Return it as a string. It must have no leading zeros, and if nothing is left, return <code>"0"</code>.</p>
+<pre><code>num = "1432219", k = 3
+answer: "1219"        <span class="cm"># delete 4, 3 and one of the 2s</span>
+
+num = "10200", k = 1
+answer: "200"         <span class="cm"># delete the 1; "0200" becomes "200" once the leading zero is dropped</span>
+
+num = "10", k = 2
+answer: "0"           <span class="cm"># everything is deleted</span></code></pre>
+<p>Trying every way to choose which digits to delete is far too slow. Think about what makes a number small instead: the <b>leftmost digits matter most</b>. Walk from left to right. If a digit is bigger than the digit right after it, deleting the bigger one makes the number smaller, because the smaller digit slides into its place. For example, in <code>"1432219"</code> the 4 is followed by a 3, and <code>"132219"</code> is smaller than <code>"1432219"</code>.</p>
+<p>That is a pile of unfinished decisions again. Keep a stack of the digits you are keeping so far. For each new digit <code>d</code>: while you still have deletions left (<code>k &gt; 0</code>) and the top of the stack is <b>bigger</b> than <code>d</code>, pop it (that is one deletion). Then push <code>d</code>. Two cleanups at the end: if deletions are left over (the digits only ever went up, like <code>"12345"</code>), delete from the end, because the biggest digits sit there. Then strip leading zeros, and return <code>"0"</code> if nothing is left.</p>
+<p>Trace for <code>"1432219"</code> with <code>k = 3</code>:</p>
 <div class="tw"><table>
-<tr><th>Token</th><th>What happens</th><th>Stack (bottom to top)</th></tr>
-<tr><td><code>4</code></td><td>push 4</td><td>[4]</td></tr>
-<tr><td><code>13</code></td><td>push 13</td><td>[4, 13]</td></tr>
-<tr><td><code>5</code></td><td>push 5</td><td>[4, 13, 5]</td></tr>
-<tr><td><code>/</code></td><td>pop 5 and 13, push 13 / 5 = 2</td><td>[4, 2]</td></tr>
-<tr><td><code>+</code></td><td>pop 2 and 4, push 4 + 2 = 6</td><td>[6]</td></tr>
+<tr><th>Digit</th><th>What happens</th><th><code>k</code> left</th><th>Stack (bottom to top)</th></tr>
+<tr><td><code>1</code></td><td>push 1</td><td>3</td><td>[1]</td></tr>
+<tr><td><code>4</code></td><td>1 is not bigger than 4, push</td><td>3</td><td>[1, 4]</td></tr>
+<tr><td><code>3</code></td><td>4 is bigger than 3: pop 4, push 3</td><td>2</td><td>[1, 3]</td></tr>
+<tr><td><code>2</code></td><td>3 is bigger than 2: pop 3, push 2</td><td>1</td><td>[1, 2]</td></tr>
+<tr><td><code>2</code></td><td>2 is not bigger than 2, push</td><td>1</td><td>[1, 2, 2]</td></tr>
+<tr><td><code>1</code></td><td>2 is bigger than 1: pop 2, push 1</td><td>0</td><td>[1, 2, 1]</td></tr>
+<tr><td><code>9</code></td><td>no deletions left, push</td><td>0</td><td>[1, 2, 1, 9]</td></tr>
 </table></div>
-<p>One detail causes most of the bugs: the number popped <b>first</b> is the right-hand side. For <code>13 5 /</code>, the pops give 5, then 13, so the calculation is <code>13 / 5</code>, not <code>5 / 13</code>.</p>
-<pre><code>def evalRPN(tokens):
-    stack = []                              <span class="cm"># numbers still waiting for their operator</span>
-    for t in tokens:
-        if t in ("+", "-", "*", "/"):
-            b = stack.pop()                 <span class="cm"># the number pushed last is the right-hand side</span>
-            a = stack.pop()
-            if t == "+": stack.append(a + b)
-            elif t == "-": stack.append(a - b)
-            elif t == "*": stack.append(a * b)
-            else: stack.append(int(a / b))  <span class="cm"># division truncates toward zero</span>
-        else:
-            stack.append(int(t))
-    return stack[0]</code></pre>
-<p>At the end, one number is left: the answer.</p>
+<p>The stack spells <code>1219</code>. Equal digits stay (the test is strictly “bigger”), because deleting one of two equal digits changes nothing at that spot.</p>
+<pre><code>def removeKdigits(num, k):
+    stack = []                                  <span class="cm"># digits we are keeping, left to right</span>
+    for d in num:
+        while k &gt; 0 and stack and stack[-1] &gt; d:
+            stack.pop()                         <span class="cm"># a bigger digit just before a smaller one: delete it</span>
+            k -= 1
+        stack.append(d)
+    if k &gt; 0:                                   <span class="cm"># digits only rose, so the biggest are at the end</span>
+        stack = stack[:-k]
+    return "".join(stack).lstrip("0") or "0"    <span class="cm"># drop leading zeros; "0" if nothing is left</span></code></pre>
+<p>For <code>"10200"</code> with <code>k = 1</code>: the 0 is smaller than the 1 before it, so the 1 is popped (<code>k</code> becomes 0). The rest are pushed, giving <code>"0200"</code>, and <code>lstrip("0")</code> leaves <code>"200"</code>.</p>
 <h3>How to recognize it</h3>
 <ul>
 <li>“For each item, find the next (or previous) item that is larger (or smaller).”</li>
@@ -282,7 +289,7 @@ answer: 6        <span class="cm"># 13 / 5 is 2, and 4 + 2 is 6</span></code></p
 <h3>Common mistakes</h3>
 <ul>
 <li><b><code>&lt;</code> or <code>&lt;=</code> in the pop condition.</b> This decides equal values. In Daily Temperatures, an equal day is not warmer, so pop only on <code>&lt;</code>.</li>
-<li><b>The items left at the end.</b> They never found an answer. Some problems want 0 for them. Some want “to the end”.</li>
+<li><b>The items left at the end.</b> They never found an answer. Some problems want 0 for them; others want a default such as −1. Decide before you code.</li>
 </ul>
 
 <h3>Try it yourself</h3>

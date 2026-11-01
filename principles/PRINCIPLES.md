@@ -421,42 +421,53 @@ def maxProfit(prices):
     return best
 ```
 
-### Worked example 2: Maximum Product Subarray (LeetCode 152)
+### Worked example 2: Maximum Sum Circular Subarray (LeetCode 918)
 
-**Problem.** `nums` holds whole numbers, some of them negative or zero. Return the largest product of any run of side-by-side numbers (at least one number).
+**Problem.** `nums` holds whole numbers, some of them negative. Treat the list as a **circle**: the last number sits next to the first. Return the largest sum of a run of side-by-side numbers (at least one number, none used twice). The run is allowed to wrap around the end of the list.
 
 ```
-nums = [2, 3, -2, 4]
-answer: 6            the run [2, 3]
+nums = [5, -3, 5]
+answer: 10           the run 5, 5: start at the last number and wrap around to the first
 
-nums = [-2, 3, -4]
-answer: 24           the whole list: (-2) × 3 × (-4)
+nums = [-3, -2, -3]
+answer: -2           every number is negative, so the best run is the single number -2
 ```
 
-The slow way multiplies every run from scratch: O(n²) runs. The fix is the same as for sums: carry a summary forward. With sums, one number is enough (the best sum of a run ending here). With products, one number is not enough, because **a negative number flips everything**. The most negative product so far becomes the most positive one after you multiply by another negative.
+The slow way tries every starting spot and every length around the circle: O(n²) runs. The fix is the same as before: carry a summary forward.
 
-So carry two numbers for the runs that end at the current position: the **largest** product (`hi`) and the **smallest** product (`lo`). For each new number `x`, the runs ending at `x` are: `x` alone, `x` times the previous largest, or `x` times the previous smallest. Take the biggest of those three for the new `hi` and the smallest for the new `lo`.
+A run that does **not** wrap is an ordinary run, and Maximum Subarray (P7, Card 3) already finds the best one by carrying "the best sum of a run ending here". A run that **does** wrap is different. Whatever it leaves out is one ordinary run in the middle of the list. So a wrapping run equals **the total of the whole list minus one ordinary run in the middle**, and it is largest when the run you cut out is the **smallest** one.
 
-Trace for `[2, 3, -2, 4, -1]`:
+So the answer is the larger of two numbers:
 
-| `x` | `hi` | `lo` | Best so far |
-|---|---|---|---|
-| 2 | 2 | 2 | 2 |
-| 3 | 6 | 3 | 6 |
-| -2 | -2 | -12 | 6 |
-| 4 | 4 | -48 | 6 |
-| -1 | 48 | -4 | 48 |
+- the best ordinary run, and
+- the total minus the worst (smallest-sum) ordinary run.
 
-At `-2` the old `hi` (6) becomes the new `lo` (−12). At the final `-1`, that `lo` becomes the answer: (2 × 3 × −2 × 4) × −1 = 48.
+Find both in one pass by carrying these numbers: `hi` and `lo` (the largest and smallest sum of a run ending at the current number), plus `best` and `worst` (the largest and smallest value `hi` and `lo` have reached so far), and keep the running `total`. For a new number `x`, the run ending at `x` is either `x` alone or `x` added to the earlier run: `hi = max(x, hi + x)` and `lo = min(x, lo + x)`.
+
+Trace for `[5, -3, 5]`:
+
+| `x` | `hi` | `lo` | `best` | `worst` | `total` |
+|---|---|---|---|---|---|
+| 5 | 5 | 5 | 5 | 5 | 5 |
+| -3 | 2 | -3 | 5 | -3 | 2 |
+| 5 | 7 | 2 | 7 | -3 | 7 |
+
+The best ordinary run is 7 (the whole list: 5 − 3 + 5). The worst ordinary run is −3 (the middle number alone). Cutting it out of the total gives 7 − (−3) = 10: the two 5s joined around the circle. The larger of 7 and 10 is **10**.
+
+There is one trap. If **every** number is negative, the "worst run" is the whole list, so total minus worst is 0. That means "take nothing", which is not allowed. When `best` is negative, no run can beat the best single number, so return `best` as it is.
 
 ```python
-def maxProduct(nums):
-    hi = lo = best = nums[0]      # largest and smallest product of a run ending at the current number
+def maxSubarraySumCircular(nums):
+    hi = lo = best = worst = total = nums[0]   # sums of runs ending at the current number, and their records
     for x in nums[1:]:
-        options = (x, x * hi, x * lo)   # start fresh, extend the largest, or extend the smallest
-        hi, lo = max(options), min(options)
-        best = max(best, hi)
-    return best
+        hi = max(x, hi + x)                     # start fresh at x, or extend the earlier run
+        lo = min(x, lo + x)
+        best = max(best, hi)                    # the best ordinary run
+        worst = min(worst, lo)                  # the worst ordinary run
+        total += x
+    if best < 0:                                # all numbers are negative: total - worst would mean "take nothing"
+        return best
+    return max(best, total - worst)             # an ordinary run, or the wrap-around run
 ```
 
 ### Worked example 3: counting subarrays with a given sum (running totals plus a dictionary)
@@ -498,7 +509,7 @@ Each of these carries a running summary forward:
 - **Maximum Subarray (53).** *Find the contiguous stretch with the largest sum.* Carry "the best sum of a stretch ending here". Covered in P7 and Card 3.
 - **Maximum Product Subarray (152).** *Same, but for products.* Carry both the largest *and* the smallest product ending here, because multiplying by a negative number swaps them.
 - **Partition Labels (763).** *Cut a string into as many pieces as possible so that each letter appears in only one piece.* Precompute the last position of every letter, then extend the current piece's end as you walk. Covered in P7.
-- **Trapping Rain Water (42)** and **Product of Array Except Self (238)**, above.
+- **Product of Array Except Self (238)**, above. **Trapping Rain Water (42)**, a Hard, is worked in "Later: the Hard worked examples".
 - **Best Time to Buy and Sell Stock (121)**, above.
 
 **Beyond the list:** range-sum queries (precompute running totals once, then any range sum is one subtraction), running totals over a grid for rectangle sums, and "longest stretch with equal numbers of 0s and 1s" (Contiguous Array 525, Card 28).
@@ -816,7 +827,7 @@ def lengthOfLIS(nums):
 
 That is O(n²). A faster O(n log n) version uses binary search (P4) and is on Card 32.
 
-**Choosing the last step instead of the first (Burst Balloons, 312).** Covered in P18. When choosing the *first* action changes what the later choices look like, try choosing the *last* action instead.
+**Choosing the last step instead of the first (Burst Balloons, 312).** A Hard, worked in "Later: the Hard worked examples" (P18). When choosing the *first* action changes what the later choices look like, try choosing the *last* action instead.
 
 ### Where else it shows up
 
@@ -1214,7 +1225,7 @@ def longestPalindrome(s):
 ### Where else it shows up
 
 - **Valid Palindrome (125).** *Ignoring case and anything that is not a letter or digit, does the string read the same both ways?* One pointer at each end; skip non-alphanumeric characters; compare and move inward.
-- **Trapping Rain Water (42).** The pointer version in P2.
+- **Trapping Rain Water (42).** The pointer version, a Hard, is worked in "Later: the Hard worked examples".
 - **Merge Two Sorted Lists (21).** *Merge two sorted linked lists into one sorted list.* One pointer on each list; take the smaller head each time. See P16.
 - **Reorder List (143).** *Rearrange `1→2→3→4→5` into `1→5→2→4→3`.* Split, reverse the second half, then walk both halves together. See P16.
 - **Spiral Matrix (54).** *Return a grid's elements in clockwise spiral order.* Keep four boundaries (top, bottom, left, right) and move each inward after walking its edge.
@@ -1309,7 +1320,7 @@ Because the temperatures never increase going up the stack, the top is always th
 
 - "For every element, find the next (or previous) element that is larger (or smaller)."
 - "How long until ...", "how far back until ...".
-- "Largest rectangle", "how many cars form groups".
+- "Largest rectangle" (a Hard, for later), "how many cars form groups".
 - Matching or nesting: brackets, tags, undo operations, expressions.
 
 ### The other kind of stack problem: matching and nesting
@@ -1334,44 +1345,53 @@ def isValid(s):
 
 **Evaluate Reverse Polish Notation (150)** works the same way. *Evaluate an expression written with operators after their operands, like `["2", "1", "+", "3", "*"]` meaning (2 + 1) × 3 = 9.* Numbers are pushed; an operator pops the two most recent numbers and pushes the result.
 
-### Worked example 2: Evaluate Reverse Polish Notation (LeetCode 150)
+### Worked example 2: Remove K Digits (LeetCode 402)
 
-**Problem.** `tokens` is a calculation written in *reverse Polish notation*: each operator comes **after** its two numbers. So `["2", "1", "+", "3", "*"]` means (2 + 1) × 3. Return the value. Division throws away the fraction toward zero.
+**Problem.** `num` is a string of digits that spells a whole number, and `k` is how many digits you must delete. Delete exactly `k` digits so that the number left over is as small as possible. Return it as a string. It must have no leading zeros, and if nothing is left, return `"0"`.
 
 ```
-tokens = ["4", "13", "5", "/", "+"]
-answer: 6            13 / 5 is 2, and 4 + 2 is 6
+num = "1432219", k = 3
+answer: "1219"        delete 4, 3 and one of the 2s
+
+num = "10200", k = 1
+answer: "200"         delete the 1; "0200" becomes "200" once the leading zero is dropped
+
+num = "10", k = 2
+answer: "0"           everything is deleted
 ```
 
-Each number has to wait until the operator that uses it shows up. That is a pile of unfinished items again, and an operator settles the top of the pile: it needs the **two most recent** numbers, which are exactly the top two of the stack. It removes them, calculates, and puts the result back as a new waiting number.
+Trying every way to choose which digits to delete is far too slow. Think about what makes a number small instead: the **leftmost digits matter most**. Walk from left to right. If a digit is bigger than the digit right after it, deleting the bigger one makes the number smaller, because the smaller digit slides into its place. For example, in `"1432219"` the 4 is followed by a 3, and `"132219"` is smaller than `"1432219"`.
 
-| Token | What happens | Stack (bottom → top) |
-|---|---|---|
-| `4` | push 4 | [4] |
-| `13` | push 13 | [4, 13] |
-| `5` | push 5 | [4, 13, 5] |
-| `/` | pop 5 and 13, push 13 / 5 = 2 | [4, 2] |
-| `+` | pop 2 and 4, push 4 + 2 = 6 | [6] |
+That is a pile of unfinished decisions again. Keep a stack of the digits you are keeping so far. For each new digit `d`: while you still have deletions left (`k > 0`) and the top of the stack is **bigger** than `d`, pop it (that is one deletion). Then push `d`. Two cleanups at the end: if deletions are left over (the digits only ever went up, like `"12345"`), delete from the end, because the biggest digits sit there. Then strip leading zeros, and return `"0"` if nothing is left.
 
-One detail causes most of the bugs: the number popped **first** is the right-hand side. For `13 5 /`, the pop gives 5, then 13, so the calculation is `13 / 5`, not `5 / 13`.
+Trace for `"1432219"` with `k = 3`:
+
+| Digit | What happens | `k` left | Stack (bottom → top) |
+|---|---|---|---|
+| `1` | push 1 | 3 | [1] |
+| `4` | 1 is not bigger than 4, push | 3 | [1, 4] |
+| `3` | 4 is bigger than 3: pop 4, push 3 | 2 | [1, 3] |
+| `2` | 3 is bigger than 2: pop 3, push 2 | 1 | [1, 2] |
+| `2` | 2 is not bigger than 2, push | 1 | [1, 2, 2] |
+| `1` | 2 is bigger than 1: pop 2, push 1 | 0 | [1, 2, 1] |
+| `9` | no deletions left, push | 0 | [1, 2, 1, 9] |
+
+The stack spells `1219`. Equal digits stay (the test is strictly "bigger"), because deleting one of two equal digits changes nothing at that spot.
 
 ```python
-def evalRPN(tokens):
-    stack = []                              # numbers still waiting for their operator
-    for t in tokens:
-        if t in ("+", "-", "*", "/"):
-            b = stack.pop()                 # the number pushed last is the right-hand side
-            a = stack.pop()
-            if t == "+": stack.append(a + b)
-            elif t == "-": stack.append(a - b)
-            elif t == "*": stack.append(a * b)
-            else: stack.append(int(a / b))  # division truncates toward zero
-        else:
-            stack.append(int(t))
-    return stack[0]
+def removeKdigits(num, k):
+    stack = []                                  # digits we are keeping, left to right
+    for d in num:
+        while k > 0 and stack and stack[-1] > d:
+            stack.pop()                         # a bigger digit just before a smaller one: delete it
+            k -= 1
+        stack.append(d)
+    if k > 0:                                   # digits only rose, so the biggest are at the end
+        stack = stack[:-k]
+    return "".join(stack).lstrip("0") or "0"    # drop leading zeros; "0" if nothing is left
 ```
 
-At the end, one number is left: the answer.
+For `"10200"` with `k = 1`: the 0 is smaller than the 1 before it, so the 1 is popped (`k` becomes 0). The rest are pushed, giving `"0200"`, and `lstrip("0")` leaves `"200"`.
 
 ### Where else it shows up
 
@@ -1740,48 +1760,51 @@ The set is never rebuilt, only edited at the edges. If you ever find yourself bu
 
 For "shortest", you shrink while you still can, because every step makes a shorter valid window.
 
-### Worked example 2: a fixed-size window (Permutation in String, LeetCode 567)
+### Worked example 2: the shortest window (Minimum Size Subarray Sum, LeetCode 209)
 
-**Problem.** Given two strings `s1` and `s2`, return `True` if `s2` contains a stretch that is a rearrangement of `s1`: the same letters, the same number of each, in any order.
+**Problem.** `nums` holds positive whole numbers and `target` is a positive whole number. Return the length of the shortest run of side-by-side numbers whose sum is at least `target`. If no run reaches `target`, return 0.
 
 ```
-s1 = "ab", s2 = "eidbaooo"
-answer: True         "ba" is a rearrangement of "ab"
+target = 7, nums = [2, 3, 1, 2, 4, 3]
+answer: 2            the run [4, 3] adds up to 7
 
-s1 = "ab", s2 = "eidboaoo"
-answer: False
+target = 4, nums = [1, 4, 4]
+answer: 1            the single number 4
+
+target = 11, nums = [1, 1, 1, 1, 1, 1, 1, 1]
+answer: 0            all eight numbers add up to only 8
 ```
 
-A rearrangement of `s1` has exactly `len(s1)` letters, so the stretch you are looking for has a **fixed length**. Every candidate is a window of that size. The window does not grow or shrink. It only slides.
+The slow way adds up every run from every starting spot: O(n²). A window does better, and it works here because **all the numbers are positive**: adding a number to the window can only raise the sum, and removing one can only lower it. The rule "sum is at least `target`" is one-directional, as a window needs.
 
-A stretch is a rearrangement of `s1` exactly when it has the **same count of every letter**. So keep two lists of 26 counts: `need` (from `s1`) and `have` (from the current window). Sliding one step to the right changes `have` in two places only: the new letter on the right comes in, and the letter that falls off the left goes out. Then compare the two lists.
+The earlier example looked for the *longest* window, so it shrank while the window was invalid and recorded after the shrink. This one wants the *shortest*, so it flips both: grow the right edge, then **shrink while the window is valid** (sum at least `target`), and **record inside the shrink loop**. Each time the window is valid it is a candidate. Then try dropping the left number, and see whether a shorter window is still valid.
 
-Windows of size 2 in `"eidbaooo"`:
+Trace for `target = 7`, `nums = [2, 3, 1, 2, 4, 3]`:
 
-| Window positions | Letters | Same counts as `ab`? |
-|---|---|---|
-| 0–1 | `ei` | no |
-| 1–2 | `id` | no |
-| 2–3 | `db` | no |
-| 3–4 | `ba` | **yes** |
+| Add (right edge) | Sum after adding | Valid windows found while shrinking | Best length |
+|---|---|---|---|
+| 2 | 2 | none | none yet |
+| 3 | 5 | none | none yet |
+| 1 | 6 | none | none yet |
+| 2 | 8 | `[2, 3, 1, 2]` (length 4), drop 2, sum is 6, stop | 4 |
+| 4 | 10 | `[3, 1, 2, 4]` (4), drop 3, sum 7: `[1, 2, 4]` (3), drop 1, sum 6, stop | 3 |
+| 3 | 9 | `[2, 4, 3]` (3), drop 2, sum 7: `[4, 3]` (2), drop 4, sum 3, stop | **2** |
 
 ```python
-def checkInclusion(s1, s2):
-    if len(s1) > len(s2):
-        return False
-    need, have = [0] * 26, [0] * 26             # how many of each letter: wanted, and in the window
-    for c in s1:
-        need[ord(c) - 97] += 1
-    for r, c in enumerate(s2):
-        have[ord(c) - 97] += 1                   # the right edge takes in a new letter
-        if r >= len(s1):
-            have[ord(s2[r - len(s1)]) - 97] -= 1 # the left edge lets one go
-        if have == need:
-            return True
-    return False
+def minSubArrayLen(target, nums):
+    l = 0
+    window_sum = 0
+    best = float("inf")                         # "no valid window yet"
+    for r, x in enumerate(nums):
+        window_sum += x                         # the right edge takes in a number
+        while window_sum >= target:             # still valid: record it, then try a shorter one
+            best = min(best, r - l + 1)
+            window_sum -= nums[l]               # the left edge lets one go
+            l += 1
+    return 0 if best == float("inf") else best  # nothing ever reached target
 ```
 
-Comparing two lists of 26 costs a constant amount, so the whole scan is O(n). The window is never rebuilt, only nudged.
+Each number enters the window once and leaves at most once, so the scan is O(n).
 
 ### Where else it shows up
 
@@ -1915,44 +1938,51 @@ def minMeetingRooms(intervals):
 
 This technique is called a **sweep line**: imagine a vertical line moving left to right across the timeline, and keep a count of what it is currently crossing.
 
-### Worked example 3: inserting into a sorted list (Insert Interval, LeetCode 57)
+### Worked example 3: two sorted lists at once (Interval List Intersections, LeetCode 986)
 
-**Problem.** `intervals` is a list of intervals that do not overlap, already sorted by start. Insert `newInterval` and merge anything it overlaps. Return the sorted list.
+**Problem.** `first` and `second` are two lists of intervals. An interval `[a, b]` is **closed**: it includes both of its ends. Inside each list the intervals do not overlap and are sorted by start. Return every place where an interval from `first` overlaps an interval from `second`, as a list of intervals (the shared part), in sorted order.
 
 ```
-intervals = [[1, 2], [3, 5], [6, 7], [8, 10], [12, 16]],  newInterval = [4, 8]
-answer: [[1, 2], [3, 10], [12, 16]]      [3, 5], [6, 7] and [8, 10] all touch [4, 8]
+first  = [[0, 2], [5, 10], [13, 23], [24, 25]]
+second = [[1, 5], [8, 12], [15, 24], [25, 26]]
+answer: [[1, 2], [5, 5], [8, 10], [15, 23], [24, 24], [25, 25]]
 ```
 
-This list is already in sorted order, so the first half of the idea is done for you: because the intervals are sorted by start, each one only has to be compared with its neighbor in the scan, and the scan only goes one way. The new interval splits the list into three parts, in order:
+For example, `[0, 2]` and `[1, 5]` share the stretch from 1 to 2. And `[5, 10]` and `[1, 5]` share only the single point 5, which counts because the ends are included.
 
-1. **Before it:** intervals whose end is less than the new start. Copy them.
-2. **Overlapping it:** intervals whose start is at most the new end. Merge each one into the new interval (the smaller start, the larger end).
-3. **After it:** everything left. Copy it.
+The slow way compares every interval in `first` with every interval in `second`: O(n × m). Both lists are already sorted, so you can do much better with the idea from this principle: compare neighbors in one pass. Keep one finger `i` on `first` and one finger `j` on `second`.
 
-| Interval | Compared with the new interval | Action | New interval |
-|---|---|---|---|
-| `[1, 2]` | ends at 2, before 4 | copy | `[4, 8]` |
-| `[3, 5]` | starts at 3, at most 8 | merge | `[3, 8]` |
-| `[6, 7]` | starts at 6, at most 8 | merge | `[3, 8]` |
-| `[8, 10]` | starts at 8, at most 8 | merge | `[3, 10]` |
-| `[12, 16]` | starts at 12, after 10 | stop merging; copy it and everything after | `[3, 10]` |
+For the two intervals under your fingers, the shared part (if any) starts at the **later** of the two starts and ends at the **earlier** of the two ends: `[max(starts), min(ends)]`. It exists exactly when that start is no later than that end.
+
+Then move a finger. The interval that **ends first** cannot overlap anything else: everything after it in the other list starts even later. So it is finished, and its finger moves on. The other interval ends later and might still overlap the next interval in the first list, so it stays.
+
+| `i` | `j` | `first[i]` | `second[j]` | Shared part | Move |
+|---|---|---|---|---|---|
+| 0 | 0 | `[0, 2]` | `[1, 5]` | `[1, 2]` | `first` ends first (2 < 5): `i` moves |
+| 1 | 0 | `[5, 10]` | `[1, 5]` | `[5, 5]` | `second` ends first (5 < 10): `j` moves |
+| 1 | 1 | `[5, 10]` | `[8, 12]` | `[8, 10]` | `first` ends first: `i` moves |
+| 2 | 1 | `[13, 23]` | `[8, 12]` | none (13 > 12) | `second` ends first: `j` moves |
+| 2 | 2 | `[13, 23]` | `[15, 24]` | `[15, 23]` | `first` ends first: `i` moves |
+| 3 | 2 | `[24, 25]` | `[15, 24]` | `[24, 24]` | `second` ends first: `j` moves |
+| 3 | 3 | `[24, 25]` | `[25, 26]` | `[25, 25]` | `first` ends first: `i` moves, past the end, so stop |
 
 ```python
-def insert(intervals, new):
-    out, i, n = [], 0, len(intervals)
-    while i < n and intervals[i][1] < new[0]:      # ends before the new one starts: keep as is
-        out.append(intervals[i])
-        i += 1
-    while i < n and intervals[i][0] <= new[1]:     # starts before the new one ends: they overlap
-        new = [min(new[0], intervals[i][0]), max(new[1], intervals[i][1])]
-        i += 1
-    out.append(new)                                # the merged interval
-    out.extend(intervals[i:])                      # everything left starts after it ends
+def intervalIntersection(first, second):
+    i, j = 0, 0
+    out = []
+    while i < len(first) and j < len(second):
+        lo = max(first[i][0], second[j][0])        # the later start
+        hi = min(first[i][1], second[j][1])        # the earlier end
+        if lo <= hi:                               # they really overlap (touching at one point counts)
+            out.append([lo, hi])
+        if first[i][1] < second[j][1]:             # whichever ends first is finished
+            i += 1
+        else:
+            j += 1
     return out
 ```
 
-Without the sorted order you would have to check every interval against the new one and then sort the result. With it, one pass is enough.
+If either list is empty the loop never runs, and the answer is `[]`. Each step moves one finger forward, so the whole scan is O(n + m).
 
 ### Where else it shows up
 
@@ -2103,36 +2133,61 @@ def lastStoneWeight(stones):
     return -heap[0] if heap else 0
 ```
 
-### Worked example 3: keep only the best k (K Closest Points to Origin, LeetCode 973)
+### Worked example 3: keep only the best k, with a tie-break (Top K Frequent Words, LeetCode 692)
 
-**Problem.** `points` holds points `[x, y]` on a plane. Return the `k` points closest to the origin `(0, 0)`, in any order.
+**Problem.** `words` is a list of words and `k` is a whole number. Return the `k` words that appear most often, ordered from most frequent to least frequent. If two words appear equally often, the one that comes first alphabetically goes first.
 
 ```
-points = [[3, 3], [5, -1], [-2, 4]],  k = 2
-answer: [[3, 3], [-2, 4]]         (squared distances 18, 26 and 20)
+words = ["i", "love", "leetcode", "i", "love", "coding"],  k = 2
+answer: ["i", "love"]          both appear twice; "i" comes before "love" alphabetically
+
+words = ["the", "day", "is", "sunny", "the", "the", "the", "sunny", "is", "is"],  k = 4
+answer: ["the", "is", "sunny", "day"]      appearing 4, 3, 2 and 1 times
 ```
 
-Sorting every point by distance works but does too much: O(n log n) to order points you will never return. You only need to remember the best `k` so far, and know **which kept point is the worst**, so you can throw it out when a better one arrives. A heap answers "which is the worst?" instantly.
+First count how often each word appears (a dictionary, P1). Sorting all the distinct words by "count, then alphabet" works but orders words you will never return. Instead keep only the best `k` in a heap and know **which kept word is the worst**, so you can throw it out when a better one arrives.
 
-The distance from the origin is √(x² + y²). The square root never changes the order, so compare `x² + y²`. The heap must hand back the **largest** distance among the kept points, but Python's heap hands back the smallest. Store the distance as a **negative** number, so the farthest point sits at the top.
+Be careful about what "worst" means, because the tie-break lives here. A word is worse if it appears **fewer** times. If two words appear equally often, the one that comes **later** in the alphabet is worse, because the alphabetical-first word wins the tie. So among the kept words, the one to throw out is: lowest count, and among equal counts, the alphabetically last.
 
-| New point | Squared distance | Drops out | Kept points |
+Python's heap always hands back the smallest item, where "smaller" means whatever `<` says. For numbers we could negate to flip the order, but you cannot negate a word. So write a tiny class and define `<` to mean "ranks worse". The heap then keeps the worst kept word on top.
+
+Trace for `["b", "a", "c", "c", "a", "b", "d"]` with `k = 2`. The counts are b: 2, a: 2, c: 2, d: 1.
+
+| Next word | Count | Thrown out | Kept words |
 |---|---|---|---|
-| (3, 3) | 18 | — | (3, 3) |
-| (5, -1) | 26 | — | (3, 3), (5, -1) |
-| (-2, 4) | 20 | drop (5, -1) | (3, 3), (-2, 4) |
+| `b` | 2 | none | b |
+| `a` | 2 | none | a, b |
+| `c` | 2 | `c` (tied on count with a and b, but alphabetically last, so worst) | a, b |
+| `d` | 1 | `d` (fewest appearances) | a, b |
+
+The heap gives back the *worst* kept word first, so the answer comes out in reverse order. Reverse it at the end: `["a", "b"]`.
 
 ```python
-def kClosest(points, k):
-    h = []                                          # max-heap of the k nearest so far (negated distance)
-    for x, y in points:
-        heapq.heappush(h, (-(x * x + y * y), x, y)) # the squared distance is enough to compare
-        if len(h) > k:
-            heapq.heappop(h)                        # the farthest of the kept points goes
-    return [[x, y] for _, x, y in h]
+import heapq
+from collections import Counter
+
+class Entry:
+    def __init__(self, count, word):
+        self.count, self.word = count, word
+    def __lt__(self, other):                    # "self ranks worse than other"
+        if self.count != other.count:
+            return self.count < other.count     # fewer appearances is worse
+        return self.word > other.word           # equal counts: the alphabetically later word is worse
+
+def topKFrequent(words, k):
+    counts = Counter(words)                     # word -> how many times it appears
+    heap = []                                   # the k best entries so far; the worst is on top
+    for word, c in counts.items():
+        heapq.heappush(heap, Entry(c, word))
+        if len(heap) > k:
+            heapq.heappop(heap)                 # throw out the worst of the kept words
+    result = []
+    while heap:
+        result.append(heapq.heappop(heap).word) # worst comes out first...
+    return result[::-1]                         # ...so reverse for best first
 ```
 
-The heap never holds more than `k` points, so each push or pop costs O(log k), and the whole scan is O(n log k).
+The heap never holds more than `k` entries, so counting plus the heap work costs O(n + m log k), where `m` is the number of distinct words.
 
 ### Worked example 4: Kth Largest Element in an Array (LeetCode 215), three ways
 
@@ -2186,7 +2241,7 @@ def kth_largest_quickselect(nums, k):            # O(n) on average
 - **Task Scheduler (621).** *Same-letter tasks need `n` idle slots between them; minimize the total time.* A max-heap of remaining counts plus a queue of tasks cooling down (or the formula in P7).
 - **Design Twitter (355).** *Return the 10 most recent tweets from a user and everyone they follow.* Each person's tweets are already in time order, so this is a merge of sorted lists, stopped after 10.
 - **Top K Frequent Elements (347).** Count with a dictionary (P1), then keep the `k` most frequent in a heap, or use the bucket list from P1.
-- **Minimum Interval to Include Each Query (1851)** and **Meeting Rooms II (253).** Heaps of active intervals, P9.
+- **Minimum Interval to Include Each Query (1851)** and **Meeting Rooms II (253).** Heaps of active intervals. 253 is worked in P9; 1851 (a Hard) is in "Later: the Hard worked examples".
 - **Network Delay Time (743), Swim in Rising Water (778), Min Cost to Connect All Points (1584).** A heap of "the cheapest place to go next", P15.
 
 **Beyond the list:** reorganize a string so no two neighbors match, ugly numbers, sliding window median, the skyline problem, minimum cost to hire `k` workers.
@@ -2587,48 +2642,55 @@ def subsetsWithDup(nums):
 
 The check is `i > start`, not `i > 0`: skipping is only about repeats *at the same level*. Using the second `2` *after* the first (to build `[2, 2]`) is still allowed.
 
-### Worked example 2: choosing what is still unused (Permutations, LeetCode 46)
+### Worked example 2: choosing only larger numbers (Combinations, LeetCode 77)
 
-**Problem.** `nums` holds distinct numbers. Return every ordering of them.
+**Problem.** `n` and `k` are whole numbers. Return every way to choose `k` different numbers from `1, 2, ..., n`. The order inside a choice does not matter, so `[1, 2]` and `[2, 1]` are the same choice and must appear only once.
 
 ```
-nums = [1, 2, 3]
-answer: [[1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], [3,2,1]]
+n = 4, k = 2
+answer: [[1,2], [1,3], [1,4], [2,3], [2,4], [3,4]]
+
+n = 1, k = 1
+answer: [[1]]
 ```
 
-Build each ordering one position at a time. At each position, try every number that has not been used yet in this ordering. If you place a number and then finish exploring, take it back out and try the next one. The rule for what is allowed is the **conflict check**: a number may only go in if it is not already in `path`. A list of `used` flags makes that check instant.
+Build each choice one number at a time. If you let every position pick any unused number, you build `[1, 2]` and `[2, 1]` as two different lists, and every choice shows up many times. To prevent that, build each choice in **increasing order**: the next number must be larger than the one just picked. Then each set can only be built one way. The code does this with a `start` value. After picking `x`, the next level may only pick from `x + 1` upward.
 
-The first few steps for `[1, 2, 3]`:
+The **conflict check** is therefore built into the loop range: `for x in range(start, n + 1)`. No `used` list is needed, because you only ever look forward.
+
+The steps for `n = 4`, `k = 2`:
 
 | Step | `path` | What happens |
 |---|---|---|
 | 1 | `[1]` | choose 1 |
-| 2 | `[1, 2]` | choose 2 (1 is used) |
-| 3 | `[1, 2, 3]` | choose 3: full, so save a copy |
-| 4 | `[1, 2]` | undo 3. Nothing else is free. |
-| 5 | `[1]` | undo 2. Try the next free number. |
-| 6 | `[1, 3]` | choose 3 |
-| 7 | `[1, 3, 2]` | choose 2: full, so save a copy |
-| 8 | `[1, 3]`, `[1]`, `[]` | undo 2, undo 3, undo 1. Then start with 2. |
+| 2 | `[1, 2]` | choose 2: the path has `k` numbers, so save a copy |
+| 3 | `[1]` | undo 2 |
+| 4 | `[1, 3]` | choose 3: full, so save a copy |
+| 5 | `[1]` | undo 3 |
+| 6 | `[1, 4]` | choose 4: full, so save a copy |
+| 7 | `[1]`, then `[]` | undo 4. Nothing larger is left, so undo 1. |
+| 8 | `[2]` | choose 2. The same steps follow, saving `[2, 3]` and `[2, 4]`. |
+| 9 | `[3]`, `[3, 4]` | choose 3, then 4: save `[3, 4]`, then undo both |
+| 10 | `[4]`, then `[]` | choose 4. Nothing is larger, so no choice can follow: a dead end. Undo it, and the search is over. |
+
+That saved six lists, which is right: choosing 2 numbers out of 4 can be done in 6 ways.
 
 ```python
-def permute(nums):
-    res, path, used = [], [], [False] * len(nums)
-    def go():
-        if len(path) == len(nums):
+def combine(n, k):
+    res, path = [], []
+    def go(start):
+        if len(path) == k:
             res.append(path[:])                     # a copy: path keeps changing
             return
-        for i, x in enumerate(nums):
-            if used[i]:                             # already placed in this ordering
-                continue
-            used[i] = True; path.append(x)          # choose
-            go()                                    # explore
-            path.pop(); used[i] = False             # undo
-    go()
+        for x in range(start, n + 1):               # only numbers larger than the last pick
+            path.append(x)                          # choose
+            go(x + 1)                               # explore: the next pick starts after x
+            path.pop()                              # undo
+    go(1)
     return res
 ```
 
-Two points matter. The `path[:]` makes a copy, because `path` keeps changing after you save it. And the undo lines must exactly reverse the choose lines, or the next branch starts with leftovers from the last one. For 3 numbers the result has 3! = 6 lists; for n numbers, n!.
+Two points matter. The `path[:]` makes a copy, because `path` keeps changing after you save it. And `go(x + 1)`, not `go(start + 1)`: the next level starts after the number you just picked, not after where this level began.
 
 ### Four shapes the decisions take
 
@@ -3818,7 +3880,7 @@ Each row is a problem stated in one line, the new way to see it, and the princip
 | **Surrounded Regions (130):** capture regions not connected to the border | which regions *are* connected to the border? (search from the border) | P13 |
 | **Walls and Gates (286):** each room's distance to the nearest gate | one search spreading from all gates at once | P13 |
 | **Jump Game (55):** can I reach the end? | which positions can reach the end? (scan backward) | P7 |
-| **Burst Balloons (312):** best order to burst balloons for coins | which balloon is burst *last* in each range? (below) | P3 |
+| **Burst Balloons (312):** best order to burst balloons for coins | which balloon is burst *last* in each range? (a Hard: see "Later: the Hard worked examples") | P3 |
 | **Target Sum (494):** count `±` patterns that hit a target | count subsets summing to `(total + target) / 2` | P3 |
 | **Two Sum (1):** find a pair adding to `t` | for each `a`, look up `t − a` | P1 |
 | **House Robber II (213):** no two neighbors, houses in a circle | the better of two straight rows (without the first house, without the last) | P3 |
@@ -3840,46 +3902,58 @@ Each row is a problem stated in one line, the new way to see it, and the princip
 | **Alien Dictionary (269):** the alphabet behind a sorted word list | "letter before letter" facts from each neighboring pair of words | P14 |
 | **Trapping Rain Water (42):** water above each bar | `min(tallest on the left, tallest on the right) − height` | P2 |
 
-### Worked example 2: break the circle into rows (House Robber II, LeetCode 213)
+### Worked example 2: remove from both ends (Minimum Operations to Reduce X to Zero, LeetCode 1658)
 
-**Problem.** The houses stand in a **circle**, so the first and last houses are neighbors. Robbing two neighbors sets off the alarm. `nums[i]` is the money in house `i`. Return the most you can take.
+**Problem.** `nums` holds positive whole numbers, and `x` is a whole number. In one operation you remove either the leftmost or the rightmost number of `nums`, and subtract its value from `x`. Return the fewest operations that make `x` exactly 0, or `-1` if that is impossible.
 
 ```
-nums = [2, 3, 2]
-answer: 3            the first and last are neighbors, so you cannot take both 2s
+nums = [1, 1, 4, 2, 3],  x = 5
+answer: 2            remove 3 and then 2 from the right end: 5 - 3 - 2 = 0
 
-nums = [1, 2, 3, 1]
-answer: 4            1 + 3
+nums = [5, 6, 7, 8, 9],  x = 4
+answer: -1           no combination of end numbers adds up to 4
+
+nums = [3, 2, 20, 1, 1, 3],  x = 10
+answer: 5            remove 3 and 2 on the left, and 3, 1, 1 on the right
 ```
 
-You already know how to solve the same problem on a straight row (House Robber, LeetCode 198, in P3). Only the circle is new. Do not invent a new method. **Describe the problem differently until it becomes the one you know.**
+Trying every order of "left or right" is an exponential search. Do not invent something clever for the ends. **Describe the problem differently until it becomes one you know.**
 
-In any valid choice, you cannot rob both the first house and the last house. So every valid choice either skips the first house or skips the last house (or both). That gives two straight rows:
+Look at what stays. If you remove some numbers from the left end and some from the right end, the numbers **left behind** form one unbroken stretch in the middle. The removed numbers add up to `x`, so the numbers left behind add up to `total − x`, where `total` is the sum of the whole list. And removing the *fewest* numbers means keeping the *most*.
 
-- the houses **without the last one**: `nums[:-1]`
-- the houses **without the first one**: `nums[1:]`
+So the problem becomes: **find the longest stretch whose sum is exactly `total − x`.** The answer is the list length minus that stretch's length. That is a window problem (P8), and it works because all the numbers are positive: adding a number raises the sum, removing one lowers it. Grow the right edge. While the sum is too big, shrink the left edge. When the sum equals the target, record the length.
 
-The answer is the larger of the two straight-row answers. Nothing is lost: each valid circular choice fits one of those rows.
+For `nums = [1, 1, 4, 2, 3]` and `x = 5`: `total` is 11, so the target sum for the stretch we keep is 6.
 
-| Row | Straight-row best |
-|---|---|
-| `[1, 2, 3]` (without the last house) | 4 (1 + 3) |
-| `[2, 3, 1]` (without the first house) | 3 |
-| Answer | **4** |
+| Right edge adds | Window after shrinking | Window sum | Longest kept stretch |
+|---|---|---|---|
+| 1 | `[1]` | 1 | none yet |
+| 1 | `[1, 1]` | 2 | none yet |
+| 4 | `[1, 1, 4]` | 6, equals the target | 3 |
+| 2 | `[4, 2]` (the sum hit 8 and then 7, so two 1s were dropped) | 6, equals the target | 3 |
+| 3 | `[2, 3]` (the sum hit 9, so the 4 was dropped) | 5 | 3 |
+
+The longest stretch kept has length 3, so the fewest operations are 5 − 3 = **2**.
 
 ```python
-def rob(nums):
-    def line(a):                                    # the ordinary House Robber on a straight row
-        take, skip = 0, 0
-        for x in a:
-            take, skip = skip + x, max(take, skip)
-        return max(take, skip)
-    if len(nums) == 1:
-        return nums[0]
-    return max(line(nums[:-1]), line(nums[1:]))     # leave out the last house, or leave out the first
+def minOperations(nums, x):
+    target = sum(nums) - x                          # the sum of the stretch we keep in the middle
+    if target < 0:                                  # x is bigger than everything together
+        return -1
+    l = 0
+    window_sum = 0
+    keep = -1                                       # length of the longest valid stretch; -1 means none yet
+    for r, v in enumerate(nums):
+        window_sum += v                             # the right edge takes in a number
+        while window_sum > target:                  # too big: let the left edge go
+            window_sum -= nums[l]
+            l += 1
+        if window_sum == target:
+            keep = max(keep, r - l + 1)
+    return -1 if keep == -1 else len(nums) - keep
 ```
 
-A single house has no neighbors, so the two rows would both be empty. That one case is handled on its own line.
+Two edge cases come out correctly. If `x` is bigger than the total, `target` is negative and the answer is `-1`. If `x` equals the total, `target` is 0, the stretch kept is empty (length 0), and you remove everything.
 
 ### Worked example 3: make the format describe itself (Encode and Decode Strings, LeetCode 271)
 

@@ -128,7 +128,7 @@ Some pairs below need different principles. Others use the same principle and di
 
 <details><summary>Answer</summary>
 
-- **Deciding feature:** **longest** vs **shortest**. Longest: shrink *while invalid*, then record. Shortest: record and shrink *while valid*. Same two pointers, inverted inner loop (P8, Card 13).
+- **Deciding feature:** **longest** vs **shortest**. Longest: shrink *while invalid*, then record. Shortest: record and shrink *while valid*. Same two pointers, inverted inner loop (P8: Card 13 for the longest window; for the shortest, the P8 worked example on 209 Minimum Size Subarray Sum, and Later drill D in `DRILLS.md` for 76).
 - **Say:** "Maximize shrinks on violation; minimize shrinks on satisfaction."
 
 </details>

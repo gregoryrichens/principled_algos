@@ -66,6 +66,8 @@ return list(groups.values())
 
 - **Product of Array Except Self (238).** Return a list where position `i` holds the product of every number except `nums[i]`. No division, O(n) time.
   `nums = [2, 3, 4, 5]` → `[60, 40, 30, 24]` (for example, 60 = 3·4·5)
+- **Product of the Last K Numbers (1352).** Build a class with `add(num)`, which appends a number to a growing stream, and `getProduct(k)`, which returns the product of the last `k` numbers added. Both should be O(1).
+  `add(3), add(0), add(2), add(5), add(4)`, then `getProduct(2)` → `20`, `getProduct(3)` → `40`, `getProduct(4)` → `0`
 
 **When to reach for this card.** Every position needs something about *everything to its left* and *everything to its right*, and the slow solution rescans those sides for each position.
 
@@ -75,6 +77,7 @@ return list(groups.values())
 
 **Write, from memory:**
 1. Product of Array Except Self, using the output list for the left products and a single variable for the right product.
+2. Product of the Last K Numbers, with a list of running products that restarts at every 0.
 
 <details><summary>Answer</summary>
 
@@ -88,12 +91,27 @@ for i in range(len(nums) - 1, -1, -1):
     result[i] *= right                        # use it first...
     right *= nums[i]                       # ...then include nums[i] for the next position
 return result
+
+# Product of the Last K Numbers
+class ProductOfNumbers:
+    def __init__(self):
+        self.prefix = [1]                  # prefix[i] = product of the first i numbers since the last 0
+    def add(self, num):
+        if num == 0:
+            self.prefix = [1]              # a 0 wipes out every product that reaches back past it
+        else:
+            self.prefix.append(self.prefix[-1] * num)
+    def getProduct(self, k):
+        if k >= len(self.prefix):          # the last k numbers include a 0
+            return 0
+        return self.prefix[-1] // self.prefix[-1 - k]   # the product of the last k = (all) / (all but the last k)
 ```
 
 **Compare your answer against these:**
 - **Leave out the current element.** `res[i]` must be the product of `nums[0..i-1]`, not `nums[0..i]`. That is why the first loop multiplies by `nums[i - 1]`.
 - **Use, then update.** In the backward pass, multiply `res[i]` by `right` *before* folding `nums[i]` into `right`. Swapping the two lines includes each number in its own answer.
 - **No extra list for products.** The output list holds the left products, and the right product is one variable, so the extra memory is O(1).
+- **Reset on 0.** A product of the last `k` numbers is the running product now divided by the running product `k` numbers ago. A 0 would turn every later running product into 0 and make that division impossible, so restart the list at each 0. If `k` reaches back past the restart, the last `k` numbers contain a 0, so the answer is 0.
 </details>
 
 **Now use it on:** Product Except Self 238 · Trapping Rain Water 42 (a Hard: see Later drill A) · for "count the stretches that sum to k", see Card 28.
@@ -546,6 +564,8 @@ return res
 
 - **Daily Temperatures (739).** For each day, return how many days until a warmer temperature, or 0 if none comes.
   `[73, 74, 75, 71, 69, 72, 76, 73]` → `[1, 1, 4, 2, 1, 1, 0, 0]`
+- **Online Stock Span (901).** Prices arrive one day at a time through `next(price)`. Return today's span: the number of days in a row, ending today and counting today, on which the price was less than or equal to today's price.
+  `next(100), next(80), next(60), next(70), next(60), next(75), next(85)` → `1, 1, 1, 2, 1, 4, 6`
 
 **When to reach for this card.** "For every element, find the next (or previous) larger (or smaller) one", or something that stretches until a smaller element blocks it.
 
@@ -555,6 +575,7 @@ return res
 
 **Write, from memory:**
 1. Daily Temperatures.
+2. Online Stock Span, with a stack of `(price, span)` pairs.
 
 <details><summary>Answer</summary>
 
@@ -568,12 +589,20 @@ for i, t in enumerate(T):
         res[j] = i - j
     stack.append(i)
 return res
+
+# Online Stock Span (the body of next(price); self.stack holds (price, span) pairs)
+span = 1                                  # today counts
+while self.stack and self.stack[-1][0] <= price:
+    span += self.stack.pop()[1]           # absorb the days the popped price already covered
+self.stack.append((price, span))
+return span
 ```
 
 **Compare your answer against these:**
 - **Store positions, not values.** The answer is a distance (or a width), so you need positions. Values can be looked up from them.
 - **`<` or `<=` decides what happens with ties.** Popping on `<` leaves equal values on the stack, which is right for "strictly warmer". Popping on `<=` keeps the stack strictly decreasing.
 - **Deal with what's left.** Positions still on the stack at the end never found an answer: 0 for Daily Temperatures.
+- **Store the answer with the item.** For the stock span, each stack entry carries its own span. Popping a price adds the span it already covered, so those days are never counted twice. Here the test is `<=`, because a day with an equal price belongs in the span.
 </details>
 
 **Now use it on:** Daily Temperatures 739 · Largest Rectangle 84 (a Hard: see Later drill C) · Sliding Window Maximum 239 (the largest value in every window of `k` consecutive elements; the deque stores **positions**, because the test for "has the front left the window?" is `q[0] <= r - k`; full version on Card 34).
@@ -646,8 +675,8 @@ return start
 
 - **Longest Substring Without Repeating Characters (3).** Return the length of the longest stretch with no repeated character.
   `"abcabcbb"` → `3` ("abc")
-- **Longest Repeating Character Replacement (424).** Return the length of the longest stretch that can be made all one letter by changing at most `k` characters.
-  `s = "AABABBA", k = 1` → `4` ("AABA" becomes "AAAA")
+- **Max Consecutive Ones III (1004).** `nums` holds 0s and 1s. You may flip at most `k` zeros to 1. Return the length of the longest stretch of 1s you can make.
+  `nums = [1, 0, 1, 1, 0, 1], k = 1` → `4` (flip the first 0 and the first four numbers are all 1s)
 
 **When to reach for this card.** "Substring", "subarray", "consecutive" or "window", plus "longest" or "how many", with a condition on the stretch's contents.
 
@@ -657,7 +686,7 @@ return start
 
 **Write, from memory:**
 1. Longest Substring Without Repeating Characters, with a set.
-2. Longest Repeating Character Replacement, with a count of each letter.
+2. Max Consecutive Ones III, with a count of the zeros in the window.
 
 <details><summary>Answer</summary>
 
@@ -671,12 +700,14 @@ for r, c in enumerate(s):
     best = max(best, r - l + 1)
 return best
 
-# Longest Repeating Character Replacement
-count, l, best = {}, 0, 0
-for r, c in enumerate(s):
-    count[c] = count.get(c, 0) + 1
-    while (r - l + 1) - max(count.values()) > k:   # more than k characters would need changing: shrink
-        count[s[l]] -= 1
+# Max Consecutive Ones III
+zeros, l, best = 0, 0, 0
+for r, x in enumerate(nums):
+    if x == 0:
+        zeros += 1
+    while zeros > k:                       # more than k zeros would need flipping: shrink
+        if nums[l] == 0:
+            zeros -= 1
         l += 1
     best = max(best, r - l + 1)
 return best
@@ -684,11 +715,11 @@ return best
 
 **Compare your answer against these:**
 - **Shrink while invalid.** The `while` loop runs as long as the window breaks the rule, and the answer is recorded after it.
-- **Valid means at most `k` changes.** The window length minus the count of its most common letter is how many characters would need changing.
+- **Valid means at most `k` flips.** The number of zeros in the window is how many you would have to flip. Only decrease `zeros` when the number leaving on the left is a 0.
 - **The condition must only get harder as the window grows.** "Sum exactly `k`" with negative numbers can become valid by *adding* an element, so a window doesn't work there. Use Card 28.
 </details>
 
-**Now use it on:** Longest Substring 3 · Minimum Window 76 (a Hard: see Later drill D) · Permutation in String 567 (does `s2` contain a rearrangement of `s1` as a consecutive stretch? a fixed-size window of letter counts).
+**Now use it on:** Longest Substring 3 · Longest Repeating Character Replacement 424 (the longest stretch that can be made one letter by changing at most `k` characters; valid when `length − count of the most common letter ≤ k`) · Minimum Window 76 (a Hard: see Later drill D) · Permutation in String 567 (does `s2` contain a rearrangement of `s1` as a consecutive stretch? a fixed-size window of letter counts).
 
 ### Card 14 · Sort, then one pass: merge, keep the most, count the overlap (P9)
 
@@ -761,8 +792,8 @@ return best
 
 - **Kth Largest Element in an Array (215).** Return the `k`-th largest element.
   `nums = [3, 2, 1, 5, 6, 4], k = 2` → `5`
-- **K Closest Points to Origin (973).** Return the `k` points nearest to `(0, 0)`.
-  `points = [[1, 3], [-2, 2]], k = 1` → `[[-2, 2]]`
+- **Top K Frequent Words (692).** Return the `k` words that appear most often, most frequent first. Words with the same count go in alphabetical order.
+  `words = ["i", "love", "leetcode", "i", "love", "coding"], k = 2` → `["i", "love"]`
 
 **When to reach for this card.** "The k largest / closest", or any loop that keeps asking for the smallest or largest item of a changing collection.
 
@@ -772,7 +803,7 @@ return best
 
 **Write, from memory:**
 1. Kth largest with a heap of size `k`.
-2. K Closest Points, with a heap of size `k` keyed on negative distance.
+2. Top K Frequent Words, with a heap of size `k` of entries whose `<` means "ranks worse".
 
 <details><summary>Answer</summary>
 
@@ -784,17 +815,29 @@ for x in nums:
     if len(h) > k: heapq.heappop(h)        # evict the smallest; the k largest remain
 return h[0]
 
-# K Closest Points to Origin: keep the k nearest in a max-heap (negated distance)
+# Top K Frequent Words: keep the k best in a heap with the worst on top
+class Entry:
+    def __init__(self, count, word):
+        self.count, self.word = count, word
+    def __lt__(self, other):               # "self ranks worse than other"
+        if self.count != other.count:
+            return self.count < other.count   # fewer appearances is worse
+        return self.word > other.word      # equal counts: the alphabetically later word is worse
+
 h = []
-for x, y in points:
-    heapq.heappush(h, (-(x * x + y * y), x, y))
-    if len(h) > k: heapq.heappop(h)        # evict the farthest; the k nearest remain
-return [[x, y] for _, x, y in h]
+for word, c in Counter(words).items():
+    heapq.heappush(h, Entry(c, word))
+    if len(h) > k: heapq.heappop(h)        # evict the worst; the k best remain
+result = []
+while h:
+    result.append(heapq.heappop(h).word)   # worst comes out first...
+return result[::-1]                        # ...so reverse for best first
 ```
 
 **Compare your answer against these:**
 - **"k largest" uses a min-heap.** You need quick access to the smallest of your kept items, because that's the one to evict.
 - **Negate for a max-heap.** Python only has a min-heap. Store `-x` and negate again when reading.
+- **Ties decide who is "worst".** For equal counts the alphabetically *later* word loses, because alphabetical order wins the tie. A word cannot be negated, so define `__lt__` instead.
 - **Another way to find the kth largest:** quickselect, on Card 31.
 </details>
 
@@ -812,6 +855,8 @@ return [[x, y] for _, x, y in h]
   `[1, 2, 3, 4, 5]` → `3` (4 → 2 → 1 → 3)
 - **Balanced Binary Tree (110).** Is every node's left and right subtree height within 1 of each other?
   `[3, 9, 20, null, null, 15, 7]` → `True`
+- **Longest ZigZag Path in a Binary Tree (1372).** A zigzag path starts at any node, steps to a child (left or right), and must then switch direction at every step. Return the number of edges on the longest zigzag path.
+  `[1, null, 2, 3, 4, null, 5]` → `3` (1 → 2 → 3 → 5: right, left, right)
 
 **When to reach for this card.** Each node's answer comes from its children, but the overall answer is a different thing from what a parent needs (a path through the node versus the height below it).
 
@@ -822,6 +867,7 @@ return [[x, y] for _, x, y in h]
 **Write, from memory:**
 1. Diameter.
 2. Say what changes for Balanced.
+3. Longest ZigZag Path, where each call returns two lengths.
 
 <details><summary>Answer</summary>
 
@@ -836,6 +882,20 @@ def height(node):
     return 1 + max(L, R)                   # the height, for the parent
 height(root)
 return best
+
+# Longest ZigZag Path in a Binary Tree
+best = 0
+def go(node):
+    nonlocal best
+    if not node: return -1, -1            # a missing child, so a lone node gets 1 + (-1) = 0 edges
+    _, left_child_goes_right = go(node.left)
+    right_child_goes_left, _ = go(node.right)
+    left = 1 + left_child_goes_right      # step left, then the child must step right
+    right = 1 + right_child_goes_left     # step right, then the child must step left
+    best = max(best, left, right)         # record the best on the side
+    return left, right                    # the two things the parent can use
+go(root)
+return best
 ```
 
 Balanced: return a pair `(is_balanced, height)` from each call, and a node is balanced when both children are and `abs(left_height - right_height) <= 1`.
@@ -844,6 +904,7 @@ Balanced: return a pair `(is_balanced, height)` from each call, and a node is ba
 - **`nonlocal best`.** Without it, `best = ...` inside the inner function creates a new local variable and the outer `best` never changes. (A one-element list also works.)
 - **Diameter counts edges.** `height` counts nodes, so `L + R` is the number of edges on the path bending at this node.
 - **Decide the return value before coding.** Write down "this returns ___" first.
+- **Two numbers go up, not one.** A parent needs the longest zigzag that starts by stepping left and the longest that starts by stepping right, because which one it can use depends on which side of the parent the child is on. The overall answer is recorded on the side, not returned.
 </details>
 
 **Now use it on:** Diameter 543 · Max Path Sum 124 (a Hard: see Later drill F) · Balanced 110 · Maximum Depth 104 (the number of nodes on the longest root-to-leaf path: `1 + max(left, right)`).
