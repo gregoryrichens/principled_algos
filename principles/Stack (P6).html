@@ -243,6 +243,7 @@ for i in range(len(temperatures)):
             stack.append(int(t))
     return stack[0]</code></pre>
 
+<details class="later"><summary>Later, not for your first day: Largest Rectangle in Histogram (LeetCode 84, a Hard)</summary><div>
 <h3>Worked example 3: Largest Rectangle in Histogram (LeetCode 84)</h3>
 <p><code>heights[i]</code> is the height of a bar 1 unit wide. Find the area of the largest rectangle that fits inside the bars.</p>
 <pre><code>heights = [2, 1, 5, 6, 2, 3]
@@ -280,12 +281,13 @@ answer: 10        <span class="cm"># bars of height 5 and 6 hold a rectangle 5 h
         best = max(best, height * (len(heights) - s))
     return best</code></pre>
 <p>Bars still on the stack at the end reach to the right end.</p>
+</div></details>
 
 <h3>How to recognize it</h3>
 <ul>
 <li>“For each item, find the next (or previous) item that is larger (or smaller).”</li>
 <li>“How long until …”, “how far back until …”.</li>
-<li>“Largest rectangle” in bars.</li>
+<li>“Largest rectangle” in bars (a Hard, for later).</li>
 <li>Pairs inside pairs: brackets, HTML tags, expressions.</li>
 </ul>
 
@@ -315,8 +317,9 @@ answer: 10        <span class="cm"># bars of height 5 and 6 hold a rectangle 5 h
 <details><summary>3. Which are valid: "{[]}(", "(]", ")("?</summary><div>
 <p><b>Answer:</b> none of them. <code>"{[]}("</code> leaves <code>(</code> on the stack. <code>"(]"</code> has the wrong type on the top. <code>")("</code> closes before anything opens.</p>
 </div></details>
-<details><summary>4. Largest rectangle in [3, 1, 3, 2, 2]</summary><div>
-<p><b>Answer:</b> 6. Height 2 over bars 2, 3 and 4, so 3 bars wide. Type the heights into the histogram above and check each step.</p>
+<details><summary>4. Next smaller value: [4, 5, 2, 10, 8]</summary><div>
+<p>For each item, give the next smaller value, or −1 if there is none.</p>
+<p><b>Answer:</b> <code>[2, 2, -1, 8, -1]</code>. Use the same code as problem 1, but pop while the top is <em>larger</em> than the new item.</p>
 </div></details>
 
 <h2>In the real world</h2>

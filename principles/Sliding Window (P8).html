@@ -158,6 +158,7 @@ ul{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem}
 </table></div>
 <p>Why can the shortest case move <code>l</code>? When the window is good, every later window that starts at <code>l</code> is longer. So <code>l</code> is finished: record, then move <code>l</code>.</p>
 
+<details class="later"><summary>Later, not for your first day: Minimum Window Substring (LeetCode 76, a Hard)</summary><div>
 <h3>Worked example 2: Minimum Window Substring (LeetCode 76)</h3>
 <p><b>Problem.</b> Return the shortest stretch of <code>s</code> that contains every character of <code>t</code>, with repeats, or <code>""</code> if there is none. For <code>s = "ADOBECODEBANC"</code> and <code>t = "ABC"</code>, the answer is <code>"BANC"</code>.</p>
 <p><b>Test the mirror of Fact 3.</b> For a shortest problem, a good window must stay good when it grows. Here it does: added letters cannot remove a letter of <code>t</code>.</p>
@@ -208,6 +209,7 @@ ul{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem}
             l += 1
     return s[best_l : best_l + best_len] if best_len != float("inf") else ""</code></pre>
 <p>The invariant here: when the shrink loop ends, the window is bad, and every good window that ends at <code>r</code> was recorded.</p>
+</div></details>
 
 <h3>Worked example 3: Longest Repeating Character Replacement (LeetCode 424)</h3>
 <p><b>Problem.</b> You can change at most <code>k</code> letters. Return the longest stretch that you can make into one letter. For <code>"AABABBA"</code> and <code>k = 1</code>, the answer is 4 (<code>"AABA"</code>).</p>
