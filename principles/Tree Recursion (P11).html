@@ -178,7 +178,7 @@ def diameter(node):
 <p><code>walk</code> reads only its argument, and it changes nothing outside itself. It answers one question about one subtree. Many solutions online do it another way. They keep the answer in a variable outside the function, with <code>nonlocal</code> or <code>self.best</code>, and change it from inside each call. Then the function returns one value and also changes another. That breaks <b>command-query separation</b>: a function should either answer a question or change something, not both. The pair version is just as fast, and you can test each call by itself.</p>
 
 <h3>Watch the computer run it</h3>
-<p>A computer cannot ask two children at the same time. It follows one call to its end before it starts the next. The widget below runs <code>walk</code> on a tree with 9 nodes. Press Step, and look at three things.</p>
+<p>A computer cannot ask two children at the same time. It follows one call to its end before it starts the next. The widget below runs <code>walk</code> on a tree with 9 nodes. The number in each circle is only a label, to tell the nodes apart. <code>walk(node 4)</code> means "call <code>walk</code> on the node with the label 4". In real code you pass the node itself, for example <code>node.left</code>. Press Step, and look at three things.</p>
 <ul>
 <li><b>The order.</b> The calls start down the left side first. But a node finishes only after both of its children finish. So the nodes finish children first, parent last: 8, 6, 4, 9, 7, 5, 2, 3, 1. This finish order is called <b>post-order</b>.</li>
 <li><b>The stack of open calls.</b> When a node calls a child, the node stops and waits with half of its work done. You can see that in the list, for example <code>left = (3, 2), right = ?</code>. The waiting calls make a pile, called the <b>call stack</b>. Only the call on top runs. The pile is never taller than the longest path from the root down: here 5 calls, for 9 nodes. (The calls on empty children start and end at once, so the widget does not show them. In real Python they add one more call at the deepest moment.)</li>
@@ -192,7 +192,7 @@ def diameter(node):
       <span class="head">Call stack (top runs)</span>
       <div id="stack1"></div>
       <span class="head" style="margin-top:6px">The answer</span>
-      <div class="bestbox" id="best1">walk(1)[1] = ?</div>
+      <div class="bestbox" id="best1">walk(root)[1] = ?</div>
     </div>
   </div>
   <div class="legend">
@@ -400,29 +400,29 @@ const frames1=[];
   const state={}, out={}, stack=[];
   for(const k in T) state[k]='idle';
   const snap=(msg,extra={})=>frames1.push(Object.assign({state:{...state},out:{...out},stack:stack.map(f=>({...f})),msg},extra));
-  snap('Press Step to call <code>walk(1)</code> on the root.');
+  snap('Press Step to call <code>walk(root)</code>.');
   function go(id){
     const n=T[id]; const f={id,left:'?',right:'?'};
     if(stack.length) state[stack[stack.length-1].id]='wait';
     stack.push(f); state[id]='now';
     let msg;
     if(!n.l&&!n.r){f.left=[0,0];f.right=[0,0];
-      msg=`Call <code>walk(${id})</code>. Node ${id} is a leaf. Its calls on its two empty children return (0, 0) at once, so <code>left = (0, 0)</code> and <code>right = (0, 0)</code>.`;}
-    else if(n.l){msg=`Call <code>walk(${id})</code>. Node ${id} runs now, but it cannot return yet. First it needs the pair from its left child, so its next action is to call <code>walk(${n.l})</code>.`;}
-    else {f.left=[0,0];msg=`Call <code>walk(${id})</code>. Its left child is empty, so <code>left = (0, 0)</code> at once. Its next action is to call <code>walk(${n.r})</code> for its right child.`;}
+      msg=`Call <code>walk(node ${id})</code>. Node ${id} is a leaf. Its calls on its two empty children return (0, 0) at once, so <code>left = (0, 0)</code> and <code>right = (0, 0)</code>.`;}
+    else if(n.l){msg=`Call <code>walk(node ${id})</code>. Node ${id} runs now, but it cannot return yet. First it needs the pair from its left child, so its next action is to call <code>walk(node ${n.l})</code>.`;}
+    else {f.left=[0,0];msg=`Call <code>walk(node ${id})</code>. Its left child is empty, so <code>left = (0, 0)</code> at once. Its next action is to call <code>walk(node ${n.r})</code> for its right child.`;}
     snap(msg);
     if(n.l) f.left=go(n.l);
     if(n.r) f.right=go(n.r); else f.right=[0,0];
     const [lh,ld]=f.left,[rh,rd]=f.right, bend=lh+rh, H=1+Math.max(lh,rh), D=Math.max(bend,ld,rd);
     stack.pop(); state[id]='done'; out[id]=[H,D];
-    let m=`<code>walk(${id})</code> finishes with <code>left = ${pr(f.left)}</code> and <code>right = ${pr(f.right)}</code>. The path that bends here has ${lh} + ${rh} = ${bend} ${bend===1?'edge':'edges'}. The diameter of this subtree is max(${bend}, ${ld}, ${rd}) = ${D}`;
+    let m=`<code>walk(node ${id})</code> finishes with <code>left = ${pr(f.left)}</code> and <code>right = ${pr(f.right)}</code>. The path that bends here has ${lh} + ${rh} = ${bend} ${bend===1?'edge':'edges'}. The diameter of this subtree is max(${bend}, ${ld}, ${rd}) = ${D}`;
     m+= (D>bend)?`, from a path below this node. `:`. `;
     m+=`It returns (1 + max(${lh}, ${rh}), ${D}) = ${pr([H,D])}`;
     const p=parent[id];
     if(p){const pf=stack[stack.length-1]; state[p]='now';
       m+=` to node ${p}. `;
       if(T[p].l===id){ pf.left=[H,D];
-        if(T[p].r) m+=`Node ${p} now knows <code>left = ${pr([H,D])}</code>. Next it calls <code>walk(${T[p].r})</code>.`;
+        if(T[p].r) m+=`Node ${p} now knows <code>left = ${pr([H,D])}</code>. Next it calls <code>walk(node ${T[p].r})</code>.`;
         else {pf.right=[0,0]; m+=`Node ${p} has no right child, so <code>right = (0, 0)</code>. Node ${p} can now finish.`;}
       } else { pf.right=[H,D]; m+=`Node ${p} now has both pairs and can finish.`; }
     } else m+=` to the code that called it. The walk is complete.`;
@@ -430,7 +430,7 @@ const frames1=[];
     return [H,D];
   }
   go(1);
-  snap('Done: <code>walk(1)[1]</code> is <b>6</b>. The longest path, 8 – 6 – 4 – 2 – 5 – 7 – 9, bends at node 2, not at the root. Node 2 found it, and each call above passed it up as the second number of its pair. No variable outside <code>walk</code> was ever changed.',{path:true,rootDone:true});
+  snap('Done: <code>walk(root)[1]</code> is <b>6</b>. The longest path, 8 – 6 – 4 – 2 – 5 – 7 – 9, bends at node 2, not at the root. Node 2 found it, and each call above passed it up as the second number of its pair. No variable outside <code>walk</code> was ever changed.',{path:true,rootDone:true});
 })();
 let i1=0, timer1=null;
 function draw1(){
@@ -449,9 +449,9 @@ function draw1(){
   if(!f.stack.length){const d=document.createElement('div');d.className='empty';d.textContent='(no open calls)';box.appendChild(d);}
   f.stack.slice().reverse().forEach((fr,j)=>{const d=document.createElement('div');d.className='frame'+(j===0?' top':'');
     const v=x=>x==='?'?'<span class="q">?</span>':pr(x);
-    d.innerHTML=`<b>walk(${fr.id})</b><span>left = ${v(fr.left)}</span><span>right = ${v(fr.right)}</span>`;box.appendChild(d);});
+    d.innerHTML=`<b>walk(node ${fr.id})</b><span>left = ${v(fr.left)}</span><span>right = ${v(fr.right)}</span>`;box.appendChild(d);});
   s.appendChild(box);
-  const b=$('best1'); b.textContent='walk(1)[1] = '+(f.rootDone?f.out[1][1]:'?');
+  const b=$('best1'); b.textContent='walk(root)[1] = '+(f.rootDone?f.out[1][1]:'?');
   if(f.rootDone&&!f.path&&!reduce){b.classList.add('bump');setTimeout(()=>b.classList.remove('bump'),300);}
   $('msg1').innerHTML=f.msg;
   $('msg1').className='status'+(f.path?' ok':'');
