@@ -847,7 +847,7 @@ return result[::-1]                        # ...so reverse for best first
 
 ## MOVE 4 — Decompose
 
-### Card 16 · Tree: return what the parent needs, record the best on the side (P11)
+### Card 16 · Tree: return everything the parent needs, as a tuple (P11)
 
 **The problems**
 
@@ -860,51 +860,47 @@ return result[::-1]                        # ...so reverse for best first
 
 **When to reach for this card.** Each node's answer comes from its children, but the overall answer is a different thing from what a parent needs (a path through the node versus the height below it).
 
-**Say this before you write.** "My recursive function returns what the parent needs: the height. While it's at each node, it also updates a separate best with the answer that bends through that node."
+**Say this before you write.** "My recursive function returns everything the parent needs about this subtree, as a tuple: the height, and the longest path inside it."
 
-**What stays true.** When a call returns, its whole subtree has been handled and the return value is exactly what the parent needs.
+**What stays true.** When a call returns, its whole subtree has been handled, the returned tuple is exactly what the parent needs, and nothing outside the call has changed.
 
 **Write, from memory:**
 1. Diameter.
 2. Say what changes for Balanced.
-3. Longest ZigZag Path, where each call returns two lengths.
+3. Longest ZigZag Path, where each call returns two lengths and the best path in its subtree.
 
 <details><summary>Answer</summary>
 
 ```python
 # Diameter of Binary Tree
-best = 0
-def height(node):
-    nonlocal best
-    if not node: return 0
-    L, R = height(node.left), height(node.right)
-    best = max(best, L + R)                # the longest path bending at this node
-    return 1 + max(L, R)                   # the height, for the parent
-height(root)
-return best
+def walk(node):                            # returns (height, diameter) of this subtree
+    if not node: return 0, 0
+    lh, ld = walk(node.left)
+    rh, rd = walk(node.right)
+    height = 1 + max(lh, rh)               # the height, for the parent
+    diameter = max(lh + rh, ld, rd)        # bends here, or lies entirely in one side
+    return height, diameter
+return walk(root)[1]
 
 # Longest ZigZag Path in a Binary Tree
-best = 0
-def go(node):
-    nonlocal best
-    if not node: return -1, -1            # a missing child, so a lone node gets 1 + (-1) = 0 edges
-    _, left_child_goes_right = go(node.left)
-    right_child_goes_left, _ = go(node.right)
+def go(node):                              # returns (zigzag starting left, zigzag starting right, best in subtree)
+    if not node: return -1, -1, 0         # a missing child, so a lone node gets 1 + (-1) = 0 edges
+    _, left_child_goes_right, left_best = go(node.left)
+    right_child_goes_left, _, right_best = go(node.right)
     left = 1 + left_child_goes_right      # step left, then the child must step right
     right = 1 + right_child_goes_left     # step right, then the child must step left
-    best = max(best, left, right)         # record the best on the side
-    return left, right                    # the two things the parent can use
-go(root)
-return best
+    return left, right, max(left, right, left_best, right_best)
+return go(root)[2]
 ```
 
 Balanced: return a pair `(is_balanced, height)` from each call, and a node is balanced when both children are and `abs(left_height - right_height) <= 1`.
 
 **Compare your answer against these:**
-- **`nonlocal best`.** Without it, `best = ...` inside the inner function creates a new local variable and the outer `best` never changes. (A one-element list also works.)
-- **Diameter counts edges.** `height` counts nodes, so `L + R` is the number of edges on the path bending at this node.
+- **No outer `best`.** The answer goes up inside the tuple. Updating a variable outside the call (with `nonlocal` or `self.best`) makes the function both return a value and change state, which breaks command-query separation.
+- **The longest path may not touch this node.** The diameter is `max(lh + rh, ld, rd)`, not just `lh + rh`.
+- **Diameter counts edges.** Height counts nodes, so `lh + rh` is the number of edges on the path bending at this node.
 - **Decide the return value before coding.** Write down "this returns ___" first.
-- **Two numbers go up, not one.** A parent needs the longest zigzag that starts by stepping left and the longest that starts by stepping right, because which one it can use depends on which side of the parent the child is on. The overall answer is recorded on the side, not returned.
+- **Two numbers go up, not one.** A parent needs the longest zigzag that starts by stepping left and the longest that starts by stepping right, because which one it can use depends on which side of the parent the child is on. The best path in the subtree goes up too, as the third number.
 </details>
 
 **Now use it on:** Diameter 543 · Max Path Sum 124 (a Hard: see Later drill F) · Balanced 110 · Maximum Depth 104 (the number of nodes on the longest root-to-leaf path: `1 + max(left, right)`).
@@ -2175,24 +2171,23 @@ def median():
   `[-10, 9, 20, null, null, 15, 7]` → `42` (15 → 20 → 7)
 
 **Write, from memory:**
-1. Write it: the function returns the best downward path, and a separate `best` records the path that bends at the node.
+1. Write it: the function returns a pair, the best downward path from the node and the best path anywhere in its subtree.
 
 <details><summary>Answer</summary>
 
 ```python
 # Binary Tree Maximum Path Sum
-best = root.val                            # not 0: an all-negative tree must return its largest node
-def gain(node):                            # the best downward path starting at node
-    nonlocal best
-    if not node: return 0
-    L = max(gain(node.left), 0)            # a negative branch is better left out
-    R = max(gain(node.right), 0)
-    best = max(best, node.val + L + R)
-    return node.val + max(L, R)            # the parent can only extend one side
-gain(root)
-return best
+def go(node):                              # returns (best downward path from node, best path in subtree)
+    if not node: return 0, float("-inf")  # -inf, not 0: an all-negative tree must return its largest node
+    left_down, left_best = go(node.left)
+    right_down, right_best = go(node.right)
+    L = max(left_down, 0)                  # a negative branch is better left out
+    R = max(right_down, 0)
+    down = node.val + max(L, R)            # the parent can only extend one side
+    return down, max(node.val + L + R, left_best, right_best)
+return go(root)[1]
 ```
 
 **Compare your answer against these:**
-- **Clip negatives, and don't start at 0, for path sums.** A negative branch only lowers the total, so treat it as 0. But `best` must start at a real node value: with `best = 0`, the tree `[-3]` would return 0.
+- **Clip negatives, and don't use 0 for an empty subtree's best.** A negative branch only lowers the total, so treat it as 0. But an empty subtree has no path at all, so its best is `-inf`: with 0, the tree `[-3]` would return 0.
 </details>

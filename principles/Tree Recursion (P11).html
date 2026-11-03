@@ -1,0 +1,586 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Tree Recursion (P11)</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: the same reading column (~46rem) as the P5, P6, P8, P9 and P10 pages in this series. Widgets sit in the column as framed panels.
+   Colors: amber = the call that runs now. Light amber = a call that waits on the stack. Teal = finished, or the check passes.
+   Red = the check fails. Blue = the answer (the longest path). Orange arrows = information that goes down; teal arrows = information that goes up. */
+:root{
+  --bg:#f6f7f4; --panel:#ffffff; --ink:#1d2321; --muted:#5d6762; --line:#d9ddd6; --gone:#e6e8e3;
+  --left:#0f7f78; --right:#b8640c; --hit:#2f6fd0; --good:#d3ebe3; --win:#e2ebfa; --bad:#c23a2b; --badbg:#f7e1de; --amberbg:#f6e6d2;
+  --display:"Young Serif", Georgia, serif;
+  --body:"Atkinson Hyperlegible", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141917; --panel:#1c2220; --ink:#e7ebe8; --muted:#9aa49f; --line:#323a37; --gone:#262d2a;
+  --left:#3cc4b9; --right:#f0a24a; --hit:#7aa9ff; --good:#1f3d35; --win:#1d2a40; --bad:#ff7a6b; --badbg:#3d2420; --amberbg:#3a2c1a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141917; --panel:#1c2220; --ink:#e7ebe8; --muted:#9aa49f; --line:#323a37; --gone:#262d2a;
+  --left:#3cc4b9; --right:#f0a24a; --hit:#7aa9ff; --good:#1f3d35; --win:#1d2a40; --bad:#ff7a6b; --badbg:#3d2420; --amberbg:#3a2c1a; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;
+  padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px));padding-block:32px 64px}
+main{max-width:46rem;margin:0 auto;display:flex;flex-direction:column;gap:1.1rem}
+h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.4rem,7vw,3.6rem)}
+h2{font-size:1.8rem;margin-top:2.2rem;padding-top:1.4rem;border-top:1px solid var(--line)}
+h3{font-size:1.3rem;margin-top:1.3rem}
+p{margin:0}
+.eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lede{font-size:1.15rem;color:var(--muted)}
+code{font-family:var(--mono);font-size:.88em;background:var(--gone);padding:.05em .3em;border-radius:3px}
+pre{font-family:var(--mono);font-size:.85rem;line-height:1.5;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px;overflow-x:auto;margin:0}
+pre code{background:none;padding:0;font-size:inherit}
+.cm{color:var(--muted)}
+.widget{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.widget svg{width:100%;height:auto;display:block}
+.widget svg circle{transition:fill .35s,stroke .35s}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button{font:600 .9rem var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 14px;cursor:pointer}
+button:hover{border-color:var(--muted)}
+button[aria-pressed="true"]{border-color:var(--ink);background:var(--panel)}
+button:disabled{opacity:.45;cursor:default}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--hit);outline-offset:2px}
+.status{font-size:.97rem;min-height:4.8em;border-left:3px solid var(--line);padding:2px 0 2px 12px}
+.status.wrong{border-left-color:var(--bad)}
+.status.ok{border-left-color:var(--left)}
+.caption{font-size:.9rem;color:var(--muted)}
+.facts{font-family:var(--mono);font-size:.85rem;display:flex;flex-wrap:wrap;gap:6px 18px;font-variant-numeric:tabular-nums}
+.facts b{font-weight:600}
+table{border-collapse:collapse;font-size:.92rem;font-variant-numeric:tabular-nums;width:100%}
+.tw{overflow-x:auto}
+th,td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:400}
+.rule{border-left:3px solid var(--hit);padding:4px 0 4px 14px;font-size:1.08rem}
+.napkin-box{border:1px dashed var(--muted);border-radius:8px;padding:12px 16px;display:flex;flex-direction:column;gap:.6rem}
+.napkin-box .eyebrow{color:var(--ink)}
+.verdict{font-weight:700}
+ul,ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem}
+/* widget 1: tree + stack side by side */
+.split{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:14px;align-items:start}
+.stack{display:flex;flex-direction:column;gap:6px;font-family:var(--mono);font-size:.82rem;font-variant-numeric:tabular-nums;min-width:0}
+.stack .head{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.frame{border:1px solid var(--line);border-radius:6px;padding:5px 8px;background:var(--amberbg);display:flex;flex-wrap:wrap;gap:2px 10px}
+.frame.top{border:2px solid var(--right);padding:4px 7px}
+.frame b{font-weight:600}
+.frame .q{color:var(--muted)}
+.empty{border:1px dashed var(--line);border-radius:6px;padding:5px 8px;color:var(--muted)}
+.bestbox{border:2px solid var(--hit);border-radius:6px;padding:4px 8px;background:var(--win);font-weight:600;transition:transform .3s}
+.bestbox.bump{transform:scale(1.08)}
+.slider{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:.92rem}
+.slider input{flex:1 1 10rem;accent-color:var(--right);min-width:0}
+.slider output{font-family:var(--mono);font-weight:600;min-width:2ch}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.82rem;color:var(--muted)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:5px;vertical-align:-1px;border:2px solid}
+@media (max-width:34rem){.split{grid-template-columns:1fr}}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<main>
+<header style="display:flex;flex-direction:column;gap:.6rem">
+  <span class="eyebrow">Principled Algos · Principle 11 of 18</span>
+  <h1>Tree recursion</h1>
+  <p class="lede">Most tree problems have a short solution, because you write the job of only one node: ask its two children, combine their answers, and report the result to its parent.</p>
+  <p class="caption">DRILLS.md is the practice file in this folder. Its Cards 16, 17 and 18 have drills for this page. You do not need them to read this page.</p>
+</header>
+
+<h2>As if to a child</h2>
+<p>A big school wants to know how many staff work in it. The head teacher does not walk to every room to count. She asks the two deputies under her: "How many people work in your part of the school?" Each deputy asks the two teachers under him. Each teacher asks the two class helpers under her. A helper has nobody under her, so she says, "Just me. One."</p>
+<p>Then the answers come back up. A teacher hears "1" and "1", adds herself, and says "3". A deputy hears "3" and "3", adds himself, and says "7". The head teacher hears "7" and "7", adds herself, and knows the answer: 15. Nobody counted the whole school. Each person did one small job: ask the people directly under you, add, and tell the person above you.</p>
+<p>Messages can also go down. The head teacher tells each deputy, "Your part of the school can spend at most £100 on the trip." A deputy tells each of his teachers, "You can spend at most £50." A teacher can make the limit smaller for her helpers, but never larger. So each helper knows a limit that agrees with every person above her, and nobody had to look at the whole school.</p>
+
+<h2>The extended explanation</h2>
+
+<h3>What a tree is</h3>
+<p>A tree here is like a family tree, drawn from the top down. Each box in it is a <b>node</b>. A node has a value and at most two <b>children</b>, called <code>left</code> and <code>right</code>. The node at the top is the <b>root</b>. A node with no children is a <b>leaf</b>. A tree where each node has at most two children is a <b>binary tree</b>, and all the trees on this page are binary trees.</p>
+<p>In Python, each node is an object made from the class below. <code>node.val</code> is its value, and <code>node.left</code> and <code>node.right</code> are its children. A missing child is <code>None</code>.</p>
+<pre><code>class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right</code></pre>
+<p>LeetCode writes a tree as a list. It reads the tree row by row, from left to right, and writes <code>null</code> for a missing child. So <code>[1, 2, 3, 4, 5]</code> means this tree:</p>
+<pre><code>        1
+       / \
+      2   3
+     / \
+    4   5</code></pre>
+<p>The functions on this page get the root node (a <code>TreeNode</code>), not the list. LeetCode builds the nodes from the list for you.</p>
+<p>Now the important fact. Put your hand over the root. What is left? Two smaller trees: one with 2 at the top, and one with 3 at the top. Each child is the root of its own smaller tree, called a <b>subtree</b>. A missing child is a tree too: the empty tree. So a question about a tree almost always breaks into the same question about two smaller trees. A function that answers a question by asking the same question about smaller parts is <b>recursive</b>.</p>
+
+<h3>Write the job of one node</h3>
+<p>Go back to the school. Each person did the same three things. First, a person with nobody below gave a fixed answer. Second, each person asked the people directly below. Third, each person combined those answers and told the person above. Here is a function that counts the nodes in a tree, in exactly that shape:</p>
+<pre><code>def count(node):
+    if not node:                  <span class="cm"># 1. the empty tree has no nodes</span>
+        return 0
+    left = count(node.left)       <span class="cm"># 2. ask the left child</span>
+    right = count(node.right)     <span class="cm">#    and the right child</span>
+    return 1 + left + right       <span class="cm"># 3. combine, and report up</span></code></pre>
+<p>One difference from the story. In the school, the helpers at the bottom gave the fixed answer, "one". The code goes one step further down. Below each leaf it asks the empty tree, and <code>if not node</code> is true only when <code>node</code> is <code>None</code>. The empty tree answers 0. Then a leaf works like every other node: 1 + 0 + 0 = 1. So the code needs only one fixed answer, for the empty tree, and no special rule for leaves.</p>
+<p>Now look at one call only. It does not know the size of the tree or where in the tree it is, and it does not need to. It trusts its two children to give correct counts, and it adds 1 for itself.</p>
+<p>Most people find this trust strange at first. So let us check that it is safe. The empty tree returns 0, and that is correct. A leaf gets 0 and 0 from its two empty children and returns 1, and that is correct too. Now take any node whose two children return correct counts. Then 1 plus those counts is a correct count for the node. So correct answers start at the bottom and climb up, one level at a time, to the root. This argument is called <b>induction</b>, and you use it each time you trust a recursive call.</p>
+<p>So you do not need to follow all the calls in your head to write the code. You need to answer one question: "If my children give me correct answers, can I make my own correct answer?" But it helps to see the order of the calls one time, and we will do that below.</p>
+
+<h3>Worked example 1: report two facts up (LeetCode 543)</h3>
+<p><b>Diameter of Binary Tree (LeetCode 543).</b> Return the length of the longest path between any two nodes. The length is the number of <b>edges</b> on the path (the lines between nodes). The path does not have to go through the root.</p>
+<pre><code>root = [1, 2, 3, 4, 5]      (the tree drawn above)
+answer: 3                   the path 4 → 2 → 1 → 3 has 3 edges</code></pre>
+<p><b>The slow way.</b> We need one more word first. The <b>height</b> of a tree is the number of nodes on the longest path from its root down to a leaf. The empty tree has height 0, and a single leaf has height 1. (Some books count height in edges, so a leaf has height 0. This page counts nodes, the same as the code.)</p>
+<p>Now think about one node. Any path has one highest node. From there, the path goes down the left side, down the right side, or down both. We say the path <b>bends</b> at its highest node, even when it goes down only one side. The longest path that bends at a given node goes down to the deepest point on its left, and down to the deepest point on its right.</p>
+<p>How many edges is that? The left height counts the nodes on the deepest path down the left side. Each of those nodes is joined to the node above it by one edge, so that half of the path has exactly as many edges as the left height. The same is true on the right. So the length of the path is the left height plus the right height. Compute that bend at every node, and keep the largest:</p>
+<pre><code>def height(node):
+    if not node:
+        return 0
+    return 1 + max(height(node.left), height(node.right))
+
+def diameter(node):
+    if not node:
+        return 0
+    through_here = height(node.left) + height(node.right)
+    return max(through_here, diameter(node.left), diameter(node.right))</code></pre>
+<p><b>Where the time goes.</b> Each call to <code>height</code> walks the whole subtree under it, and <code>diameter</code> calls <code>height</code> on the children of every node. Follow node 4 in the tree above. <code>diameter(2)</code> visits node 4 once, to get the height of its left child. <code>diameter(1)</code> visits node 4 again, inside the height of node 2. So node 4 is visited two times, once for each of its two ancestors (2 and 1). In a tall tree, a node near the bottom has many ancestors, and it is visited again for each one.</p>
+
+<div class="napkin-box">
+  <span class="eyebrow">Napkin math: how slow is slow?</span>
+  <p>Take the worst shape: a chain of <i>n</i> nodes, where each node has one child. At the top node, <code>diameter</code> measures the subtree of its child, which has <i>n</i> − 1 nodes. At the next node, it measures <i>n</i> − 2 nodes, and so on down to 1. The total is 1 + 2 + … + (<i>n</i> − 1), which is about <i>n</i>² / 2 visits. Each visit also makes a call on the empty child, so the number of function calls is about twice that: <i>n</i>².</p>
+  <p>For <i>n</i> = 10,000, that is 10,000 × 10,000 = 100,000,000 calls. Python makes about 10 million simple function calls per second, so the slow way takes about 100,000,000 / 10,000,000 = 10 seconds. The fix below makes about 2 calls per node: 20,000 calls, or about 2 milliseconds. (A chain this deep needs one change to Python's settings before it can run at all. The second napkin box explains why.)</p>
+  <p><span class="verdict">Verdict: approximately accurate.</span> On your computer, both times can be 2 or 3 times faster or slower. The ratio, about 5,000 to 1, stays the same. This is what O(<i>n</i>²) means for the slow way: double the nodes, and the work grows 4 times. The fix is O(<i>n</i>): double the nodes, and the work only doubles.</p>
+</div>
+
+<p><b>The fix.</b> Look again at what the two functions need. <code>diameter</code> at a node needs the heights of its two children. <code>height</code> at a node also needs the heights of its two children. They ask the same question! So one walk can do both jobs, if each call reports both facts about its subtree.</p>
+<p>So write one function, <code>walk</code>, that <b>returns a pair</b> for its subtree: the height and the diameter. The parent needs both. It needs the heights of its children to find the path that bends at itself. And it needs the diameters of its children, because the longest path in its subtree may not touch the parent at all. That path can lie fully inside one child's subtree.</p>
+<p>So at each node, the diameter of the subtree is the largest of three numbers: the path that bends here (<code>lh + rh</code>), the longest path inside the left subtree (<code>ld</code>), and the longest path inside the right subtree (<code>rd</code>).</p>
+<pre><code>def diameterOfBinaryTree(root):
+    def walk(node):                       <span class="cm"># returns (height, diameter) of this subtree</span>
+        if not node:
+            return 0, 0                   <span class="cm"># the empty tree: no nodes, no edges</span>
+        lh, ld = walk(node.left)
+        rh, rd = walk(node.right)
+        height = 1 + max(lh, rh)          <span class="cm"># what the parent needs to make longer paths</span>
+        diameter = max(lh + rh, ld, rd)   <span class="cm"># bends here, or lies fully in one side</span>
+        return height, diameter
+    return walk(root)[1]                  <span class="cm"># the answer is the second number</span></code></pre>
+<p>A Python function can return two values at one time, as a pair: <code>return height, diameter</code>. The caller takes them apart with <code>lh, ld = walk(node.left)</code>. At the end, <code>walk(root)[1]</code> takes the second value of the root's pair.</p>
+<p>A node finishes only after both of its children finish. So on the tree <code>[1, 2, 3, 4, 5]</code>, the nodes finish in this order: 4, 5, 2, 3, 1.</p>
+<div class="tw"><table>
+<thead><tr><th>Node</th><th>Left pair (lh, ld)</th><th>Right pair (rh, rd)</th><th>Bend here (lh + rh)</th><th>Returns (height, diameter)</th></tr></thead>
+<tbody>
+<tr><td>4</td><td>(0, 0)</td><td>(0, 0)</td><td>0</td><td>(1, 0)</td></tr>
+<tr><td>5</td><td>(0, 0)</td><td>(0, 0)</td><td>0</td><td>(1, 0)</td></tr>
+<tr><td>2</td><td>(1, 0)</td><td>(1, 0)</td><td>2</td><td>(2, max(2, 0, 0)) = (2, 2)</td></tr>
+<tr><td>3</td><td>(0, 0)</td><td>(0, 0)</td><td>0</td><td>(1, 0)</td></tr>
+<tr><td>1</td><td>(2, 2)</td><td>(1, 0)</td><td>3</td><td>(3, max(3, 2, 0)) = (3, <b>3</b>)</td></tr>
+</tbody></table></div>
+<p>Every node is visited one time, so the time is O(<i>n</i>).</p>
+<p><code>walk</code> reads only its argument, and it changes nothing outside itself. It answers one question about one subtree. Many solutions online, and Card 16 in DRILLS.md, do it another way. They keep the answer in a variable outside the function, with <code>nonlocal</code> or <code>self.best</code>, and change it from inside each call. Then the function returns one value and also changes another. That breaks <b>command-query separation</b>: a function should either answer a question or change something, not both. The pair version is just as fast, and you can test each call by itself.</p>
+
+<h3>Watch the computer run it</h3>
+<p>A computer cannot ask two children at the same time. It follows one call to its end before it starts the next. The widget below runs <code>walk</code> on a tree with 9 nodes. Press Step, and look at three things.</p>
+<ul>
+<li><b>The order.</b> The calls start down the left side first. But a node finishes only after both of its children finish. So the nodes finish children first, parent last: 8, 6, 4, 9, 7, 5, 2, 3, 1. This finish order is called <b>post-order</b>.</li>
+<li><b>The stack of open calls.</b> When a node calls a child, the node stops and waits with half of its work done. You can see that in the list, for example <code>left = (3, 2), right = ?</code>. The waiting calls make a pile, called the <b>call stack</b>. Only the call on top runs. The pile is never taller than the longest path from the root down: here 5 calls, for 9 nodes. (The calls on empty children start and end at once, so the widget does not show them. In real Python they add one more call at the deepest moment.)</li>
+<li><b>The second number.</b> Each node returns its own diameter: the largest of its bend and its children's diameters. Watch where the largest value first appears, and how it gets to the root.</li>
+</ul>
+
+<div class="widget" id="w1">
+  <div class="split">
+    <svg id="svg1" viewBox="0 0 560 320" role="img" aria-label="A tree with 9 nodes. Node 1 is the root, with children 2 and 3. Node 2 has children 4 and 5. Node 4 has a left child 6, and 6 has a left child 8. Node 5 has a right child 7, and 7 has a right child 9."></svg>
+    <div class="stack" aria-live="polite">
+      <span class="head">Call stack (top runs)</span>
+      <div id="stack1"></div>
+      <span class="head" style="margin-top:6px">The answer</span>
+      <div class="bestbox" id="best1">walk(1)[1] = ?</div>
+    </div>
+  </div>
+  <div class="legend">
+    <span><i style="border-color:var(--right);background:var(--right)"></i>runs now</span>
+    <span><i style="border-color:var(--right);background:var(--amberbg)"></i>waits on the stack</span>
+    <span><i style="border-color:var(--left);background:var(--good)"></i>finished: (height, diameter)</span>
+  </div>
+  <div class="status" id="msg1"></div>
+  <div class="controls">
+    <button id="back1">Back</button>
+    <button id="step1">Step</button>
+    <button id="play1">Play</button>
+    <button id="reset1">Reset</button>
+    <span class="facts" id="count1"></span>
+  </div>
+</div>
+
+<p>Now you can see why each call must report two numbers. The longest path, 8 – 6 – 4 – 2 – 5 – 7 – 9, bends at node 2 and uses both of node 2's edges down. A path cannot split into branches, so at each node it uses at most two edges. To reach the root, this path would need a third edge at node 2, the edge up to node 1. So the root cannot make this path longer. What the root can use from node 2 is a path that goes straight down from node 2 on one side, and the longest such path is the height. So node 2 reports two different numbers: its height, 4, which the root uses to make new paths, and its diameter, 6. The root's own bend is only 4 + 1 = 5, so it returns max(5, 6, 0) = 6 as its diameter, unchanged from node 2.</p>
+
+<h3>What stays true</h3>
+<p>Each principle in this folder has an <b>invariant</b>: a sentence that is true at every step of the code. Here it is true each time a call returns:</p>
+<p class="rule">When <code>walk(node)</code> returns, the whole subtree under that node is finished. It returns exactly the height and the diameter of that subtree, and nothing outside the call has changed.</p>
+<p>So before you write any tree function, decide two things:</p>
+<ol>
+<li><b>What does the parent need from each call?</b> Here, the height, to make longer paths.</li>
+<li><b>What does the problem ask for?</b> Here, the diameter. If the two are different, each call returns both, as a pair.</li>
+</ol>
+
+<h3>Information goes two ways</h3>
+<p>In the diameter, all the information goes up. A node needs facts about its <b>descendants</b>, the nodes under it, and its children return those facts. But some questions need facts about the <b>ancestors</b>, the nodes above. A child cannot ask its parent anything. The parent calls the child, not the other way. So the parent must give those facts to the child when it calls it, as <b>arguments</b>.</p>
+<div class="widget">
+<svg viewBox="0 0 560 210" role="img" aria-label="A parent node with two children. Arrows from the parent to each child show limits that go down as arguments. Arrows from each child to the parent show answers that come up as return values.">
+  <defs>
+    <marker id="aDown" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--right)"/></marker>
+    <marker id="aUp" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--left)"/></marker>
+  </defs>
+  <line x1="280" y1="52" x2="160" y2="152" style="stroke:var(--line);stroke-width:2"/>
+  <line x1="280" y1="52" x2="400" y2="152" style="stroke:var(--line);stroke-width:2"/>
+  <path d="M252,56 L162,131" style="stroke:var(--right);stroke-width:2.5;fill:none" marker-end="url(#aDown)"/>
+  <path d="M182,160 L272,85" style="stroke:var(--left);stroke-width:2.5;fill:none" marker-end="url(#aUp)"/>
+  <path d="M308,56 L398,131" style="stroke:var(--right);stroke-width:2.5;fill:none" marker-end="url(#aDown)"/>
+  <path d="M378,160 L288,85" style="stroke:var(--left);stroke-width:2.5;fill:none" marker-end="url(#aUp)"/>
+  <circle cx="280" cy="36" r="22" style="fill:var(--panel);stroke:var(--ink);stroke-width:2"/>
+  <circle cx="160" cy="168" r="22" style="fill:var(--panel);stroke:var(--ink);stroke-width:2"/>
+  <circle cx="400" cy="168" r="22" style="fill:var(--panel);stroke:var(--ink);stroke-width:2"/>
+  <text x="280" y="41" text-anchor="middle" style="fill:var(--ink);font:600 14px var(--mono)">node</text>
+  <text x="160" y="173" text-anchor="middle" style="fill:var(--ink);font:600 13px var(--mono)">left</text>
+  <text x="400" y="173" text-anchor="middle" style="fill:var(--ink);font:600 13px var(--mono)">right</text>
+  <text x="120" y="78" text-anchor="end" style="fill:var(--right);font:600 13px var(--body)">down: arguments</text>
+  <text x="120" y="96" text-anchor="end" style="fill:var(--muted);font:12px var(--body)">facts about ancestors</text>
+  <text x="440" y="78" text-anchor="start" style="fill:var(--right);font:600 13px var(--body)">e.g. an allowed range</text>
+  <text x="250" y="136" text-anchor="end" style="fill:var(--left);font:600 13px var(--body)">up:</text>
+  <text x="310" y="136" text-anchor="start" style="fill:var(--left);font:600 13px var(--body)">return values</text>
+  <text x="280" y="204" text-anchor="middle" style="fill:var(--muted);font:12px var(--body)">facts about descendants, e.g. height, subtree sum</text>
+</svg>
+</div>
+<p>So use this test on each new tree problem. If the answer at a node depends on what is under it, the children return it up. If it depends on what is above it, the parent passes it down. Some problems need both directions. For example, to count the nodes that have no larger value above them, each call gets the largest value so far from its parent (down) and returns the count for its subtree (up).</p>
+
+<h3>Worked example 2: pass the limits down (LeetCode 98)</h3>
+<p><b>Validate Binary Search Tree.</b> In a <b>binary search tree</b>, each node follows one rule. Every value in its left subtree is smaller than the node, and every value in its right subtree is larger. Return whether a given tree follows the rule.</p>
+<pre><code>        8
+      /   \
+     4     12
+    / \    / \
+   2   9  10  14
+
+answer: False      9 is in the left subtree of 8, but 9 is larger than 8</code></pre>
+<p><b>The trap.</b> Compare each node with its parent only, and this tree passes: 4 &lt; 8, 12 &gt; 8, 2 &lt; 4, 9 &gt; 4, 10 &lt; 12, 14 &gt; 12. But the rule is about every node in the left subtree, not only the child. 9 breaks the rule with its grandparent, 8.</p>
+<p><b>The fix.</b> Each node must be inside a range that all its ancestors make together. We write a range as (4, 8), which means "larger than 4 and smaller than 8". The root has no ancestors, so its range is (−∞, ∞): any value. In Python, −∞ and ∞ are <code>float("-inf")</code> and <code>float("inf")</code>.</p>
+<p>Follow the ranges down to the 9. The root 8 passes (−∞, 8) to its left child, 4, because everything on its left must be smaller than 8. Then 4 passes (4, 8) to its right child: everything there must be larger than 4, and the limit 8 from above still applies. So the rule is: go left from a node, and its value becomes the new upper limit. Go right, and its value becomes the new lower limit. The other limit stays as it was, so the range can only get narrower as you go down. The parent passes the range to each child as two arguments, <code>low</code> and <code>high</code>:</p>
+<pre><code>def isValidBST(root):
+    def valid(node, low, high):        <span class="cm"># every value here must be between low and high</span>
+        if not node:
+            return True
+        if not (low &lt; node.val &lt; high):
+            return False
+        return (valid(node.left, low, node.val) and    <span class="cm"># going left: the upper limit gets smaller</span>
+                valid(node.right, node.val, high))     <span class="cm"># going right: the lower limit gets larger</span>
+    return valid(root, float("-inf"), float("inf"))</code></pre>
+<p>Python's <code>and</code> stops at the first <code>False</code>. So after one node fails, the code does not check the rest of the tree. One bad node is enough to give the answer.</p>
+<p>Now try both checks in the widget. The marked node has a dashed ring. Move the slider to change its value, and find all the values that the range check accepts.</p>
+
+<div class="widget" id="w2">
+  <div class="controls" role="group" aria-label="Which check">
+    <button id="modeP" aria-pressed="false">Compare with parent only</button>
+    <button id="modeR" aria-pressed="true">Pass the range down</button>
+  </div>
+  <svg id="svg2" viewBox="0 0 600 240" role="img" aria-label="A tree. 8 is the root, with children 4 and 12. 4 has children 2 and the marked node. 12 has children 10 and 14."></svg>
+  <div class="legend">
+    <span><i style="border-color:var(--right);background:var(--amberbg)"></i>checked now</span>
+    <span><i style="border-color:var(--left);background:var(--good)"></i>passes</span>
+    <span><i style="border-color:var(--bad);background:var(--badbg)"></i>fails</span>
+    <span><i style="border-color:var(--right);border-style:dashed;background:transparent"></i>the marked node</span>
+  </div>
+  <svg id="line2" viewBox="0 0 600 64" role="img" aria-label="A number line from 0 to 16 that shows the allowed range for the current node."></svg>
+  <div class="slider"><label for="x2">Value of the marked node</label><input type="range" id="x2" min="1" max="15" value="9"><output id="x2o" for="x2">9</output></div>
+  <div class="status" id="msg2"></div>
+  <div class="controls">
+    <button id="step2">Step</button>
+    <button id="run2">Run to the end</button>
+    <button id="reset2">Reset</button>
+  </div>
+</div>
+
+<p>(The range check accepts only 5, 6 and 7.) Compare this code with <code>height</code>. Both handle <code>None</code> first. But two things changed. The information goes down, not up. And the node does its own check <i>before</i> it calls its children, where <code>height</code> called its children first. It must, because each child needs a range that the parent makes from its own value.</p>
+
+<h3>Worked example 3: report two numbers up (LeetCode 337)</h3>
+<p><b>House Robber III.</b> The houses make a binary tree, and each node holds the money in one house. If a thief robs two houses that are directly joined (a parent and its child), the alarm goes off. Return the most money the thief can take.</p>
+<pre><code>        3
+       / \
+      2   3
+       \   \
+        3   1
+
+answer: 7          rob the root 3, the lower 3 and the 1</code></pre>
+<p>You want each house to answer one question: "What is the most money in my subtree?" But that one number is not enough for the parent, because the parent has a choice to make. If the parent robs itself, it needs the best total of each child's subtree <i>with that child skipped</i>. If the parent skips itself, it needs the best total of each child's subtree with the child free to be robbed or not. One number cannot answer both questions. So each call returns <b>two</b> totals, one for each case:</p>
+<ul>
+<li><code>rob_me</code>: the best total if this house is robbed. Then both children must be skipped: <code>node.val + skip_l + skip_r</code>.</li>
+<li><code>skip_me</code>: the best total if this house is skipped. Then each child can take its better choice: <code>max(rob_l, skip_l) + max(rob_r, skip_r)</code>.</li>
+</ul>
+<p>Here <code>rob_l</code> and <code>skip_l</code> are the two totals from the left child, and <code>rob_r</code> and <code>skip_r</code> are the two from the right child. An empty child reports <code>(0, 0)</code>. Here is the work from the bottom up:</p>
+<div class="tw"><table>
+<thead><tr><th>House</th><th>rob_me</th><th>skip_me</th></tr></thead>
+<tbody>
+<tr><td>leaf 3 (under the 2)</td><td>3</td><td>0</td></tr>
+<tr><td>leaf 1</td><td>1</td><td>0</td></tr>
+<tr><td>the 2</td><td>2 + 0 + 0 = 2</td><td>max(0, 0) + max(3, 0) = 3</td></tr>
+<tr><td>the upper right 3</td><td>3 + 0 + 0 = 3</td><td>max(0, 0) + max(1, 0) = 1</td></tr>
+<tr><td>root 3</td><td>3 + 3 + 1 = <b>7</b></td><td>max(2, 3) + max(3, 1) = 6</td></tr>
+</tbody></table></div>
+<p>To rob the root, the thief must skip both children. Their <code>skip_me</code> values are 3 and 1, so <code>rob_me</code> at the root is 3 + 3 + 1 = 7.</p>
+<pre><code>def rob(root):
+    def go(node):                                      <span class="cm"># returns (best if I rob this house, best if I skip it)</span>
+        if not node:
+            return 0, 0
+        rob_l, skip_l = go(node.left)
+        rob_r, skip_r = go(node.right)
+        rob_me = node.val + skip_l + skip_r            <span class="cm"># robbing me means both children are skipped</span>
+        skip_me = max(rob_l, skip_l) + max(rob_r, skip_r)   <span class="cm"># skipping me lets each child do its best</span>
+        return rob_me, skip_me
+    return max(go(root))</code></pre>
+<p>At the end, <code>max(go(root))</code> takes the larger of the root's two totals.</p>
+<p>This is the same move as the diameter: decide what each node reports up before you write code. In both problems, the parent needs more than the final answer, so the report is a pair.</p>
+
+<h3>How deep the calls go</h3>
+<div class="napkin-box">
+  <span class="eyebrow">Napkin math: the size of the call stack</span>
+  <p>Each open call waits on the stack. So the memory that a tree function uses depends on the <b>depth</b> of the tree, not on its number of nodes. The depth is the number of levels, which is the same number as the height of the root.</p>
+  <p>Take a tree where every level is full. It doubles in size at each level: 1, 2, 4, 8 nodes, and so on. 2<sup>20</sup> = 1,048,576, so a tree like this with a million nodes has only about 20 levels. At most about 20 calls wait at the same time, which is far below Python's limit.</p>
+  <p>That limit: Python stops a program with a <code>RecursionError</code> after about 1,000 nested calls. A chain of <i>n</i> nodes has <i>n</i> levels, and many LeetCode tree problems allow up to 10,000 nodes. So a test shaped like a chain can stop your code.</p>
+  <p><span class="verdict">Verdict: accurate.</span> 1,000 is the default limit in Python (<code>sys.getrecursionlimit()</code> returns 1000). For deep trees, raise the limit at the start, for example with <code>sys.setrecursionlimit(20000)</code>. Or use a loop that keeps its own list of nodes to visit, in place of the call stack. Card 30 in DRILLS.md shows how.</p>
+</div>
+
+<h3>How to recognize it</h3>
+<p>Almost every binary tree problem uses this principle: depth, balance, paths, comparing two trees, mirroring a tree, building a tree, or turning a tree into text and back. To choose the shape of the code, apply the up-or-down test from above:</p>
+<ul>
+<li>The answer at a node depends on its <b>descendants</b>, for example a height, the sum of a subtree, or "robbed or not". The children return it up.</li>
+<li>The answer at a node depends on its <b>ancestors</b>, for example an allowed range, or the largest value on the path from the root. The parent passes it down as arguments.</li>
+<li>The problem asks for the tree "level by level", or for "what you see from the right side". Here the easiest tool is a <b>queue</b>: a line where nodes join at the back and leave from the front, so they leave one level at a time (Card 18). Recursion can do it too, if you pass the level number down. A later principle, P13, uses the same queue to explore networks.</li>
+</ul>
+<p>PRINCIPLES.md lists twelve more LeetCode problems for this principle, each with a one-line hint.</p>
+
+<h3>Common mistakes</h3>
+<ul>
+<li><b>Writing code before you decide what each call returns.</b> Decide first, and write it down. A pair such as <code>(is_balanced, height)</code> is fine.</li>
+<li><b>Forgetting the paths that do not touch the current node.</b> The diameter of a subtree is <code>max(lh + rh, ld, rd)</code>, not only <code>lh + rh</code>. Without <code>ld</code> and <code>rd</code>, a long path deep inside one side is lost before it gets to the root.</li>
+<li><b>Comparing a node with its parent only.</b> The search tree rule is about all the ancestors, so pass a range down.</li>
+<li><b>Using recursion on a very deep tree.</b> A chain of 10,000 nodes is deeper than Python's limit of about 1,000 nested calls. Raise the limit, or use a loop (Card 30).</li>
+</ul>
+
+<h2>In the real world</h2>
+<p><b>Every screen you look at.</b> A web page is a tree. The page holds sections, a section holds paragraphs, and a paragraph holds words. Before the browser can draw anything, it must find the size and place of each box. It does this with both directions of this page. The width that a box can use comes down from its parent: a column cannot be wider than its page. The height of a box goes up from its children: a paragraph is as tall as its lines of text. Google's Flutter toolkit, which draws the screens of many phone apps, tells its users this rule in a few words: limits go down, sizes go up, and the parent decides where each child goes. The width works like the range in <code>isValidBST</code>: each parent passes a limit down, and a child can only make it smaller. The height works like the height in <code>walk</code>: each box reports its size up, and its parent combines the sizes of its children. So one walk of the tree uses both directions of this page.</p>
+<p><b>Git.</b> Git gives each file a fingerprint: a short code calculated from its contents. A folder's fingerprint is calculated from the fingerprints of everything in it. So one change in one file changes the fingerprint of each folder above it, up to the top. To find what changed between two versions, git compares the two top fingerprints. Where they are equal, it skips the whole subtree. Where they differ, it goes down into the children. One small piece of information, reported up from each node, saves git from looking at almost all the files.</p>
+</main>
+
+<script>
+(function(){
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NS='http://www.w3.org/2000/svg';
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e};
+const txt=(p,x,y,s,a={})=>{const t=el('text',Object.assign({x,y,'text-anchor':'middle'},a),p);t.textContent=s;return t};
+const $=id=>document.getElementById(id);
+const MONO='font-family:var(--mono);';
+
+/* ---------- Widget 1: walk() on a 9-node tree, with the call stack ---------- */
+const T={1:{x:330,y:36,l:2,r:3,s:'R'},2:{x:210,y:100,l:4,r:5,s:'L'},3:{x:470,y:100,s:'R'},
+  4:{x:130,y:164,l:6,s:'L'},5:{x:290,y:164,r:7,s:'R'},6:{x:85,y:228,l:8,s:'L'},7:{x:335,y:228,r:9,s:'R'},
+  8:{x:45,y:292,s:'R'},9:{x:380,y:292,s:'R'}};
+const parent={};for(const k in T){if(T[k].l)parent[T[k].l]=+k;if(T[k].r)parent[T[k].r]=+k}
+const BEST_PATH=[[8,6],[6,4],[4,2],[2,5],[5,7],[7,9]];
+const svg1=$('svg1'), edges1=el('g',{},svg1), nodes1=el('g',{},svg1), labs1=el('g',{},svg1);
+const E1={}, N1={}, L1={}, X1={};
+for(const k in T){const n=T[k];for(const c of [n.l,n.r]) if(c){
+  E1[k+'-'+c]=el('line',{x1:n.x,y1:n.y,x2:T[c].x,y2:T[c].y,style:'stroke:var(--line);stroke-width:2'},edges1);}}
+for(const k in T){const n=T[k];
+  N1[k]=el('circle',{cx:n.x,cy:n.y,r:20,style:'fill:var(--panel);stroke:var(--muted);stroke-width:2'},nodes1);
+  X1[k]=txt(nodes1,n.x,n.y+6,k,{style:MONO+'font-size:17px;font-weight:600;fill:var(--ink)'});
+  const right=n.s==='R';
+  L1[k]=txt(labs1,right?n.x+24:n.x-24,n.y-12,'',{'text-anchor':right?'start':'end',style:MONO+'font-size:15px;font-weight:600;fill:var(--left)'});
+}
+const pr=p=>`(${p[0]}, ${p[1]})`;
+// build the frames by running walk() and recording each moment
+const frames1=[];
+(function(){
+  const state={}, out={}, stack=[];
+  for(const k in T) state[k]='idle';
+  const snap=(msg,extra={})=>frames1.push(Object.assign({state:{...state},out:{...out},stack:stack.map(f=>({...f})),msg},extra));
+  snap('Press Step to call <code>walk(1)</code> on the root.');
+  function go(id){
+    const n=T[id]; const f={id,left:'?',right:'?'};
+    if(stack.length) state[stack[stack.length-1].id]='wait';
+    stack.push(f); state[id]='now';
+    let msg;
+    if(!n.l&&!n.r){f.left=[0,0];f.right=[0,0];
+      msg=`Call <code>walk(${id})</code>. Node ${id} is a leaf. Its calls on its two empty children return (0, 0) at once, so <code>left = (0, 0)</code> and <code>right = (0, 0)</code>.`;}
+    else if(n.l){msg=`Call <code>walk(${id})</code>. Node ${id} runs now, but it cannot return yet. First it needs the pair from its left child, so its next action is to call <code>walk(${n.l})</code>.`;}
+    else {f.left=[0,0];msg=`Call <code>walk(${id})</code>. Its left child is empty, so <code>left = (0, 0)</code> at once. Its next action is to call <code>walk(${n.r})</code> for its right child.`;}
+    snap(msg);
+    if(n.l) f.left=go(n.l);
+    if(n.r) f.right=go(n.r); else f.right=[0,0];
+    const [lh,ld]=f.left,[rh,rd]=f.right, bend=lh+rh, H=1+Math.max(lh,rh), D=Math.max(bend,ld,rd);
+    stack.pop(); state[id]='done'; out[id]=[H,D];
+    let m=`<code>walk(${id})</code> finishes with <code>left = ${pr(f.left)}</code> and <code>right = ${pr(f.right)}</code>. The path that bends here has ${lh} + ${rh} = ${bend} ${bend===1?'edge':'edges'}. The diameter of this subtree is max(${bend}, ${ld}, ${rd}) = ${D}`;
+    m+= (D>bend)?`, from a path below this node. `:`. `;
+    m+=`It returns (1 + max(${lh}, ${rh}), ${D}) = ${pr([H,D])}`;
+    const p=parent[id];
+    if(p){const pf=stack[stack.length-1]; state[p]='now';
+      m+=` to node ${p}. `;
+      if(T[p].l===id){ pf.left=[H,D];
+        if(T[p].r) m+=`Node ${p} now knows <code>left = ${pr([H,D])}</code>. Next it calls <code>walk(${T[p].r})</code>.`;
+        else {pf.right=[0,0]; m+=`Node ${p} has no right child, so <code>right = (0, 0)</code>. Node ${p} can now finish.`;}
+      } else { pf.right=[H,D]; m+=`Node ${p} now has both pairs and can finish.`; }
+    } else m+=` to the code that called it. The walk is complete.`;
+    snap(m,{rootDone:!p});
+    return [H,D];
+  }
+  go(1);
+  snap('Done: <code>walk(1)[1]</code> is <b>6</b>. The longest path, 8 – 6 – 4 – 2 – 5 – 7 – 9, bends at node 2, not at the root. Node 2 found it, and each call above passed it up as the second number of its pair. No variable outside <code>walk</code> was ever changed.',{path:true,rootDone:true});
+})();
+let i1=0, timer1=null;
+function draw1(){
+  const f=frames1[i1];
+  for(const k in T){const s=f.state[k], c=N1[k];
+    const st={idle:'fill:var(--panel);stroke:var(--muted)',wait:'fill:var(--amberbg);stroke:var(--right)',
+      now:'fill:var(--right);stroke:var(--right)',done:'fill:var(--good);stroke:var(--left)'}[s];
+    c.setAttribute('style',st+';stroke-width:'+(s==='now'?3:2));
+    X1[k].style.fill=s==='now'?'var(--panel)':'var(--ink)';
+    L1[k].textContent=f.out[k]!==undefined?pr(f.out[k]):'';
+  }
+  for(const key in E1) E1[key].setAttribute('style','stroke:var(--line);stroke-width:2');
+  if(f.path) for(const [a,b] of BEST_PATH){const e=E1[b+'-'+a]||E1[a+'-'+b]; e.setAttribute('style','stroke:var(--hit);stroke-width:5;stroke-linecap:round');}
+  const s=$('stack1'); s.innerHTML='';
+  const box=document.createElement('div'); box.style.cssText='display:flex;flex-direction:column;gap:6px';
+  if(!f.stack.length){const d=document.createElement('div');d.className='empty';d.textContent='(no open calls)';box.appendChild(d);}
+  f.stack.slice().reverse().forEach((fr,j)=>{const d=document.createElement('div');d.className='frame'+(j===0?' top':'');
+    const v=x=>x==='?'?'<span class="q">?</span>':pr(x);
+    d.innerHTML=`<b>walk(${fr.id})</b><span>left = ${v(fr.left)}</span><span>right = ${v(fr.right)}</span>`;box.appendChild(d);});
+  s.appendChild(box);
+  const b=$('best1'); b.textContent='walk(1)[1] = '+(f.rootDone?f.out[1][1]:'?');
+  if(f.rootDone&&!f.path&&!reduce){b.classList.add('bump');setTimeout(()=>b.classList.remove('bump'),300);}
+  $('msg1').innerHTML=f.msg;
+  $('msg1').className='status'+(f.path?' ok':'');
+  $('count1').innerHTML=`<span>Step <b>${i1}</b> of ${frames1.length-1}</span><span>Open calls: <b>${f.stack.length}</b></span>`;
+  $('back1').disabled=i1===0; $('step1').disabled=i1===frames1.length-1;
+}
+function stop1(){if(timer1){clearInterval(timer1);timer1=null;$('play1').textContent='Play';}}
+$('step1').onclick=()=>{stop1();if(i1<frames1.length-1){i1++;draw1();}};
+$('back1').onclick=()=>{stop1();if(i1>0){i1--;draw1();}};
+$('reset1').onclick=()=>{stop1();i1=0;draw1();};
+$('play1').onclick=()=>{if(timer1){stop1();return;}
+  if(i1===frames1.length-1)i1=0;
+  $('play1').textContent='Pause';
+  timer1=setInterval(()=>{if(i1<frames1.length-1){i1++;draw1();}else stop1();},reduce?2200:1600);};
+draw1();
+
+/* ---------- Widget 2: validate a search tree, parent-only vs range ---------- */
+const T2={A:{v:8,x:300,y:38,l:'B',r:'C',side:'R'},B:{v:4,x:160,y:108,l:'D',r:'X',side:'L'},C:{v:12,x:440,y:108,l:'F',r:'G',side:'R'},
+  D:{v:2,x:90,y:178,leaf:true},X:{v:9,x:230,y:178,leaf:true},F:{v:10,x:370,y:178,leaf:true},G:{v:14,x:510,y:178,leaf:true}};
+const P2={};for(const k in T2){if(T2[k].l)P2[T2[k].l]=k;if(T2[k].r)P2[T2[k].r]=k}
+const ORDER=['A','B','D','X','C','F','G'];
+const svg2=$('svg2'), g2e=el('g',{},svg2), g2n=el('g',{},svg2), g2l=el('g',{},svg2);
+const N2={},V2={},L2={};
+for(const k in T2){const n=T2[k];for(const c of [n.l,n.r]) if(c) el('line',{x1:n.x,y1:n.y,x2:T2[c].x,y2:T2[c].y,style:'stroke:var(--line);stroke-width:2'},g2e);}
+for(const k in T2){const n=T2[k];
+  if(k==='X') el('circle',{cx:n.x,cy:n.y,r:25,style:'fill:none;stroke:var(--right);stroke-width:1.5;stroke-dasharray:4 3'},g2n);
+  N2[k]=el('circle',{cx:n.x,cy:n.y,r:20,style:'fill:var(--panel);stroke:var(--muted);stroke-width:2'},g2n);
+  V2[k]=txt(g2n,n.x,n.y+6,String(n.v),{style:MONO+'font-size:17px;font-weight:600;fill:var(--ink)'});
+  if(n.leaf) L2[k]=txt(g2l,n.x,n.y+46,'',{style:MONO+'font-size:15px;fill:var(--muted)'});
+  else L2[k]=txt(g2l,n.side==='R'?n.x+26:n.x-26,n.y+4,'',{'text-anchor':n.side==='R'?'start':'end',style:MONO+'font-size:15px;fill:var(--muted)'});
+}
+const line2=$('line2'), LX=v=>30+v*(540/16);
+const g2bar=el('g',{},line2), g2axis=el('g',{},line2), g2dot=el('g',{},line2);
+el('line',{x1:20,y1:30,x2:580,y2:30,style:'stroke:var(--muted);stroke-width:1.5'},g2axis);
+for(let v=0;v<=16;v++){el('line',{x1:LX(v),y1:25,x2:LX(v),y2:35,style:'stroke:var(--muted);stroke-width:1'},g2axis);
+  if(v%2===0) txt(g2axis,LX(v),58,String(v),{style:MONO+'font-size:14px;fill:var(--muted)'});}
+const fmt=x=>x===-Infinity?'−∞':x===Infinity?'∞':String(x);
+let mode='R', frames2=[], i2=0;
+function val(k){return T2[k].v}
+function nm(k){return k==='X'?`the marked node (${val(k)})`:`node ${val(k)}`}
+const cap=x=>x[0].toUpperCase()+x.slice(1);
+function build2(){
+  T2.X.v=+$('x2').value; V2.X.textContent=String(T2.X.v); $('x2o').textContent=T2.X.v;
+  frames2=[]; const res={};
+  // the true answer, with the reason, for the parent-only ending
+  let truth=null;
+  (function chk(k,lo,hi,path){if(!k||truth)return; const v=val(k);
+    if(!(lo<v&&v<hi)){truth={k,v,path};return;}
+    chk(T2[k].l,lo,v,path.concat([[k,'left']])); chk(T2[k].r,v,hi,path.concat([[k,'right']]));})('A',-Infinity,Infinity,[]);
+  frames2.push({res:{},cur:null,range:null,msg: mode==='R'
+    ?'Press Step. Each node gets a range from its parent and checks its own value against it.'
+    :'Press Step. Each node compares its value with its parent only.'});
+  if(mode==='R'){
+    const ranges={A:[-Infinity,Infinity]};
+    const why={A:[]};
+    for(const k of ORDER){
+      const [lo,hi]=ranges[k], v=val(k), ok=lo<v&&v<hi;
+      res[k]=ok?'ok':'bad';
+      let m;
+      if(k==='A') m=`Node 8 is the root. It has no ancestors, so any value is allowed: (−∞, ∞). Pass.`;
+      else m=cap(nm(k))+': '+why[k].join('; ')+`. So it must be in (${fmt(lo)}, ${fmt(hi)}). `+(ok?`${v} is inside. Pass.`:`${v} is outside. <b>Return False.</b>`);
+      L2[k].textContent=`(${fmt(lo)}, ${fmt(hi)})`;
+      const n=T2[k];
+      if(n.l){ranges[n.l]=[lo,v];why[n.l]=why[k].concat([`it is in the left subtree of ${v}, so it must be smaller than ${v}`]);}
+      if(n.r){ranges[n.r]=[v,hi];why[n.r]=why[k].concat([`it is in the right subtree of ${v}, so it must be larger than ${v}`]);}
+      frames2.push({res:{...res},cur:k,range:[lo,hi],labels:true,msg:m,end:!ok?'bad':null});
+      if(!ok) break;
+    }
+    if(Object.values(res).every(r=>r==='ok')) frames2.push({res:{...res},cur:null,range:null,labels:true,end:'ok',
+      msg:'Every node is inside the range from its ancestors. <b>Return True.</b> This is a valid search tree.'});
+  } else {
+    for(const k of ORDER){
+      const v=val(k), p=P2[k];
+      if(!p){res[k]='ok';frames2.push({res:{...res},cur:k,range:[-Infinity,Infinity],msg:'Node 8 has no parent, so there is nothing to compare. Pass.'});continue;}
+      const pv=val(p), isL=T2[p].l===k, ok=isL?v<pv:v>pv;
+      res[k]=ok?'ok':'bad';
+      L2[k].textContent=isL?`${v} < ${pv}?`:`${v} > ${pv}?`;
+      frames2.push({res:{...res},cur:k,range:isL?[-Infinity,pv]:[pv,Infinity],labels:true,end:!ok?'bad':null,
+        msg:`${cap(nm(k))} is the ${isL?'left':'right'} child of ${pv}. Is ${v} ${isL?'smaller':'larger'} than ${pv}? `+(ok?'Yes. Pass.':'No. <b>Return False.</b>')});
+      if(!ok) break;
+    }
+    if(Object.values(res).every(r=>r==='ok')){
+      let m='Every node agrees with its parent, so this check returns <b>True</b>. ';
+      let end='ok';
+      if(truth){const [a,dir]=truth.path.find(([a,dir])=>dir==='left'?!(truth.v<val(a)):!(truth.v>val(a)));
+        m+=`But that is wrong. ${truth.v} is in the ${dir} subtree of ${val(a)}, so it must be ${dir==='left'?'smaller':'larger'} than ${val(a)}, and it is not. The parent-only check cannot see this.`;
+        end='wrong';}
+      else m+='Here that is correct, but only by luck. Move the slider to 9 and try again.';
+      frames2.push({res:{...res},cur:null,range:null,labels:true,end,msg:m,culprit:truth?truth.k:null});
+    }
+  }
+  i2=0; draw2();
+}
+function draw2(){
+  const f=frames2[i2];
+  for(const k in T2){
+    const r=f.res[k]; let st='fill:var(--panel);stroke:var(--muted);stroke-width:2';
+    if(r==='ok') st='fill:var(--good);stroke:var(--left);stroke-width:2';
+    if(r==='bad'||(f.culprit===k)) st='fill:var(--badbg);stroke:var(--bad);stroke-width:3';
+    if(f.cur===k&&r!=='bad') st='fill:var(--amberbg);stroke:var(--right);stroke-width:3';
+    N2[k].setAttribute('style',st);
+    const seen=f.res[k]!==undefined;
+    L2[k].style.visibility=seen&&f.labels?'visible':'hidden';
+  }
+  g2bar.innerHTML=''; g2dot.innerHTML='';
+  if(f.range&&f.cur){
+    const [lo,hi]=f.range, x1=lo===-Infinity?20:LX(lo), x2=hi===Infinity?580:LX(hi);
+    el('rect',{x:x1,y:22,width:x2-x1,height:16,rx:3,style:'fill:var(--good);stroke:var(--left);stroke-width:1'},g2bar);
+    if(lo===-Infinity) txt(g2bar,12,35,'◀',{style:'font-size:11px;fill:var(--left)'});
+    if(hi===Infinity) txt(g2bar,589,35,'▶',{style:'font-size:11px;fill:var(--left)'});
+    const v=val(f.cur), ok=lo<v&&v<hi;
+    el('circle',{cx:LX(v),cy:30,r:7,style:ok?'fill:var(--left);stroke:var(--panel);stroke-width:2':'fill:var(--bad);stroke:var(--panel);stroke-width:2'},g2dot);
+    txt(g2dot,LX(v),15,String(v),{style:MONO+'font-size:14px;font-weight:600;fill:'+(ok?'var(--left)':'var(--bad)')});
+  } else {
+    txt(g2bar,300,15,'the allowed range for the current node shows here',{style:'font-size:14px;fill:var(--muted);font-family:var(--body)'});
+  }
+  $('msg2').innerHTML=f.msg;
+  $('msg2').className='status'+(f.end==='bad'||f.end==='wrong'?' wrong':f.end==='ok'?' ok':'');
+  $('step2').disabled=i2===frames2.length-1; $('run2').disabled=i2===frames2.length-1;
+}
+$('step2').onclick=()=>{if(i2<frames2.length-1){i2++;draw2();}};
+$('run2').onclick=()=>{i2=frames2.length-1;draw2();};
+$('reset2').onclick=()=>build2();
+$('x2').oninput=()=>build2();
+function setMode(m){mode=m;$('modeP').setAttribute('aria-pressed',m==='P');$('modeR').setAttribute('aria-pressed',m==='R');build2();}
+$('modeP').onclick=()=>setMode('P');
+$('modeR').onclick=()=>setMode('R');
+build2();
+})();
+</script>
+
+</body></html>

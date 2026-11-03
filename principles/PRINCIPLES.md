@@ -2320,45 +2320,45 @@ Every call to `height` walks the whole subtree below it, and `diameter` calls `h
 
 But look at what the two functions need. `diameter` at a node needs its children's heights. `height` at a node also needs its children's heights. So one walk can do both: each node asks its children for their heights, uses them to check the path that bends here, and then reports its own height upward.
 
-**The fix.** Write one recursive function that **returns the height** (what the parent needs) and, as a side effect, **updates a running best** with the path through the current node (the actual answer).
+**The fix.** Write one recursive function that **returns a pair** for each subtree: its height (what the parent needs to build longer paths) and its diameter (the actual answer). The parent needs both. The longest path in a subtree either bends at its top node (`left height + right height`) or lies entirely inside one child's subtree, so the diameter at a node is the largest of those three numbers.
 
-The function finishes the children before the parent, so the nodes complete in this order: 4, 5, 2, 3, 1.
+The function finishes the children before the parent, so the nodes complete in this order: 4, 5, 2, 3, 1. An empty child reports `(0, 0)`.
 
-| Node | Height of left child | Height of right child | Path bending here (left + right) | Best so far | Returns (1 + the taller side) |
-|---|---|---|---|---|---|
-| 4 | 0 | 0 | 0 | 0 | 1 |
-| 5 | 0 | 0 | 0 | 0 | 1 |
-| 2 | 1 | 1 | 2 | 2 | 2 |
-| 3 | 0 | 0 | 0 | 2 | 1 |
-| 1 | 2 | 1 | 3 | **3** | 3 |
+| Node | Left pair (height, diameter) | Right pair (height, diameter) | Path bending here (left height + right height) | Returns (1 + the taller side, the largest of the three) |
+|---|---|---|---|---|
+| 4 | (0, 0) | (0, 0) | 0 | (1, 0) |
+| 5 | (0, 0) | (0, 0) | 0 | (1, 0) |
+| 2 | (1, 0) | (1, 0) | 2 | (2, 2) |
+| 3 | (0, 0) | (0, 0) | 0 | (1, 0) |
+| 1 | (2, 2) | (1, 0) | 3 | (3, **3**) |
 
 ```python
 def diameterOfBinaryTree(root):
-    best = 0
-    def height(node):
-        nonlocal best                          # we assign to best, which lives outside this function
+    def walk(node):                            # returns (height, diameter) of this subtree
         if not node:
-            return 0
-        left = height(node.left)
-        right = height(node.right)
-        best = max(best, left + right)         # the answer: longest path bending at this node
-        return 1 + max(left, right)            # what the parent needs: this subtree's height
-    height(root)
-    return best
+            return 0, 0
+        lh, ld = walk(node.left)
+        rh, rd = walk(node.right)
+        height = 1 + max(lh, rh)               # what the parent needs: this subtree's height
+        diameter = max(lh + rh, ld, rd)        # bends here, or lies entirely in one side
+        return height, diameter
+    return walk(root)[1]
 ```
 
 Every node is visited once: O(n).
 
-**Why does `left + right` count edges?** `height` counts nodes on a downward path. A path from the deepest node on the left, up to this node, and down to the deepest on the right, uses `left` edges on one side and `right` on the other.
+**Why not keep the answer in an outer variable?** Many solutions keep a `best` outside the function and update it from inside each call (with `nonlocal best` or `self.best`). That function then both returns a value and changes state, which breaks *command-query separation*: a function should either answer a question or change something, not both. Returning a pair is just as fast, and each call can be checked on its own.
+
+**Why does `lh + rh` count edges?** Height counts nodes on a downward path. A path from the deepest node on the left, up to this node, and down to the deepest on the right, uses `lh` edges on one side and `rh` on the other.
 
 ### What stays true (the invariant)
 
-**"When `height(node)` returns, that node's whole subtree has been fully handled, and the returned value is exactly what the parent needs from it."**
+**"When `walk(node)` returns, that node's whole subtree has been fully handled, the returned pair is exactly what the parent needs from it, and nothing outside the call has changed."**
 
 So before writing any tree function, decide two things:
 
-1. **What does each call return to its parent?** Here, the height.
-2. **Is the overall answer the same thing?** If not (here, the answer is a path length, not a height), keep the answer in a separate variable and update it along the way.
+1. **What does the parent need from each call?** Here, the height.
+2. **What does the problem ask for?** If it is something else (here, the answer is a path length, not a height), return both, as a tuple.
 
 ### How to recognize it
 
@@ -2512,7 +2512,7 @@ This is breadth-first search (BFS), which P13 uses on graphs.
 ### Common mistakes
 
 - **Not deciding the return value first.** Write down what each call returns before coding. A tuple like `(is_balanced, height)` is fine.
-- **Forgetting `nonlocal`.** Assigning `best = ...` inside the inner function without `nonlocal best` creates a new local variable, and the outer `best` never changes.
+- **Returning only the path through this node.** The diameter of a subtree is `max(lh + rh, ld, rd)`, not just `lh + rh`. Without `ld` and `rd`, a long path deep in one side is lost before it reaches the root.
 - **Checking only against the parent.** Search-tree rules involve all ancestors; pass a range down.
 - **Recursion depth.** Python allows about 1,000 nested calls. A tree shaped like a chain of 10,000 nodes needs a loop with an explicit stack (Card 30).
 
@@ -4226,21 +4226,21 @@ class MedianFinder:
 
 **Problem.** Node values may be negative. A path is any chain of connected nodes (at least one). Return the largest sum of values along any path.
 
-It is the diameter skeleton with values instead of edge counts, plus one change: if a child's best downward sum is negative, don't use it (treat it as 0).
+It is the diameter skeleton with values instead of edge counts, plus one change: if a child's best downward sum is negative, don't use it (treat it as 0). Each call returns a pair: the best path going *down* from this node (what the parent can extend), and the best path anywhere in this subtree (the answer).
 
 ```python
 def maxPathSum(root):
-    best = root.val                              # not 0: an all-negative tree must return its largest node
-    def gain(node):                              # best sum of a path going down from node
-        nonlocal best
+    def go(node):                                # returns (best downward sum from node, best path sum in subtree)
         if not node:
-            return 0
-        left = max(gain(node.left), 0)           # a negative branch is better left out
-        right = max(gain(node.right), 0)
-        best = max(best, node.val + left + right)
-        return node.val + max(left, right)       # the parent can only extend one side
-    gain(root)
-    return best
+            return 0, float("-inf")              # -inf, not 0: an all-negative tree must return its largest node
+        left_down, left_best = go(node.left)
+        right_down, right_best = go(node.right)
+        left = max(left_down, 0)                 # a negative branch is better left out
+        right = max(right_down, 0)
+        down = node.val + max(left, right)       # the parent can only extend one side
+        best = max(node.val + left + right, left_best, right_best)
+        return down, best
+    return go(root)[1]
 ```
 
 ## placing pieces with conflict checks (N-Queens, LeetCode 51) (from P12)
@@ -4511,7 +4511,7 @@ Primary principle is the move that produces the optimal solution; secondary prin
 |---|---|---|---|---|---|
 | 226 | Invert Binary Tree | E | P11 Tree recursion |  | swap, recurse |
 | 104 | Maximum Depth of Binary Tree | E | P11 Tree recursion |  | 1 + max(children) |
-| 543 | Diameter of Binary Tree | E | P11 Tree recursion |  | return height, update global |
+| 543 | Diameter of Binary Tree | E | P11 Tree recursion |  | return (height, diameter) |
 | 110 | Balanced Binary Tree | E | P11 Tree recursion |  | return (balanced, height) |
 | 100 | Same Tree | E | P11 Tree recursion |  | lockstep recursion |
 | 572 | Subtree of Another Tree | E | P11 Tree recursion |  | outer traversal, inner sameTree |
@@ -4522,7 +4522,7 @@ Primary principle is the move that produces the optimal solution; secondary prin
 | 98 | Validate Binary Search Tree | M | P11 Tree recursion |  | pass (low, high) down |
 | 230 | Kth Smallest Element In a Bst | M | P11 Tree recursion | P4 | in-order is sorted; stop at k |
 | 105 | Construct Binary Tree From Preorder And Inorder Traversal | M | P11 Tree recursion | P1 | preorder head is root; map for inorder index |
-| 124 | Binary Tree Maximum Path Sum | H | P11 Tree recursion |  | return one-branch sum, update global with both |
+| 124 | Binary Tree Maximum Path Sum | H | P11 Tree recursion |  | return (one-branch sum, best path), clip negatives |
 | 297 | Serialize And Deserialize Binary Tree | H | P11 Tree recursion |  | preorder with null markers |
 
 ### Tries
