@@ -41,19 +41,18 @@ def maxDepth(self, root):
 
 ### 543 Diameter of Binary Tree  [Trees, Easy]
 - **Trigger**: "longest path between any two nodes" — path need not pass through the root.
-- **Brute force -> optimal leap**: Naive = for every node compute height(left)+height(right), an O(n^2) re-traversal. Optimal = compute height via one post-order pass and update a global/`nonlocal` best diameter *during* that same pass — one traversal does double duty.
+- **Brute force -> optimal leap**: Naive = for every node compute height(left)+height(right), an O(n^2) re-traversal. Optimal = one post-order pass where each call returns `(height, diameter)` for its subtree — one traversal does double duty, with no outer variable.
 - **Core principle(s)**:
   - Bottom-up recursive combine (post-order returns height).
-  - Piggyback a global-optimum update onto a traversal you already need, instead of a separate O(n) pass per node.
-- **Invariant / state**: `res` = max(left+right) seen so far across all nodes visited; function returns height of subtree.
+  - Return the subtree's best answer alongside its height from a traversal you already need, instead of a separate O(n) pass per node.
+- **Invariant / state**: function returns `(height, diameter)` of the subtree; the diameter is the max of `left height + right height` and the two children's diameters.
 - **Key code idiom**:
 ```python
 def dfs(node):
-    nonlocal res
-    if not node: return 0
-    left, right = dfs(node.left), dfs(node.right)
-    res = max(res, left + right)
-    return 1 + max(left, right)
+    if not node: return 0, 0
+    lh, ld = dfs(node.left)
+    rh, rd = dfs(node.right)
+    return 1 + max(lh, rh), max(lh + rh, ld, rd)
 ```
 - **Complexity**: O(n) time, O(h) space.
 - **Sibling problems**: Balanced Binary Tree (110), Binary Tree Maximum Path Sum (124).
@@ -64,7 +63,7 @@ def dfs(node):
 - **Trigger**: property ("balanced") depends on heights of *every* subtree, not just the root's.
 - **Brute force -> optimal leap**: Naive recomputes height per node -> O(n^2). Optimal fuses the height computation and the balance check into a single post-order traversal, short-circuiting/propagating a "not balanced" signal upward.
 - **Core principle(s)**:
-  - Piggyback a global-optimum/validity update onto a required bottom-up height traversal (same as 543).
+  - Return the validity flag alongside the height from the required bottom-up height traversal (same as 543).
 - **Invariant / state**: DFS returns `[isBalanced, height]` for the subtree; a subtree is balanced iff both children are balanced and `|leftHeight-rightHeight| <= 1`.
 - **Key code idiom**:
 ```python
@@ -258,19 +257,20 @@ root.right = self.buildTree(preorder[mid+1:], inorder[mid+1:])
 
 ### 124 Binary Tree Maximum Path Sum  [Trees, Hard]
 - **Trigger**: "path" that may bend at any node and go through at most one turn — a global optimum over all possible paths.
-- **Brute force -> optimal leap**: Checking every pair of nodes is O(n^2). Optimal computes, per node in one post-order pass, the best "extend up to parent" value (one branch only, clipped at 0 to drop negative contributions) while separately updating a global best that allows using both branches (the "through this node" case).
+- **Brute force -> optimal leap**: Checking every pair of nodes is O(n^2). Optimal computes, per node in one post-order pass, the best "extend up to parent" value (one branch only, clipped at 0 to drop negative contributions) and returns it together with the best path anywhere in the subtree, which may use both branches (the "through this node" case).
 - **Core principle(s)**:
-  - Bottom-up recursive combine + piggyback a global-optimum update onto that traversal (same principle family as 543/110).
+  - Bottom-up recursive combine + return the subtree's best path alongside the extendable value (same principle family as 543/110).
   - Clip negative contributions to zero — a subtree only helps if it improves the sum.
-- **Invariant / state**: `dfs(node)` returns max path sum extendable upward through `node` using only one child branch; `res[0]` tracks the best "through-node" (both branches) sum seen.
+- **Invariant / state**: `dfs(node)` returns `(max path sum extendable upward through node using only one child branch, best path sum anywhere in the subtree)`; an empty subtree returns `(0, -inf)`.
 - **Key code idiom**:
 ```python
 def dfs(root):
-    if not root: return 0
-    leftMax  = max(dfs(root.left), 0)
-    rightMax = max(dfs(root.right), 0)
-    res[0] = max(res[0], root.val + leftMax + rightMax)
-    return root.val + max(leftMax, rightMax)
+    if not root: return 0, float("-inf")
+    leftGain, leftBest = dfs(root.left)
+    rightGain, rightBest = dfs(root.right)
+    leftMax, rightMax = max(leftGain, 0), max(rightGain, 0)
+    return (root.val + max(leftMax, rightMax),
+            max(root.val + leftMax + rightMax, leftBest, rightBest))
 ```
 - **Complexity**: O(n) time, O(h) space.
 - **Sibling problems**: Diameter of Binary Tree (543), Balanced Binary Tree (110).
@@ -556,7 +556,7 @@ for c in range(n):
 
 ### 1. Principle tally
 
-1. **Bottom-up recursive combine ("tree DP")** — solve on left/right subtrees first, then combine results at the node (optionally piggybacking a global-best update onto the same traversal instead of a second O(n) pass): **100, 104, 105, 110, 124, 226, 543, 572**
+1. **Bottom-up recursive combine ("tree DP")** — solve on left/right subtrees first, then combine results at the node (optionally returning the subtree's best answer alongside the value the parent needs, instead of a second O(n) pass): **100, 104, 105, 110, 124, 226, 543, 572**
 2. **Top-down state threading** — pass ancestor/path-derived context (running max, valid-range bounds) down as extra recursion parameters instead of recomputing it per node: **98, 1448**
 3. **Exploit sorted/ordering invariant to eliminate one whole branch per step** (binary-search-style pruning) instead of exploring both sides: **235**
 4. **In-order traversal of a BST yields sorted order for free** — exploit structure instead of sorting: **230**
@@ -587,7 +587,7 @@ for c in range(n):
 
 | If you see... | Think... |
 |---|---|
-| A property defined per-node in terms of its children (height, diameter, balance, path sum) | Post-order DFS: compute children's answers first, combine at the node; use a `nonlocal`/list side-channel if you also need a running global best |
+| A property defined per-node in terms of its children (height, diameter, balance, path sum) | Post-order DFS: compute children's answers first, combine at the node; return a tuple if the parent also needs the best answer found so far in the subtree |
 | A property defined per-node in terms of its ancestors/path-so-far (max on path, valid range) | Pre-order DFS: pass the accumulated context down as an extra recursion argument |
 | "BST" mentioned explicitly | Ordering lets you go left/right/stop in O(1) (LCA) or get sorted order via in-order traversal (kth smallest, validate) — you rarely need to visit both subtrees |
 | "By level" / "per row of the tree" / "side view" | BFS with a queue-length snapshot per iteration |

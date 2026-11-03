@@ -212,13 +212,13 @@ LCS 1143 · Edit Distance 72 · Distinct Subsequences 115 · Interleaving String
 
 </details>
 
-### B4. Return one thing, update another (P11)
+### B4. Return everything the parent needs, as a tuple (P11)
 Diameter 543 · Balanced Binary Tree 110 · Maximum Path Sum 124 · Count Good Nodes 1448 (inverse: pass down, count up).
 
 <details><summary>Answer</summary>
 
-- **Shared invariant:** the return value is what the parent's recurrence needs; the global best is a side effect.
-- **What differs:** what is returned (height, `(ok, height)`, one-branch sum) and what is clipped (negative sums to zero).
+- **Shared invariant:** each call returns a tuple with everything the parent's recurrence needs, including the best answer in its subtree; nothing outside the call changes.
+- **What differs:** what is returned (`(height, diameter)`, `(ok, height)`, `(one-branch sum, best path)`) and what is clipped (negative sums to zero).
 
 </details>
 
@@ -320,7 +320,7 @@ Work these after Parts A and B. For each, write the principles in the order they
 | Word Ladder 127 | P18 wildcard signatures + P1 buckets as adjacency + P13 BFS layers |
 | Longest Increasing Path in a Matrix 329 | P13 DFS on the implicit graph + P3 memo (safe because strict increase makes it a DAG) |
 | Target Sum 494 | P12 two branches → P3 memo on `(i, total)`, or P18 algebra → sum-axis knapsack (guards: `total + target` even, `\|target\| <= total`) |
-| Binary Tree Maximum Path Sum 124 | P11 post-order, return one-branch sum, clip negatives, update global with both branches |
+| Binary Tree Maximum Path Sum 124 | P11 post-order, return (one-branch sum, best path), clip negatives |
 | Serialize and Deserialize 297 | P11 preorder + explicit null markers (P18: make the encoding self-describing) |
 | LRU Cache 146 | P1 hash map + P16 doubly linked list with dummy head and tail (Card 35) |
 | Design Twitter 355 | P1 maps for follows and tweets + P10 k-way merge over followees' lists |

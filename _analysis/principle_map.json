@@ -283,7 +283,7 @@
  "543": {
   "primary": 11,
   "secondary": [],
-  "note": "return height, update global"
+  "note": "return (height, diameter)"
  },
  "110": {
   "primary": 11,
@@ -348,7 +348,7 @@
  "124": {
   "primary": 11,
   "secondary": [],
-  "note": "return one-branch sum, update global with both"
+  "note": "return (one-branch sum, best path), clip negatives"
  },
  "297": {
   "primary": 11,
