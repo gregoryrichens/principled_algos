@@ -175,7 +175,7 @@ def diameter(node):
 <tr><td>1</td><td>(2, 2)</td><td>(1, 0)</td><td>3</td><td>(3, max(3, 2, 0)) = (3, <b>3</b>)</td></tr>
 </tbody></table></div>
 <p>Every node is visited one time, so the time is O(<i>n</i>).</p>
-<p><code>walk</code> reads only its argument, and it changes nothing outside itself. It answers one question about one subtree. Many solutions online, and Card 16 in DRILLS.md, do it another way. They keep the answer in a variable outside the function, with <code>nonlocal</code> or <code>self.best</code>, and change it from inside each call. Then the function returns one value and also changes another. That breaks <b>command-query separation</b>: a function should either answer a question or change something, not both. The pair version is just as fast, and you can test each call by itself.</p>
+<p><code>walk</code> reads only its argument, and it changes nothing outside itself. It answers one question about one subtree. Many solutions online do it another way. They keep the answer in a variable outside the function, with <code>nonlocal</code> or <code>self.best</code>, and change it from inside each call. Then the function returns one value and also changes another. That breaks <b>command-query separation</b>: a function should either answer a question or change something, not both. The pair version is just as fast, and you can test each call by itself.</p>
 
 <h3>Watch the computer run it</h3>
 <p>A computer cannot ask two children at the same time. It follows one call to its end before it starts the next. The widget below runs <code>walk</code> on a tree with 9 nodes. Press Step, and look at three things.</p>
