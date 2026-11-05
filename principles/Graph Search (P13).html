@@ -1,0 +1,476 @@
+<title>Graph Search (P13)</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: the same reading column (~46rem) as the P5, P6, P8, P9, P10 and P11 pages in this series. Widgets sit in the column as framed panels.
+   Colors: amber = the cell the search works on now. Light amber = waiting (in todo, or an open call). Teal = finished (sunk, done).
+   Blue = the answer, and the scan position. Red = cannot be reached. Sand = land, pale blue = water. */
+:root{
+  --bg:#f6f7f4; --panel:#ffffff; --ink:#1d2321; --muted:#5d6762; --line:#d9ddd6; --gone:#e6e8e3;
+  --left:#0f7f78; --right:#b8640c; --hit:#2f6fd0; --good:#d3ebe3; --win:#e2ebfa; --bad:#c23a2b; --badbg:#f7e1de; --amberbg:#f6e6d2;
+  --water:#dce8ea; --land:#dccb9e; --orange:#e5862a; --rot:#66673a; --on-strong:#ffffff;
+  --display:"Young Serif", Georgia, serif;
+  --body:"Atkinson Hyperlegible", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141917; --panel:#1c2220; --ink:#e7ebe8; --muted:#9aa49f; --line:#323a37; --gone:#262d2a;
+  --left:#3cc4b9; --right:#f0a24a; --hit:#7aa9ff; --good:#1f3d35; --win:#1d2a40; --bad:#ff7a6b; --badbg:#3d2420; --amberbg:#3a2c1a;
+  --water:#1b2a2e; --land:#5e5440; --orange:#ec9a45; --rot:#9a9860; --on-strong:#141917; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141917; --panel:#1c2220; --ink:#e7ebe8; --muted:#9aa49f; --line:#323a37; --gone:#262d2a;
+  --left:#3cc4b9; --right:#f0a24a; --hit:#7aa9ff; --good:#1f3d35; --win:#1d2a40; --bad:#ff7a6b; --badbg:#3d2420; --amberbg:#3a2c1a;
+  --water:#1b2a2e; --land:#5e5440; --orange:#ec9a45; --rot:#9a9860; --on-strong:#141917; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;
+  padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px));padding-block:32px 64px}
+main{max-width:46rem;margin:0 auto;display:flex;flex-direction:column;gap:1.1rem}
+h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.4rem,7vw,3.6rem)}
+h2{font-size:1.8rem;margin-top:2.2rem;padding-top:1.4rem;border-top:1px solid var(--line)}
+h3{font-size:1.3rem;margin-top:1.3rem}
+p{margin:0}
+.eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lede{font-size:1.15rem;color:var(--muted)}
+code{font-family:var(--mono);font-size:.88em;background:var(--gone);padding:.05em .3em;border-radius:3px}
+pre{font-family:var(--mono);font-size:.85rem;line-height:1.5;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px;overflow-x:auto;margin:0}
+pre code{background:none;padding:0;font-size:inherit}
+.cm{color:var(--muted)}
+.hl{background:var(--amberbg);border-radius:3px;padding:0 .2em}
+.widget{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.widget svg{width:100%;height:auto;display:block}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button{font:600 .9rem var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 14px;cursor:pointer}
+button:hover{border-color:var(--muted)}
+button[aria-pressed="true"]{border-color:var(--ink);background:var(--panel);box-shadow:inset 0 -2px 0 var(--ink)}
+button:disabled{opacity:.45;cursor:default}
+button:focus-visible{outline:2px solid var(--hit);outline-offset:2px}
+.status{font-size:.97rem;min-height:4.8em;border-left:3px solid var(--line);padding:2px 0 2px 12px}
+.status.ok{border-left-color:var(--left)}
+.status.wrong{border-left-color:var(--bad)}
+.caption{font-size:.9rem;color:var(--muted)}
+.facts{font-family:var(--mono);font-size:.85rem;display:flex;flex-wrap:wrap;gap:6px 18px;font-variant-numeric:tabular-nums}
+.facts b{font-weight:600}
+.rule{border-left:3px solid var(--hit);padding:4px 0 4px 14px;font-size:1.08rem}
+.napkin-box{border:1px dashed var(--muted);border-radius:8px;padding:12px 16px;display:flex;flex-direction:column;gap:.6rem}
+.napkin-box .eyebrow{color:var(--ink)}
+.verdict{font-weight:700}
+ul,ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.82rem;color:var(--muted)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
+.split{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:34rem){.split{grid-template-columns:1fr}}
+.board{display:grid;gap:3px;width:100%;max-width:30rem;margin:0 auto}
+.cell{aspect-ratio:1;border-radius:3px;display:grid;place-items:center;min-width:0;
+  font:600 clamp(.62rem,2.6vw,.88rem)/1 var(--mono);font-variant-numeric:tabular-nums;color:var(--ink);
+  transition:background-color .25s,box-shadow .25s,color .25s}
+.cell.water{background:var(--water)}
+.cell.land{background:var(--land)}
+.cell.sunk{background:var(--good);color:var(--left)}
+.cell.onstack{background:var(--amberbg);box-shadow:inset 0 0 0 2px var(--right)}
+.cell.now{background:var(--right);color:var(--on-strong)}
+.cell.scan{box-shadow:inset 0 0 0 3px var(--hit)}
+.cell.wall{background:var(--muted)}
+.cell.open{background:var(--bg);box-shadow:inset 0 0 0 1px var(--line);color:var(--muted)}
+.cell.waiting{background:var(--amberbg);color:var(--right)}
+.cell.done{background:var(--good);color:var(--ink)}
+.cell.path{background:var(--win);box-shadow:inset 0 0 0 3px var(--hit);color:var(--hit)}
+.cell.empty{background:var(--gone)}
+.cell .fruit{width:66%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;transition:background-color .3s,box-shadow .3s}
+.cell.fresh .fruit{background:var(--orange)}
+.cell.rotten .fruit{background:var(--rot);color:var(--on-strong)}
+.cell.newrot .fruit{box-shadow:0 0 0 3px var(--hit)}
+.cell.lost .fruit{box-shadow:0 0 0 3px var(--bad)}
+
+.list{display:flex;flex-direction:column;gap:6px;font-family:var(--mono);font-size:.8rem;font-variant-numeric:tabular-nums;min-width:0}
+.list .head{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{border:1px solid var(--line);border-radius:5px;padding:2px 6px;background:var(--amberbg)}
+.chip.next{border:2px solid var(--right);padding:1px 5px;font-weight:600}
+.chip.none{background:none;border-style:dashed;color:var(--muted)}
+.frames{display:flex;flex-direction:column;gap:4px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<main>
+<header style="display:flex;flex-direction:column;gap:.6rem">
+  <span class="eyebrow">Principled Algos · Principle 13 of 18</span>
+  <h1>Graph search</h1>
+  <p class="lede">Many problems are really about things that connect to other things. When you see the connections, the solution is always the same idea: start somewhere, go to the neighbors, and put a mark on each thing the first time you reach it.</p>
+  <p class="caption">DRILLS.md, the practice file in this folder, is a set of numbered exercise cards. Cards 20 and 21 have drills for this page, and Card 30 drills the loop version of the search. You do not need them to read this page.</p>
+</header>
+
+<h2>As if to a child</h2>
+<p>Imagine a very big house with many rooms. Doors connect some rooms to other rooms. You start at the front door, and you want to visit every room that you can get to. You have only one rule, but it is an important one: when you go into a room, you put a sticker on its door, and you never go through a door that has a sticker. Without the stickers, you could walk in circles forever, because many doors lead back to rooms that you saw before. With the stickers, you see each room one time, and then you stop.</p>
+<p>There are two ways to explore. In the first way, you are brave. You go through a door, then through the next door, and the next, as far as you can go. When you find no new doors, you walk back one room and try a different door there. In the second way, you are careful. First you look into every room next to the front door. Then you look into every room next to those rooms. Your search grows in rings, like the ripples when you drop a stone into a pond. The careful way gives you a special bonus. The first time you get to a room, you got there in the smallest possible number of steps.</p>
+
+<h2>The extended explanation</h2>
+
+<h3>What a graph is</h3>
+<p>A <b>graph</b> is a set of things and a set of connections between pairs of those things. Programmers call the things <b>nodes</b> and the connections <b>edges</b>. That is all a graph is. It is not the kind of graph with two axes that you drew in school. Only the dots and the lines matter, not where you draw them.</p>
+<p>The difficult part is this: a problem almost never uses the word "graph". It gives you a grid, a list of words, or a list of courses, and you must find the graph yourself. Ask two questions. What are the things? Which things connect to which? In a grid of land and water, each land cell is a thing. Two land cells connect if one is directly above, below, left or right of the other. Cells that touch only at a corner do not connect.</p>
+<p>This page names a cell by its row and its column, in that order, and both count from 0. So <code>(0, 0)</code> is the top left cell, and <code>(1, 3)</code> is in the second row and the fourth column. The picture shows a small grid, and the same grid drawn as dots and lines.</p>
+
+<div class="widget">
+  <svg id="svg0" viewBox="0 0 640 230" role="img" aria-label="A 3 by 4 grid of land and water, and the same land cells drawn as nodes joined by edges"></svg>
+  <p class="caption">Left: the grid, with row and column numbers. Right: the graph hidden in it. Each land cell becomes a node, labeled with its row and column. Each pair of land cells that share a side gets an edge. The cell <code>(2, 0)</code> touches <code>(1, 1)</code> only at a corner, so it gets no edge. It is an island by itself.</p>
+</div>
+
+<p>When you see the graph, most questions become one of a few questions about it. What can I reach from here? How many separate groups are there? What is the smallest number of steps from here to there? This page answers all three with one tool.</p>
+
+<h3>Worked example 1: count the islands (LeetCode 200)</h3>
+<p><b>Number of Islands.</b> A grid holds <code>"1"</code> for land and <code>"0"</code> for water. An island is a group of land cells that connect up, down, left or right. Count the islands.</p>
+<pre><code>grid = [
+  ["1","1","0","0","0"],
+  ["1","1","0","0","0"],
+  ["0","0","1","0","0"],
+  ["0","0","0","1","1"],
+]
+answer: 3</code></pre>
+<p><b>The slow way.</b> We cannot just count the land cells, because one island can have many cells. We must know which land cells belong together. Here is a direct method. Give each island a name: its first cell in reading order (row by row, and left to right in each row). Then, for each land cell, walk out from it to every cell of its island, and find that first cell. (The next section shows how to walk out over an island.) Count the land cell only if it is the first cell of its own island. Then each island gets counted exactly one time.</p>
+<p>This works, but look at where the time goes. On an island of 1,000 cells, each of the 1,000 cells walks over all 1,000 cells. That is 1,000,000 steps, and every one of those 1,000 walks finds the same answer. The question "which island is this cell on?" has one answer for the whole island. So we should ask it one time per island, not one time per cell.</p>
+
+<div class="napkin-box">
+  <span class="eyebrow">Napkin math: how slow is slow?</span>
+  <p>LeetCode makes the grid at most 300 by 300, so it has at most 300 × 300 = 90,000 cells. Take the worst case: all land, which is one big island. The slow way walks over 90,000 cells for each of 90,000 cells: 90,000 × 90,000 = 8,100,000,000 steps. Python does about 10 million simple steps per second, so this takes 8,100,000,000 / 10,000,000 = 810 seconds. That is about 13 minutes.</p>
+  <p>The fast way below visits each cell one time and checks its 4 neighbors: 1 + 4 = 5 steps per cell, so about 90,000 × 5 = 450,000 steps. That takes 450,000 / 10,000,000 = 0.045 seconds.</p>
+  <p>Each napkin box on this page ends with a verdict: is the figure about right, or is it exaggerated? <span class="verdict">Verdict: approximately accurate, but only for the worst case.</span> On a grid of many small islands, each slow walk is short, so the slow way is much faster than 13 minutes there. The fast way is fast on every grid.</p>
+</div>
+
+<p><b>The fix.</b> Read the grid row by row, from left to right. We call this the <b>scan</b>. When the scan finds a land cell that has no mark, do three things.</p>
+<ol>
+  <li>Add 1 to the count. This cell must be on a new island, because every cell of an island that we already counted has a mark (the section "What stays true" shows why), and this cell has none.</li>
+  <li><b>Flood</b> the whole island from this cell: mark the cell, then do the same to each neighbor that is unmarked land, and to their neighbors, until no unmarked land of this island is left.</li>
+  <li>Continue the scan. All the other cells of this island now have a mark, so the scan does not count them again.</li>
+</ol>
+<p>The easiest mark is to write <code>"0"</code> over the cell. The cell then looks like water, so nothing counts it again. We say that the cell is <b>sunk</b>, and the function that floods an island by sinking it is called <code>sink</code>.</p>
+<pre><code>def numIslands(grid):
+    rows, cols = len(grid), len(grid[0])
+    def sink(r, c):                         <span class="cm"># flood the island that holds (r, c)</span>
+        if not (0 &lt;= r &lt; rows and 0 &lt;= c &lt; cols) or grid[r][c] != "1":
+            return                          <span class="cm"># off the grid, water, or already sunk</span>
+        grid[r][c] = "0"                    <span class="cm"># the mark: do it BEFORE you go to the neighbors</span>
+        sink(r + 1, c)                      <span class="cm"># down</span>
+        sink(r - 1, c)                      <span class="cm"># up</span>
+        sink(r, c + 1)                      <span class="cm"># right</span>
+        sink(r, c - 1)                      <span class="cm"># left</span>
+    islands = 0
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == "1":
+                islands += 1                <span class="cm"># land that no flood has touched: a new island</span>
+                sink(r, c)
+    return islands</code></pre>
+<p>Some details of the Python. <code>sink</code> is defined inside <code>numIslands</code>, so it can use <code>grid</code>, <code>rows</code> and <code>cols</code> directly. <code>0 &lt;= r &lt; rows</code> is Python's short way to write <code>0 &lt;= r and r &lt; rows</code>. The order of the test matters. Python checks the left side of <code>or</code> first, and when that side is true, it does not check the right side. So for a cell off the grid, Python never reads <code>grid[r][c]</code>. Last, <code>sink</code> calls <code>sink</code>. A function that calls itself is <b>recursive</b>. Each call stops at the first <code>if</code> when it has nothing to do.</p>
+<p>Each cell is sunk one time at most, and each sinking makes four more calls. So the work grows in step with the number of cells: twice the cells, about twice the time. Programmers write this as O(R × C), said "order R times C", for a grid of R rows and C columns.</p>
+<p>Watch it run on a bigger grid. The blue square is the scan. It stays still while a flood runs. A call to <code>sink</code> is <b>open</b> from when it starts until it returns. Only the newest open call runs (amber). The other open calls wait for it (light amber). To keep the widget short, it shows only the calls on land. A call on water or off the grid stops at the first <code>if</code> at once. In the code a sunk cell holds <code>"0"</code>, but the widget colors it teal and shows the number of its island, so that you can see which flood sank it.</p>
+
+<div class="widget" id="w1">
+  <div class="split">
+    <div class="board" id="b1"></div>
+    <div class="list"><span class="head">Open calls: the top one runs, the rest wait</span><div class="frames" id="stack1"></div></div>
+  </div>
+  <div class="facts" id="facts1"></div>
+  <div class="controls"><button id="step1">Step</button><button id="play1">Play</button><button id="reset1">Reset</button></div>
+  <p class="status" id="status1" aria-live="polite"></p>
+  <div class="legend"><span><i style="background:var(--land)"></i>land</span><span><i style="background:var(--water)"></i>water</span><span><i style="background:var(--right)"></i>sink runs now</span><span><i style="background:var(--amberbg);box-shadow:inset 0 0 0 2px var(--right)"></i>open call that waits</span><span><i style="background:var(--good)"></i>sunk</span></div>
+</div>
+
+<p>Look at the open calls. When <code>sink</code> finds a land neighbor, it calls itself on that neighbor, and it cannot continue until that call returns. So the flood goes as deep as it can along one route, and only then comes back and tries the next neighbor. This way to explore is <b>depth-first search</b>, or <b>DFS</b>. It is the brave explorer from the story.</p>
+
+<h3>What stays true</h3>
+<p>Why does the scan never count an island two times? Because one fact stays true from start to end:</p>
+<p class="rule">Every marked cell belongs to an island that we already counted, and every cell of a counted island is marked.</p>
+<p>At the start, no cell is marked and no island is counted, so the fact is true. Each time the scan counts a new island, the flood marks all of its cells before the scan moves on, so the fact stays true. That is why the scan can skip marked cells and still get the correct count.</p>
+<p>This gives the general rule for every graph search: <b>mark a node at the moment you first reach it, and never work on a marked node again.</b> In a grid, the mark can be the cell itself. In other graphs, the mark is a Python <code>set</code> called <code>seen</code>.</p>
+<p>Why mark first, before you go to the neighbors? Because the neighbors connect back to you. If cell A has no mark when you go to its neighbor B, then B looks at A, sees land, and goes back to A. Then A goes to B again. The search runs in a circle until Python stops it. The mark is the sticker on the door.</p>
+
+<h3>Two ways to explore: a pile or a line</h3>
+<p>Python runs the open calls of <code>sink</code> from a hidden list, called the <b>call stack</b>. You can make that list yourself and use a loop in place of the recursion. Here is the same flood as a loop. The list <code>todo</code> holds the cells that we found and marked, but whose neighbors we did not look at yet.</p>
+<pre><code>from collections import deque
+
+def flood(grid, r, c, kind):
+    rows, cols = len(grid), len(grid[0])
+    grid[r][c] = "0"                        <span class="cm"># the mark: sink the first cell now</span>
+    todo = deque([(r, c)])
+    while todo:
+        if kind == "dfs":
+            <span class="hl">r, c = todo.pop()</span>               <span class="cm"># take the NEWEST cell: a pile</span>
+        else:
+            <span class="hl">r, c = todo.popleft()</span>           <span class="cm"># take the OLDEST cell: a line</span>
+        for nr, nc in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):
+            if 0 &lt;= nr &lt; rows and 0 &lt;= nc &lt; cols and grid[nr][nc] == "1":
+                grid[nr][nc] = "0"          <span class="cm"># mark it when you ADD it</span>
+                todo.append((nr, nc))</code></pre>
+<p>To use it, put <code>flood(grid, r, c, "dfs")</code> in <code>numIslands</code> in place of <code>sink(r, c)</code>. Either kind counts the islands correctly, because either kind sinks the whole island.</p>
+<p>A <code>deque</code> (said "deck") is a Python container like a list, but you can add and remove items at both ends quickly. A normal list can remove from the front with <code>pop(0)</code>, but then it must move every other item one place, which is slow when the list is long.</p>
+<p>Only the two highlighted lines differ. <code>pop()</code> takes the <i>newest</i> item, like the top plate on a pile of plates. A pile like this is a <b>stack</b>. The search always works on the cell it found most recently, so it goes deep before it goes wide. That is DFS. (It tries the neighbors in a different order from <code>sink</code>. The pile gives back the neighbor added last, so it goes left first, then right, up and down. The order does not change which cells it reaches.) <code>popleft()</code> takes the <i>oldest</i> item, like the first person in a line at a shop. A line like this is a <b>queue</b>. The search finishes all the cells near the start before it goes further, so it grows in rings. This is <b>breadth-first search</b>, or <b>BFS</b>. ("Breadth" means width.)</p>
+<p>Try both on a maze. S is the start and G is the goal. Gray cells are walls. The search uses the same loop as <code>flood</code>, with one addition: each new cell gets a number, which is the number of the cell that added it, plus 1. So the number is the length of the route that this search used to reach the cell. The list on the right is <code>todo</code>. The item with the thick border is the next one to come out.</p>
+
+<div class="widget" id="w2">
+  <div class="controls"><button id="dfs2" aria-pressed="true">DFS: pile (pop)</button><button id="bfs2" aria-pressed="false">BFS: line (popleft)</button></div>
+  <div class="split">
+    <div class="board" id="b2"></div>
+    <div class="list"><span class="head" id="todohead2">todo</span><div class="chips" id="todo2"></div></div>
+  </div>
+  <div class="facts" id="facts2"></div>
+  <div class="controls"><button id="step2">Step</button><button id="play2">Play</button><button id="reset2">Reset</button></div>
+  <p class="status" id="status2" aria-live="polite"></p>
+  <div class="legend"><span><i style="background:var(--right)"></i>taken out now</span><span><i style="background:var(--amberbg)"></i>in todo</span><span><i style="background:var(--good)"></i>done</span><span><i style="background:var(--win);box-shadow:inset 0 0 0 2px var(--hit)"></i>route to G</span><span><i style="background:var(--muted)"></i>wall</span></div>
+</div>
+
+<p>Run each search until G comes out, then compare. Each search stops when it finds G, so a cell with no number was never reached. Near S, the two searches give the same numbers. Near G they do not. DFS reached the area around G by a long way round, so the cells there get larger numbers, and its route to G has 19 steps. The BFS route has 13. In BFS, two open cells side by side never differ by more than 1, so the numbers grow in rings around S. DFS took out fewer cells before it found G (21, against 37 for BFS), so it did less work here. But it found <i>a</i> route, not the shortest route.</p>
+<p><b>Why BFS always finds the fewest steps.</b> First, look at the order in which cells come out of the line. S, with the number 0, comes out first, and it adds all the cells with the number 1 at the back. Every 1 comes out before any 2, because all the 1s were in the line before the first 2 went in. The 1s add the 2s at the back, and so on. So the cells come out in order of their numbers: all the 0s, then all the 1s, then all the 2s.</p>
+<p>Now suppose that BFS gave some cell X a number that is too large. Say X has the number <i>d</i>, but a shorter route to X exists, with only <i>k</i> steps. Of all the cells with a wrong number, choose the X that is nearest to S. On the short route, call the cell just before X by the name Y. Y is <i>k</i> − 1 steps from S, so Y is nearer than X, so Y got its correct number, <i>k</i> − 1. The cell that added X has the number <i>d</i> − 1, which is larger than <i>k</i> − 1. Cells come out in order of their numbers, so Y came out first. When Y came out, X had no mark yet, so Y added X, with the number <i>k</i>. That contradicts our start. So no cell gets a wrong number: each number is the true fewest steps.</p>
+<p>This argument needs every step to cost the same. When steps have different costs, like roads of different lengths, a plain line is not enough. P15 (weighted paths) handles that case.</p>
+<p>Both ways to explore are older than computers. In the 1800s, a French engineer, Charles Pierre Trémaux, solved mazes with a piece of chalk. He marked each passage that he used, and he walked back when he found only marked passages. That is DFS, with chalk marks in place of the <code>seen</code> set. In 1959, Edward F. Moore at Bell Labs published a method to find the <i>shortest</i> path through a maze. His method was BFS.</p>
+
+<h3>Worked example 2: many starts at once (LeetCode 994)</h3>
+<p><b>Rotting Oranges.</b> In a grid, 0 is empty, 1 is a fresh orange and 2 is a rotten orange. Each minute, each rotten orange makes the fresh oranges directly next to it rotten (up, down, left, right). Return the number of minutes until no fresh orange is left. If some orange can never rot, return −1.</p>
+<p>"Each minute" means rings, so this is BFS. But now there can be several rotten oranges at the start, and they all spread at the same time. The fix is simple: put <i>every</i> rotten orange in the queue before the loop starts.</p>
+<p>Why is that correct? Imagine one extra, invisible cell, V, that connects to every rotten orange. Start a normal BFS from V. Its first step takes V out of the queue and adds every rotten orange, each with the number 1. So after that first step, its queue holds exactly the rotten oranges, the same as our queue at the start. From there, the two searches do the same work. Each number in the BFS from V is 1 larger than our minute count, and nothing else changes. So the proof above holds for many starts too.</p>
+<p>We must also count the minutes, so we take the cells out of the queue one ring at a time. At the start of minute 1, the queue holds the oranges that were rotten at the start. After that, at the start of each minute, it holds the oranges that rotted in the minute before.</p>
+<pre><code>from collections import deque
+
+def orangesRotting(grid):
+    rows, cols = len(grid), len(grid[0])
+    queue, fresh = deque(), 0
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == 2:
+                queue.append((r, c))        <span class="cm"># every rotten orange starts together</span>
+            elif grid[r][c] == 1:
+                fresh += 1
+    minutes = 0
+    while queue and fresh &gt; 0:
+        for _ in range(len(queue)):         <span class="cm"># take out exactly one ring</span>
+            r, c = queue.popleft()
+            for nr, nc in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):
+                if 0 &lt;= nr &lt; rows and 0 &lt;= nc &lt; cols and grid[nr][nc] == 1:
+                    grid[nr][nc] = 2        <span class="cm"># the mark: no other orange adds it again</span>
+                    fresh -= 1
+                    queue.append((nr, nc))
+        minutes += 1
+    return minutes if fresh == 0 else -1</code></pre>
+<p>Three lines need care. First, <code>for _ in range(len(queue))</code>. Python calculates <code>len(queue)</code> one time, before this loop starts. So the loop takes out only the oranges that were in the queue at the start of the minute. The oranges added during the loop stay in the queue for the next minute. The name <code>_</code> is a Python habit for a loop variable that we never use.</p>
+<p>Second, the test <code>fresh &gt; 0</code> in the <code>while</code> line. Without it, the loop would run one more round for the last ring. That round rots nothing, but it still adds 1 to <code>minutes</code>, so the answer would be 1 too large.</p>
+<p>Third, the mark. Here it is the value 2. An orange becomes 2 when it goes into the queue, so it never goes in a second time. At the end, <code>fresh</code> tells us if some orange was out of reach.</p>
+<p>Step through the minutes below. Each rotten orange shows the minute when it rotted.</p>
+
+<div class="widget" id="w3">
+  <div class="controls"><button id="p3a" aria-pressed="true">One start</button><button id="p3b" aria-pressed="false">Two starts</button><button id="p3c" aria-pressed="false">One cut off</button></div>
+  <div class="board" id="b3" style="max-width:20rem"></div>
+  <div class="facts" id="facts3"></div>
+  <div class="controls"><button id="step3">Next minute</button><button id="play3">Play</button><button id="reset3">Reset</button></div>
+  <p class="status" id="status3" aria-live="polite"></p>
+  <div class="legend"><span><i style="background:var(--orange);border-radius:50%"></i>fresh</span><span><i style="background:var(--rot);border-radius:50%"></i>rotten</span><span><i style="border-radius:50%;box-shadow:inset 0 0 0 3px var(--hit)"></i>rotted this minute</span><span><i style="border-radius:50%;box-shadow:inset 0 0 0 3px var(--bad)"></i>can never rot</span></div>
+</div>
+
+<p>In "Two starts", the two rings meet in the middle. No orange rots two times, because the first ring to reach it marks it. That is the same rule as the sticker on the door.</p>
+
+<h3>How deep the calls go</h3>
+<p>The recursive <code>sink</code> has one danger. Each open call is one entry on Python's call stack, and Python stops a program with an error when the stack has about 1,000 entries.</p>
+<div class="napkin-box">
+  <span class="eyebrow">Napkin math: will the recursion fit?</span>
+  <p>Take a 300 by 300 grid that is all land. <code>sink</code> tries "down" first, so it runs down column 0 to the bottom: 300 open calls. At the bottom, "down" is off the grid and "up" is already sunk, so it goes right, and then up column 1: 300 more. It continues like a snake through every column, and no call can return until the snake reaches the last cell. So the chain is 300 × 300 = 90,000 calls deep. Python's limit (<code>sys.getrecursionlimit()</code>) is 1,000, and 90,000 / 1,000 = 90. The chain is 90 times too deep.</p>
+  <p><span class="verdict">Verdict: accurate.</span> A count on a real 300 by 300 grid of land gives a deepest chain of exactly 90,000 calls. You can raise the limit with <code>sys.setrecursionlimit</code>, but Python sets it low on purpose. Each call needs some memory in a block of fixed size, and a chain of 90,000 calls can fill that block and crash Python.</p>
+</div>
+<p>So for big grids, use the loop version, <code>flood</code>, from the section above. Its <code>todo</code> is a normal Python container in the normal memory of the program, and a container of 90,000 cells is small. Recursion is the clearest way to see the idea. The loop is the safe way to run it.</p>
+
+<h3>How to recognize it</h3>
+<ul>
+  <li>A grid, with words like "connected", "island", "region", "spreads", "flows" or "surrounded".</li>
+  <li>"The fewest steps, moves or changes" to get from one state to another: BFS.</li>
+  <li>Something that spreads from <b>several</b> starts at the same time, like the rotting oranges, or "the distance to the nearest exit": BFS with all the starts in the queue at the beginning.</li>
+  <li>"Which cells can reach the edge?": search one time, backward, <i>from</i> the edge, not one time from each cell. In Pacific Atlantic Water Flow (LeetCode 417), water flows downhill to the ocean. So start at the ocean edge and walk uphill. Every cell you reach is a cell whose water can run back down to the ocean.</li>
+  <li>Things that are not a grid but have a rule for "next to". In Word Ladder (LeetCode 127), each word is a node, and two words connect when they differ by one letter. The fewest changes from one word to another is a BFS.</li>
+</ul>
+
+<h3>Common mistakes</h3>
+<ul>
+  <li><b>You mark too late.</b> In BFS, mark a cell when you <i>add</i> it to the queue, not when you take it out. If you mark late, two neighbors can both add the same cell before either one takes it out, so the cell goes into the queue two times or more. The extra copies make extra work.</li>
+  <li><b>You use DFS for "fewest steps".</b> DFS finds a route, not the shortest route. In the maze above, DFS found 19 steps where 13 were possible.</li>
+  <li><b>You use recursion on a big grid.</b> The recursive <code>sink</code> can make a chain of 90,000 open calls, 90 times more than Python allows. Use the loop, <code>flood</code>.</li>
+  <li><b>You forget the edges of the grid.</b> Check <code>0 &lt;= r &lt; rows</code> and <code>0 &lt;= c &lt; cols</code> before you read <code>grid[r][c]</code>. In Python, <code>grid[-1]</code> does not cause an error. It reads the last row without a warning, and you get a wrong answer.</li>
+</ul>
+
+<h2>In the real world</h2>
+<p><b>The paint bucket.</b> In a paint program, the bucket tool fills all the touching pixels of one color with a new color. That is <code>sink</code>, exactly. The pixels are the cells, "same color" is "land", and the new color is the mark. A phone photo has about 4,000 × 3,000 = 12,000,000 pixels. A recursive fill of a large area would need millions of open calls, so real paint programs use a loop with their own list, like <code>flood</code> on this page.</p>
+<p><b>Memory clean-up.</b> A running program makes objects, and objects point to other objects. That is a graph. When the program can no longer reach an object, the memory of that object can be used again. To find those objects, many languages run a graph search. Start from the objects that the program can use now, follow every pointer, and mark each object you reach. Every object without a mark is garbage. John McCarthy first described this method in 1960, for the language Lisp.</p>
+<p>The marks do important work here, because objects often point at each other in circles. Without the marks, the search would go round a circle forever. Python shows why such circles matter. Python usually frees an object when the count of pointers to it falls to 0. But two objects that point only at each other keep a count of 1 forever, so the count never finds them. To find such groups, Python also runs a graph search with marks.</p>
+<p><b>Six degrees.</b> People say that any two people on Earth are about six handshakes apart. In 2016, Facebook measured this on its 1.6 billion users. It reported that the average distance between two users was 4.57 steps, which means about 3.57 people in between. Facebook called this "three and a half degrees of separation". The distance it measured is a BFS distance: the fewest friend-to-friend steps. Is 4.57 believable?</p>
+<div class="napkin-box">
+  <span class="eyebrow">Napkin math: how many steps to reach everybody?</span>
+  <p>Suppose that each person has 200 friends, and that no two people share a friend. Then a BFS from one person reaches 200 people in 1 step, 200 × 200 = 40,000 in 2 steps, 40,000 × 200 = 8,000,000 in 3 steps, and 8,000,000 × 200 = 1,600,000,000 in 4 steps. Within 3 steps there are only about 8 million people, which is 0.5% of 1.6 billion. So in this model, almost everybody is exactly 4 steps away, and the average is about 4.</p>
+  <p>Real friends share many friends. So each ring grows by less than 200 times, and more people end up 5 or 6 steps away. That pushes the average above 4. <span class="verdict">Verdict: approximately accurate.</span> The napkin math says "a little more than 4", and Facebook measured 4.57. The old figure of six handshakes is an exaggeration for this network, but not a large one.</p>
+</div>
+</main>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const NS='http://www.w3.org/2000/svg';
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e};
+const pr=(r,c)=>`(${r}, ${c})`;
+const D4=[[1,0],[-1,0],[0,1],[0,-1]];
+
+function board(host,R,C){host.style.gridTemplateColumns=`repeat(${C},minmax(0,1fr))`;host.innerHTML='';
+  const cells=[];for(let i=0;i<R*C;i++){const d=document.createElement('div');d.className='cell';host.appendChild(d);cells.push(d)}return cells}
+
+/* generic Step / Play / Reset player over precomputed frames */
+function player(o){
+  let frames=o.frames,i=0,timer=null;
+  const last=()=>frames.length-1;
+  function show(){o.render(frames[i]);o.step.disabled=i>=last();
+    o.play.textContent=timer?'Pause':(i>=last()?'Replay':'Play')}
+  function tick(){i++;timer=null;
+    if(i<last())timer=setTimeout(tick,frames[i].fast?o.fast:o.delay);
+    show()}
+  o.step.onclick=()=>{clearTimeout(timer);timer=null;if(i<last())i++;show()};
+  o.play.onclick=()=>{if(timer){clearTimeout(timer);timer=null;show();return}
+    if(i>=last())i=0;timer=setTimeout(tick,o.delay);show()};
+  o.reset.onclick=()=>{clearTimeout(timer);timer=null;i=0;show()};
+  show();
+  return {load(f){clearTimeout(timer);timer=null;frames=f;i=0;show()}};
+}
+
+/* ---------- Widget 0: grid to graph ---------- */
+(function(){
+  const g=["1101","0101","1001"],svg=$('svg0'),S=52,ox=40,oy=46,gx=390;
+  const T=(x,y,s,st)=>{const t=el('text',{x,y,'text-anchor':'middle',style:st},svg);t.textContent=s};
+  const small='font:11px var(--mono);fill:var(--muted)';
+  T(ox+2*S,16,'the grid','font:12px var(--mono);fill:var(--muted)');
+  T(gx+2*S,16,'the graph','font:12px var(--mono);fill:var(--muted)');
+  for(let c=0;c<4;c++)T(ox+c*S+S/2,oy-8,'col '+c,small);
+  for(let r=0;r<3;r++)T(ox-18,oy+r*S+S/2+4,'row '+r,small+';writing-mode:horizontal-tb');
+  for(let r=0;r<3;r++)for(let c=0;c<4;c++){
+    el('rect',{x:ox+c*S+2,y:oy+r*S+2,width:S-4,height:S-4,rx:4,style:`fill:var(${g[r][c]==='1'?'--land':'--water'})`},svg);
+    T(ox+c*S+S/2,oy+r*S+S/2+5,g[r][c],'font:600 14px var(--mono);fill:var(--muted)')}
+  el('path',{d:`M ${ox+4*S+14} ${oy+1.5*S} h 80`,style:'stroke:var(--muted);stroke-width:2;fill:none'},svg);
+  el('path',{d:`M ${ox+4*S+92} ${oy+1.5*S-6} l 9 6 l -9 6 z`,style:'fill:var(--muted)'},svg);
+  const cx=c=>gx+c*S+S/2,cy=r=>oy+r*S+S/2;
+  for(let r=0;r<3;r++)for(let c=0;c<4;c++)if(g[r][c]==='1')for(const[dr,dc]of[[1,0],[0,1]]){
+    const nr=r+dr,nc=c+dc;if(nr<3&&nc<4&&g[nr][nc]==='1')
+      el('line',{x1:cx(c),y1:cy(r),x2:cx(nc),y2:cy(nr),style:'stroke:var(--left);stroke-width:3'},svg)}
+  for(let r=0;r<3;r++)for(let c=0;c<4;c++)if(g[r][c]==='1'){
+    el('circle',{cx:cx(c),cy:cy(r),r:15,style:'fill:var(--panel);stroke:var(--left);stroke-width:2.5'},svg);
+    T(cx(c),cy(r)+4,`${r},${c}`,'font:600 10px var(--mono);fill:var(--ink)')}
+})();
+
+/* ---------- Widget 1: numIslands with recursive sink ---------- */
+(function(){
+  const G=["11000110","11010010","00011000","10001011","11000010","01011000"],R=G.length,C=G[0].length;
+  const cells=board($('b1'),R,C),frames=[];
+  const st=[],isl=[];for(const row of G)for(const ch of row){st.push(ch==='1'?'l':'w');isl.push(0)}
+  const stack=[];let count=0,sunk=0,scan=null;
+  const snap=(msg,fast,cls)=>frames.push({st:st.slice(),isl:isl.slice(),stack:stack.map(x=>x.slice()),count,sunk,msg,scan:scan&&scan.slice(),fast,cls});
+  snap('Press Step or Play. The scan starts at the top left cell, (0, 0).');
+  function sink(r,c,from){const i=r*C+c;st[i]='s';isl[i]=count;sunk++;stack.push([r,c]);
+    snap(from?`<code>sink${pr(r,c)}</code> is called by <code>sink${pr(...from)}</code>, because ${pr(r,c)} is unsunk land. It sinks the cell. Now ${stack.length} calls are open. Only the top one runs; the others wait.`
+             :`<code>sink${pr(r,c)}</code> sinks the cell. Then it calls <code>sink</code> on its four neighbors in this order: down, up, right, left.`);
+    for(const[dr,dc]of D4){const nr=r+dr,nc=c+dc;
+      if(nr>=0&&nr<R&&nc>=0&&nc<C&&st[nr*C+nc]==='l')sink(nr,nc,[r,c])}
+    stack.pop();
+    if(stack.length){const p=stack[stack.length-1];
+      snap(`<code>sink${pr(r,c)}</code> has tried all four neighbors, so it returns. Now <code>sink${pr(...p)}</code> runs again and tries its next neighbor.`)}}
+  for(let r=0;r<R;r++)for(let c=0;c<C;c++){const i=r*C+c;scan=[r,c];
+    if(st[i]==='w')snap(`The scan reaches ${pr(r,c)}. It is water. Skip it.`,true);
+    else if(st[i]==='s')snap(`The scan reaches ${pr(r,c)}. It is already sunk, because the flood of island ${isl[i]} got here first. Skip it, so it is not counted again.`,true);
+    else{count++;snap(`The scan reaches ${pr(r,c)}. It is land, and no flood has sunk it. So it is on a new island. Islands = ${count}. Call <code>sink${pr(r,c)}</code>.`);
+      const before=sunk;sink(r,c,null);
+      snap(`<code>sink${pr(r,c)}</code> returns, and no calls are open now. Island ${count} is completely sunk: ${sunk-before} ${sunk-before===1?'cell':'cells'}. The scan continues after ${pr(r,c)}.`,false,'ok')}}
+  scan=null;
+  snap(`The scan is complete. Answer: <b>${count} islands</b>. The scan read each of the ${R*C} cells one time, and each land cell was sunk one time.`,false,'ok');
+  const status=$('status1'),facts=$('facts1'),sbox=$('stack1');
+  player({frames,delay:700,fast:110,step:$('step1'),play:$('play1'),reset:$('reset1'),render(f){
+    const top=f.stack.length?f.stack[f.stack.length-1]:null,wait=new Set(f.stack.slice(0,-1).map(([r,c])=>r*C+c));
+    cells.forEach((d,i)=>{let k=f.st[i]==='w'?'water':f.st[i]==='l'?'land':'sunk';
+      if(wait.has(i))k='onstack';if(top&&top[0]*C+top[1]===i)k='now';
+      if(f.scan&&f.scan[0]*C+f.scan[1]===i)k+=' scan';
+      d.className='cell '+k;d.textContent=f.st[i]==='s'?f.isl[i]:''});
+    sbox.innerHTML=f.stack.length?f.stack.slice().reverse().map((p,j)=>`<div class="chip${j===0?' next':''}">sink${pr(...p)}${j===0?' ← runs':' waits'}</div>`).join(''):'<div class="chip none">no open calls</div>';
+    facts.innerHTML=`<span>islands <b>${f.count}</b></span><span>cells sunk <b>${f.sunk}</b></span><span>open calls <b>${f.stack.length}</b></span>`;
+    status.innerHTML=f.msg;status.className='status'+(f.cls?' '+f.cls:'')}});
+})();
+
+/* ---------- Widget 2: DFS vs BFS on a maze ---------- */
+(function(){
+  const M=["S..#.....",".#.#.##..",".#...#...",".####.#.#","......#..",".##.#...G","....#.#.."],R=M.length,C=M[0].length;
+  let S,Gl;for(let r=0;r<R;r++)for(let c=0;c<C;c++){if(M[r][c]==='S')S=[r,c];if(M[r][c]==='G')Gl=[r,c]}
+  const cells=board($('b2'),R,C),key=(r,c)=>r*C+c;
+  function build(kind){
+    const frames=[],todo=[S],dist=new Map([[key(...S),0]]),par=new Map(),done=new Set();let taken=0;
+    const snap=(msg,cur,path,cls)=>frames.push({todo:todo.map(x=>x.slice()),dist:new Map(dist),done:new Set(done),cur,path,msg,taken,cls});
+    snap(`<code>todo</code> holds only S, and S has its mark, with the number 0. Press Step to take out the first item.`,null);
+    while(todo.length){
+      const cur=kind==='dfs'?todo.pop():todo.shift();taken++;
+      const k=key(...cur),d=dist.get(k);
+      if(cur[0]===Gl[0]&&cur[1]===Gl[1]){
+        const path=new Set();let x=k;while(x!==undefined){path.add(x);x=par.get(x)}
+        done.add(k);
+        snap(kind==='dfs'
+          ?`G comes out after ${taken} cells, so the search stops. The route this search used is <b>${d} steps</b> long (blue). It is a real route, but not the shortest one. Press BFS to compare.`
+          :`G comes out after ${taken} cells, so the search stops. The route is <b>${d} steps</b> (blue), and no shorter route exists: every cell nearer than ${d} came out first. Look at the rings of numbers around S.`,null,path,'ok');
+        return frames}
+      const added=[];
+      for(const[dr,dc]of D4){const nr=cur[0]+dr,nc=cur[1]+dc,nk=key(nr,nc);
+        if(nr>=0&&nr<R&&nc>=0&&nc<C&&M[nr][nc]!=='#'&&!dist.has(nk)){dist.set(nk,d+1);par.set(nk,k);todo.push([nr,nc]);added.push(pr(nr,nc))}}
+      done.add(k);
+      snap(`Take out ${pr(...cur)} from the ${kind==='dfs'?'<b>end</b> (the newest item)':'<b>front</b> (the oldest item)'}. Its number is ${d}. `+
+        (added.length?`Its unmarked open neighbors ${added.join(', ')} get a mark and the number ${d+1}, and go in at the end of <code>todo</code>.`:'It has no unmarked open neighbors, so nothing goes in.'),cur)}
+    return frames}
+  const F={dfs:build('dfs'),bfs:build('bfs')};
+  const status=$('status2'),facts=$('facts2'),tbox=$('todo2'),head=$('todohead2');let kind='dfs';
+  const gk=key(...Gl);
+  const p=player({frames:F.dfs,delay:420,fast:420,step:$('step2'),play:$('play2'),reset:$('reset2'),render(f){
+    const wait=new Set(f.todo.map(x=>key(...x)));
+    cells.forEach((d,i)=>{const r=Math.floor(i/C),c=i%C;let k;
+      if(M[r][c]==='#'){d.className='cell wall';d.textContent='';return}
+      if(f.path&&f.path.has(i))k='path';else if(f.cur&&key(...f.cur)===i)k='now';else if(wait.has(i))k='waiting';else if(f.done.has(i))k='done';else k='open';
+      d.className='cell '+k;
+      d.textContent=M[r][c]==='S'?'S':M[r][c]==='G'?'G':(f.dist.has(i)?f.dist.get(i):'')});
+    head.textContent=kind==='dfs'?'todo: a pile; the next item comes from the end':'todo: a line; the next item comes from the front';
+    const n=f.todo.length,nxt=kind==='dfs'?n-1:0;
+    tbox.innerHTML=n?f.todo.map((x,j)=>`<span class="chip${j===nxt&&!f.path?' next':''}">${pr(...x)}</span>`).join(''):'<span class="chip none">empty</span>';
+    const gd=f.dist.has(gk)?f.dist.get(gk):null;
+    facts.innerHTML=`<span>taken out <b>${f.taken}</b></span><span>waiting <b>${n}</b></span><span>G's number <b>${gd===null?'not reached':gd}</b></span>`;
+    status.innerHTML=f.msg;status.className='status'+(f.cls?' '+f.cls:'')}});
+  function setKind(k){kind=k;$('dfs2').setAttribute('aria-pressed',k==='dfs');$('bfs2').setAttribute('aria-pressed',k==='bfs');p.load(F[k])}
+  $('dfs2').onclick=()=>setKind('dfs');$('bfs2').onclick=()=>setKind('bfs');
+})();
+
+/* ---------- Widget 3: rotting oranges, minute by minute ---------- */
+(function(){
+  const P={a:[[2,1,1],[1,1,0],[0,1,1]],b:[[2,1,1,1,1],[1,1,0,1,1],[1,0,1,1,1],[1,1,1,1,2]],c:[[2,1,1],[0,1,1],[1,0,1]]};
+  const host=$('b3'),status=$('status3'),facts=$('facts3');let cells,R,C;
+  function build(g){R=g.length;C=g[0].length;cells=board(host,R,C);host.style.maxWidth=(C*4.2)+'rem';
+    const v=g.flat(),when=v.map(x=>x===2?0:null),frames=[];let q=[],fresh=0,m=0;
+    v.forEach((x,i)=>{if(x===2)q.push(i);if(x===1)fresh++});
+    const snap=(msg,neu,lost,cls)=>frames.push({v:v.slice(),when:when.slice(),neu:new Set(neu),lost:!!lost,minute:m,fresh,queue:q.length,msg,cls});
+    snap(`Before minute 1, the queue holds every rotten orange: ${q.length===1?'one orange':q.length+' oranges, and they all start together'}. ${fresh} fresh oranges are left.`,q);
+    while(q.length&&fresh>0){const nq=[];
+      for(const i of q){const r=Math.floor(i/C),c=i%C;
+        for(const[dr,dc]of D4){const nr=r+dr,nc=c+dc,j=nr*C+nc;
+          if(nr>=0&&nr<R&&nc>=0&&nc<C&&v[j]===1){v[j]=2;when[j]=m+1;fresh--;nq.push(j)}}}
+      m++;const one=q.length===1;
+      const who=m===1?(one?'The rotten orange from the start':'The rotten oranges from the start')
+                     :(one?`The orange that rotted in minute ${m-1}`:`The oranges that rotted in minute ${m-1}`);
+      q=nq;
+      if(q.length)snap(`Minute ${m}. ${who} ${one?'rots':'rot'} ${q.length} fresh ${q.length===1?'neighbor':'neighbors'}. ${q.length===1?'It goes':'They go'} into the queue as the next ring. ${fresh} fresh left.`,q);
+      else snap(`Minute ${m}. ${who} ${one?'has':'have'} no fresh neighbors. Nothing rots, and the queue is now empty.`,[])}
+    if(fresh===0)snap(`No fresh orange is left. Answer: <b>${m} minutes</b>.`,[],false,'ok');
+    else snap(`The queue is empty, but ${fresh} fresh ${fresh===1?'orange is':'oranges are'} left. No rotten orange touches ${fresh===1?'it':'them'}, so no ring can get there. Answer: <b>−1</b>.`,[],true,'wrong');
+    return frames}
+  const p=player({frames:build(P.a),delay:900,fast:900,step:$('step3'),play:$('play3'),reset:$('reset3'),render(f){
+    cells.forEach((d,i)=>{const x=f.v[i];
+      if(x===0){d.className='cell empty';d.innerHTML='';return}
+      let k=x===1?'fresh':'rotten';if(f.neu.has(i))k+=' newrot';if(f.lost&&x===1)k+=' lost';
+      d.className='cell '+k;d.innerHTML=`<span class="fruit">${x===2?f.when[i]:''}</span>`});
+    facts.innerHTML=`<span>minute <b>${f.minute}</b></span><span>fresh left <b>${f.fresh}</b></span><span>in the queue <b>${f.queue}</b></span>`;
+    status.innerHTML=f.msg;status.className='status'+(f.cls?' '+f.cls:'')}});
+  for(const k of['a','b','c'])$('p3'+k).onclick=()=>{for(const j of['a','b','c'])$('p3'+j).setAttribute('aria-pressed',j===k);p.load(build(P[k]))};
+})();
+})();
+</script>
