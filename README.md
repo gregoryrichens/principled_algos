@@ -53,11 +53,11 @@ Each term below is explained using one running example, **Two Sum**:
 
 ## What each file is for
 
-| File | What it is for |
+| File or folder | What it is for |
 |---|---|
 | `ANALYSIS.md` | Why learning principles beats memorizing problems, where the approach falls short, and the study method that fixes those gaps. Read first. |
 | `SCHEDULE.md` | A day-by-day five-week plan. It also covers the five steps to follow on every problem and how to keep a short log of your attempts. |
-| `PRINCIPLES.md` | The reference book. Each of the 18 principles has its triggers, the idea explained, its invariant, its template, worked examples with full solutions, the problems it solves, and common mistakes. It ends with 14 tricks that must simply be memorized, and the coverage index. |
+| `principles` | PRINCIPLES.md servers as a reference book. Each of the 18 principles has its triggers, the idea explained, its invariant, its template, worked examples with full solutions, the problems it solves, and common mistakes. It ends with 14 tricks that must simply be memorized, and the coverage index. Within this folder are individual lessons with visualizations and explanations for each principle. |
 | `DRILLS.md` | The 36 practice cards. You write each one from memory until you can do it correctly in under two minutes, three times in a row. |
 | `CONTRASTS.md` | Contrast pairs, families, compositions, and a list of misleading wording in problems. The answers are hidden so you can test yourself. |
 
